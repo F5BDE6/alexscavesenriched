@@ -1,0 +1,27 @@
+{
+    "name": "Demon Core",
+    "icon": "alexscavesenriched:block_of_enriched_uranium",
+    "category": "alexscavesenriched:resources",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "By surrounding up to (def: 128) connected enriched uranium blocks with neutron reflectors, a demon core is made. Demon cores will inflict radiation damage that scales linearly with the number of blocks.$(br2)The shape of the demon core must be close to a rectangular prism or it may not work. A blue glow will be emitted when the demon core is successfully assembled."
+        },
+        {
+            "type": "patchouli:multiblock",
+            "text": "Minimal demon core setup",
+            "multiblock": {
+                "pattern": [
+                    [ "   ", " I ", "   " ],
+                    [ " I ", "I0I", " I " ],
+                    [ "   ", " I ", "   " ]
+                ],
+                "mapping": {
+                    "I": "#alexscavesenriched:neutron_reflector",
+                    "0": "alexscavesenriched:block_of_enriched_uranium"
+                },
+                "symmetrical": true
+            }
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:rocket"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.rocket.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.rocket.desc"
+        }
+    },
+    "parent": "alexscavesenriched:rocket_launcher",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:rocket"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

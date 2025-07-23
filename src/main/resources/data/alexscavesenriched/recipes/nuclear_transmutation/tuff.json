@@ -1,0 +1,6 @@
+{
+    "type": "alexscavesenriched:nuclear_transmutation",
+	"input": "minecraft:tuff",
+    "output": "minecraft:basalt",
+	"chance": 1.0
+}

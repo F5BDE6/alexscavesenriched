@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+        "item": "patchouli:guide_book",
+        "nbt": "{\"patchouli:book\":\"alexscavesenriched\"}"
+    },
+    "title": {
+        "translate": "advancements.alexscavesenriched.root.title"
+    },
+    "description": {
+        "translate": "advancements.alexscavesenriched.root.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "background": "alexscavesenriched:textures/block/block_of_enriched_uranium.png"
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+				"alexscaves:uranium"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "variants": {
+        "axis=x": {
+            "model": "alexscavesenriched:block/enriched_uranium_rod",
+            "x": 90,
+            "y": 90
+        },
+        "axis=y": {
+            "model": "alexscavesenriched:block/enriched_uranium_rod"
+        },
+        "axis=z": {
+            "model": "alexscavesenriched:block/enriched_uranium_rod",
+            "x": 90
+        }
+    }
+}

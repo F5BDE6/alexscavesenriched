@@ -1,0 +1,16 @@
+{
+    "name": "Uranium Candy",
+    "icon": "alexscavesenriched:uranium_candy",
+    "category": "alexscavesenriched:misc",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Uranium candy provides infinite saturation and hunger in a single bite! Can be made by either crafting uranium with sugar or by putting candy canes in a nuclear furnace."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "",
+            "recipe": "alexscavesenriched:uranium_candy"
+        }
+    ]
+}

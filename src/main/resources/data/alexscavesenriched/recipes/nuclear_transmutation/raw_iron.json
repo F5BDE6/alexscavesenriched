@@ -1,0 +1,5 @@
+{
+    "type": "alexscavesenriched:nuclear_transmutation",
+	"input": "minecraft:raw_iron_block",
+    "output": "minecraft:iron_block"
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "alexscavesenriched:uranium_candy",
+      "required": false
+    }
+  ]
+}

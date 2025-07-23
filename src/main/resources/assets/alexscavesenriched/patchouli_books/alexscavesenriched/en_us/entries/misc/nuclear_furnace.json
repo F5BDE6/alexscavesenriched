@@ -1,0 +1,11 @@
+{
+    "name": "Nuclear Furnace",
+    "icon": "alexscaves:nuclear_furnace_component",
+    "category": "alexscavesenriched:misc",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Several new nuclear furnace specific recipes are added, check the nuclear furnace component in EMI for a full list. These recipes are independent from any Alex's Caves configs."
+        }
+    ]
+}

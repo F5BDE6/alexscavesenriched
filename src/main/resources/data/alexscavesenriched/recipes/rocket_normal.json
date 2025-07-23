@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "PUP",
+        "ITI",
+        " F "
+    ],
+    "key": {
+        "P": { "item": "alexscaves:polymer_plate" },
+        "T": { "item": "minecraft:tnt" },
+        "I": { "item": "minecraft:iron_block" },
+        "U": { "item": "minecraft:copper_ingot" },
+        "F": { "item": "minecraft:firework_rocket" }
+    },
+    "result": {
+        "item": "alexscavesenriched:rocket_normal",
+        "count": 4
+    }
+}

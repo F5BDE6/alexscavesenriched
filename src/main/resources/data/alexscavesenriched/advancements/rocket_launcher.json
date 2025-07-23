@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:rocket_launcher"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.rocket_launcher.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.rocket_launcher.desc"
+        }
+    },
+    "parent": "alexscavesenriched:enriched_uranium",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:rocket_launcher"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

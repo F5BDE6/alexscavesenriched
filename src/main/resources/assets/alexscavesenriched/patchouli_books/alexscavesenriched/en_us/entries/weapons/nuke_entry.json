@@ -1,0 +1,25 @@
+{
+    "name": "Nukes",
+    "icon": "alexscaves:nuclear_bomb",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "This mod revamps Alex's Caves' nuclear explosions (for the nuclear bomb and nuclear rocket). Now nuclear explosions are more optimized and have new effects on the environment.$(br2)It is recommended to turn OFF item drops from nukes and increase size to 6+ in Alex's Caves config for best results."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "(Nuke recipe for reference)",
+            "recipe": "alexscaves:nuclear_bomb",
+            "recipe2": "alexscavesenriched:rocket_nuclear"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Nukes now explode in several stages:$(br)1. Non-blast proof blocks in range are deleted$(br)2. Blocks near the crater are transmuted. See the nuclear_bomb in EMI for recipes.$(br)3. A shockwave and blast lines are produced, which destroy weak blocks, burn flammable blocks, and transmute & (if enabled) smelt certain blocks."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Some acid and a radioactive fallout cloud are left behind.$(br2)If enabled in the config, the air blocks in the crater become radioactive and glow while inflicting the irradiated status effect. These air blocks decay via random ticks, so they may take a while to decay. Piston flying machines or liquids can be used to remove them.$(br2)If enabled in the config, the nuke will inflict void damage to the wither."
+        }
+    ]
+}

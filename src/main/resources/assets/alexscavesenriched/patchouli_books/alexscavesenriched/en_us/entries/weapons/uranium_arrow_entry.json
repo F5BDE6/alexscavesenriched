@@ -1,0 +1,16 @@
+{
+    "name": "Uranium Arrow",
+    "icon": "alexscavesenriched:uranium_arrow",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Uranium arrows have an unlimited piercing effect and deal extra damage & mild irradiation to entities. However, they are twice as heavy as regular arrows."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "",
+            "recipe": "alexscavesenriched:uranium_arrow"
+        }
+    ]
+}

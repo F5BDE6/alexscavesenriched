@@ -1,0 +1,9 @@
+{
+    "type": "alexscavesenriched:nuclear_furnace_additional",
+    "ingredient": {
+        "item": "minecraft:redstone"
+    },
+    "result": "minecraft:glowstone_dust",
+    "experience": 0.1,
+    "cookingtime": 50
+}

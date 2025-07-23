@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "UIU",
+        "UBU",
+        "UIU"
+    ],
+    "key": {
+        "U": {
+            "item": "alexscavesenriched:enriched_uranium"
+        },
+        "B": {
+            "item": "minecraft:blaze_rod"
+        },
+        "I": {
+            "tag": "forge:ingots/iron"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:enriched_uranium_rod"
+    }
+}

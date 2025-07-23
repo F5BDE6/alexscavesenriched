@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "PPU",
+        "MNE",
+        "RDP"
+    ],
+    "key": {
+        "P": {"item": "alexscaves:polymer_plate"},
+        "U": {"item": "alexscavesenriched:enriched_uranium"},
+        "M": {"item": "minecraft:netherite_ingot"},
+        "N": {"item": "minecraft:netherite_block"},
+        "E": {"item": "minecraft:end_crystal"},
+        "R": {"item": "minecraft:redstone_block"},
+        "D": {"item": "minecraft:diamond"}
+    },
+    "result": {
+        "item": "alexscavesenriched:rocket_launcher"
+    }
+}

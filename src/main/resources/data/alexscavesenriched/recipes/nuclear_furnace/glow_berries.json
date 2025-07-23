@@ -1,0 +1,9 @@
+{
+    "type": "alexscavesenriched:nuclear_furnace_additional",
+    "ingredient": {
+        "item": "minecraft:sweet_berries"
+    },
+    "result": "minecraft:glow_berries",
+    "experience": 0.1,
+    "cookingtime": 50
+}

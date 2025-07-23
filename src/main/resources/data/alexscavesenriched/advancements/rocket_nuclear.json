@@ -1,0 +1,29 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:rocket_nuclear"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.rocket_nuclear.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.rocket_nuclear.desc"
+        },
+		"frame": "goal"
+    },
+    "parent": "alexscavesenriched:rocket_launcher",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:rocket_nuclear"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

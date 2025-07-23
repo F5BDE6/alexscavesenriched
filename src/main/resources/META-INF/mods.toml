@@ -1,0 +1,42 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "alexscavesenriched"
+version = "${version}"
+displayName = "Alexs's Caves Enriched"
+authors = "Bowserinator,Xenonomous,sunny"
+description = '''
+Nuclear-themed add-on for Alex's Caves
+'''
+#logoFile = ""
+
+[[dependencies.alexscavesenriched]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.alexscavesenriched]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.alexscavesenriched]]
+modId = "alexscaves"
+mandatory = true
+versionRange="[2.0.2,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.alexscavesenriched]]
+modId = "cloth_config"
+mandatory = true
+versionRange="[11.1.136,)"
+ordering = "AFTER"
+side = "BOTH"

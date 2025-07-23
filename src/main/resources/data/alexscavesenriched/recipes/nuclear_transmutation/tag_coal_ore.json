@@ -1,0 +1,6 @@
+{
+    "type": "alexscavesenriched:nuclear_transmutation",
+	"input": "#minecraft:coal_ores",
+    "output": "minecraft:deepslate_diamond_ore",
+	"chance": 0.01
+}

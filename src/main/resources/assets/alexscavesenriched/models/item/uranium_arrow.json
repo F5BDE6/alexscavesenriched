@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:item/handheld",
+    "textures": {
+        "layer0": "alexscavesenriched:item/uranium_arrow"
+    }
+}

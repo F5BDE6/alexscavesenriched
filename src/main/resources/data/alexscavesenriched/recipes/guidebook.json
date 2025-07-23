@@ -1,0 +1,12 @@
+{
+    "type": "patchouli:shapeless_book_recipe",
+    "ingredients": [
+        {
+            "item": "alexscaves:uranium"
+        },
+        {
+            "item": "minecraft:book"
+        }
+    ],
+    "book": "alexscavesenriched"
+}

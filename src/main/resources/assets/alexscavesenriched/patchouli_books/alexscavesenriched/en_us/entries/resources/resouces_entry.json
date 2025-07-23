@@ -1,0 +1,25 @@
+{
+    "name": "Enriched Uranium & More",
+    "icon": "alexscavesenriched:enriched_uranium",
+    "category": "alexscavesenriched:resources",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Enriched uranium is produced by smelting uranium in a nuclear furnace. This recipe will take about an hour by default!"
+        },
+        {
+            "type": "patchouli:spotlight",
+            "item": "alexscavesenriched:enriched_uranium"
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "Enriched uranium rods glow, inflict irradiated II to nearby entities, and can be acid logged. Can be used to tame and breed Tremorzilla",
+            "recipe": "alexscavesenriched:enriched_uranium_rod"
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "The block of enriched uranium glows and inflicts irradiated II to nearby entities. It cannot be moved by pistons nor be blown up by TNT.",
+            "recipe": "alexscavesenriched:block_of_enriched_uranium"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:uranium_candy"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.uranium_candy.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.uranium_candy.desc"
+        }
+    },
+    "parent": "alexscavesenriched:root",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:uranium_candy"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

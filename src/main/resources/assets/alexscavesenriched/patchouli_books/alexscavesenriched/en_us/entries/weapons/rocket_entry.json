@@ -1,0 +1,30 @@
+{
+    "name": "Rockets",
+    "icon": "alexscavesenriched:rocket",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Rockets can be fired from either a rocket launcher or dispenser. Setting a rocket on fire will create a fire explosion. There are a few variations:"
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "The basic rocket makes a TNT sized explosion upon hitting the ground or an entity.",
+            "recipe": "alexscavesenriched:rocket_normal"
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "Uranium rockets have a larger explosion and leave behind a cloud of fallout.",
+            "recipe": "alexscavesenriched:rocket"
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "The nuclear rocket is an Alex's Caves nuke in rocket form.$(br2)Nuclear rockets will set off nearby sirens. Dispensers will fire nuclear rockets with zero spread and faster speed as well.",
+            "recipe": "alexscavesenriched:rocket_nuclear"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "If enabled in the config, rockets will use improved checking logic to avoid missing nether portals (due to high speed), allowing you to safely nuke others from another dimension :)"
+        }
+    ]
+}

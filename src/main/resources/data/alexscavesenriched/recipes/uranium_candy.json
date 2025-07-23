@@ -1,0 +1,11 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "tag": "forge:raw_materials/uranium" },
+        { "item": "minecraft:sugar"}
+    ],
+    "result": {
+        "item": "alexscavesenriched:uranium_candy",
+        "count": 16
+    }
+}

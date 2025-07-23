@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IFI",
+    "UBU",
+    "IFI"
+  ],
+  "key": {
+    "U": {
+      "item": "alexscavesenriched:enriched_uranium_rod"
+    },
+    "B": {
+      "item": "alexscavesenriched:block_of_enriched_uranium"
+    },
+    "F": {
+      "item": "alexscaves:fissile_core"
+    },
+    "I": {
+      "item": "minecraft:netherite_scrap"
+    }
+  },
+  "result": {
+    "item": "alexscaves:nuclear_bomb",
+    "count": 1
+  }
+}

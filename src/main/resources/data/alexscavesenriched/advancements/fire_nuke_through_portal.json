@@ -1,0 +1,25 @@
+{
+  "parent": "alexscavesenriched:rocket_nuclear",
+  "display": {
+    "description": {
+      "translate": "advancements.alexscavesenriched.fire_nuke_through_portal.desc"
+    },
+	"title": {
+      "translate": "advancements.alexscavesenriched.fire_nuke_through_portal.title"
+    },
+    "frame": "challenge",
+    "icon": {
+      "item" : "citadel:icon_item",
+      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/defeat_nucleeper.png\"}"
+    },
+    "hidden": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "alexscavesenriched:fire_nuke_through_portal"
+    }
+  },
+  "rewards": {
+    "experience": 200
+  }
+}

@@ -1,0 +1,5 @@
+{
+    "type": "alexscavesenriched:nuclear_transmutation",
+	"input": "#minecraft:stone_bricks",
+    "output": "minecraft:cracked_polished_blackstone_bricks"
+}

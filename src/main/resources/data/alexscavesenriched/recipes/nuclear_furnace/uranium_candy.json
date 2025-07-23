@@ -1,0 +1,9 @@
+{
+    "type": "alexscavesenriched:nuclear_furnace_additional",
+    "ingredient": {
+        "item": "alexscaves:candy_cane"
+    },
+    "result": "alexscavesenriched:uranium_candy",
+    "experience": 0.1,
+    "cookingtime": 50
+}

@@ -1,0 +1,9 @@
+{
+    "type": "alexscavesenriched:nuclear_furnace_additional",
+    "ingredient": {
+        "item": "minecraft:deepslate"
+    },
+    "result": "alexscaves:radrock",
+    "experience": 0.1,
+    "cookingtime": 50
+}

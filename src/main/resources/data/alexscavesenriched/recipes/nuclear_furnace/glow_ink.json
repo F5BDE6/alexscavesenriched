@@ -1,0 +1,9 @@
+{
+    "type": "alexscavesenriched:nuclear_furnace_additional",
+    "ingredient": {
+        "item": "minecraft:ink_sac"
+    },
+    "result": "minecraft:glow_ink_sac",
+    "experience": 0.1,
+    "cookingtime": 50
+}

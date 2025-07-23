@@ -1,0 +1,16 @@
+{
+    "name": "Rocket Launcher",
+    "icon": "alexscavesenriched:rocket_launcher",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The rocket launcher can be used to launch rockets (with global cooldown for each player, meaning you cannot fire multiple rocket launchers in sequence).$(br2)It can be enchanted with Power (boosts rocket speed) and Flame (to make fire explosions)."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "When firing, there will be a back blast that may damage entities.$(br2)Note: skeletons can pick up and use rocket launchers.",
+            "recipe": "alexscavesenriched:rocket_launcher"
+        }
+    ]
+}

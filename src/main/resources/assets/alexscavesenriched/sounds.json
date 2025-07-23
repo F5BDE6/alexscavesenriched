@@ -1,0 +1,7 @@
+{
+  "rocket_whistle": {
+    "category": "ambient",
+    "subtitle": "alexscavesenriched.subtitle.rocket_whistle",
+    "sounds": [ "alexscavesenriched:item/rocket_whistle" ]
+  }
+}
