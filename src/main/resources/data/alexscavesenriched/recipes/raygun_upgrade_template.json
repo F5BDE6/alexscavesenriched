@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "iii",
+        "iSi",
+        "i i"
+    ],
+    "key": {
+        "i": {
+            "item": "minecraft:iron_ingot"
+        },
+        "S": {
+            "tag": "forge:raw_materials/uranium"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:raygun_upgrade_template",
+        "count": 1
+    }
+}

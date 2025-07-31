@@ -1,0 +1,16 @@
+{
+    "name": "Neutron Bomb",
+    "icon": "alexscavesenriched:neutron_bomb",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A neutron bomb creates a brief explosion that damages and irradiates all entities in range, as well as destroying organic material (ie killing grass, disinfecting stone, etc...). Check EMI on the neutron bomb for a list of changes.$(br2)There is no long-lasting radiation from this bomb."
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "alexscavesenriched:neutron_bomb",
+            "recipe2": "alexscavesenriched:rocket_neutron"
+        }
+    ]
+}

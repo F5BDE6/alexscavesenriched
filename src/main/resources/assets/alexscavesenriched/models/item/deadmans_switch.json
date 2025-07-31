@@ -1,0 +1,14 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "alexscavesenriched:item/deadmans_switch"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "active": 1
+            },
+            "model": "alexscavesenriched:item/deadmans_switch_active"
+        }
+    ]
+}

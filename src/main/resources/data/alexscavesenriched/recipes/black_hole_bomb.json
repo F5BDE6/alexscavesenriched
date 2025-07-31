@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#",
+        "E",
+        "#"
+    ],
+    "key": {
+        "#": {
+            "item": "alexscaves:nuclear_bomb"
+        },
+        "E": {
+            "item": "minecraft:ender_eye"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:black_hole_bomb",
+        "count": 1
+    }
+}

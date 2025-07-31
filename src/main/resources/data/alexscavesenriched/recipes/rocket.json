@@ -9,7 +9,7 @@
         "P": { "item": "alexscaves:polymer_plate" },
         "T": { "item": "minecraft:tnt" },
         "I": { "item": "minecraft:iron_block" },
-        "U": { "tag": "forge:storage_blocks/uranium" },
+        "U": { "tag": "forge:raw_materials/uranium" },
         "F": { "item": "minecraft:firework_rocket" }
     },
     "result": {

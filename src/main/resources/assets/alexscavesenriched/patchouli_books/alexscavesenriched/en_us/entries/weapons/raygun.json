@@ -1,0 +1,16 @@
+{
+    "name": "Raygun Mk2",
+    "icon": "alexscavesenriched:raygun_mk2",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The raygun can be upgraded with an enriched uranium rod, which will vastly upgrade its ammo capacity (2x), damage, and range (to 125). However, this version can only fire in brief bursts."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "To upgrade a raygun, use the raygun upgrade template with a raygun and enriched uranium rod in a smithing table.",
+            "recipe": "alexscavesenriched:raygun_upgrade_template"
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Gamma Flashlight",
+    "icon": "alexscavesenriched:gamma_flashlight",
+    "category": "alexscavesenriched:misc",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The gamma flashlight functions as a (client-side only) flashlight. It also functions as a neutron source, killing off plants (with neutron kill recipe) and irradiating mobs."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "",
+            "recipe": "alexscavesenriched:gamma_flashlight"
+        }
+    ]
+}

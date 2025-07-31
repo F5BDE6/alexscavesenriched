@@ -11,7 +11,7 @@ authors = "Bowserinator,Xenonomous,sunny"
 description = '''
 Nuclear-themed add-on for Alex's Caves
 '''
-#logoFile = ""
+logoFile="assets/alexscavesenriched/textures/misc/mod_logo.png"
 
 [[dependencies.alexscavesenriched]]
 modId = "forge"

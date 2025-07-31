@@ -1,0 +1,5 @@
+{
+    "type": "alexscavesenriched:neutron_kill",
+    "input": "minecraft:mossy_cobblestone",
+    "output": "minecraft:cobblestone"
+}

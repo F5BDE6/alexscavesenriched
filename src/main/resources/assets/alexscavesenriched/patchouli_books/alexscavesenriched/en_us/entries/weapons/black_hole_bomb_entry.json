@@ -1,0 +1,15 @@
+{
+    "name": "Black Hole Bomb",
+    "icon": "alexscavesenriched:black_hole_bomb",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A clean bomb that deletes all non-nuke proof blocks (including obsidian) in a spherical radius. Leaves behind a mini black hole that will slowly decay. Throw in a bucket of lava and bucket of water to stabilize the black hole, or throw in a phantom membrane to undo."
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "alexscavesenriched:black_hole_bomb"
+        }
+    ]
+}

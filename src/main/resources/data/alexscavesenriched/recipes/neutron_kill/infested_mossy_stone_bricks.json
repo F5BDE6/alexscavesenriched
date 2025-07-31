@@ -1,0 +1,5 @@
+{
+    "type": "alexscavesenriched:neutron_kill",
+    "input": "minecraft:infested_mossy_stone_bricks",
+    "output": "minecraft:stone_bricks"
+}

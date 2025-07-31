@@ -1,0 +1,16 @@
+{
+    "name": "Flamethrower",
+    "icon": "alexscavesenriched:flamethrower",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The flamethrower shoots fire projectiles (only damages entities), using blaze powder as fuel."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "",
+            "recipe": "alexscavesenriched:flamethrower"
+        }
+    ]
+}

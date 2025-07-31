@@ -5,4 +5,8 @@ import net.minecraft.util.Identifier;
 
 public class ACESounds {
     public static final SoundEvent ROCKET_WHISTLE = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "rocket_whistle"), 64.0F);
+    public static final SoundEvent BLACKHOLE = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "black_hole"), 64.0F);
+    public static final SoundEvent FLAMETHROWER = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "flamethrower"), 32F);
+    public static final SoundEvent FLAMETHROWER_EMPTY = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "flamethrower_empty"), 32F);
+    public static final SoundEvent FLAMETHROWER_RELOAD = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "flamethrower_reload"), 32F);
 }

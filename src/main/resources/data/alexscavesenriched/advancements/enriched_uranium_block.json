@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:enriched_uranium_block"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.enriched_uranium_block.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.enriched_uranium_block.desc"
+        }
+    },
+    "parent": "alexscavesenriched:enriched_uranium",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:enriched_uranium_block"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

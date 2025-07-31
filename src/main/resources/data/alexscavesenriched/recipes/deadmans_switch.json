@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " F ",
+        "PRP",
+        " G "
+    ],
+    "key": {
+        "F": {"item": "alexscaves:fissile_core"},
+        "R": {"tag": "forge:storage_blocks/redstone"},
+        "P": {"item": "alexscaves:polymer_plate"},
+        "G": {"item": "minecraft:ghast_tear"}
+    },
+    "result": {
+        "item": "alexscavesenriched:deadmans_switch"
+    }
+}

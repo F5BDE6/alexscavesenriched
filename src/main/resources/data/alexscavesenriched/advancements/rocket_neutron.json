@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:rocket_neutron"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.rocket_neutron.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.rocket_neutron.desc"
+        }
+    },
+    "parent": "alexscavesenriched:rocket_launcher",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:rocket_neutron"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

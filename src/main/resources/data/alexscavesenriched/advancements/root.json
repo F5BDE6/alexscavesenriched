@@ -1,8 +1,8 @@
 {
   "display": {
     "icon": {
-        "item": "patchouli:guide_book",
-        "nbt": "{\"patchouli:book\":\"alexscavesenriched\"}"
+      "item" : "citadel:icon_item",
+      "nbt": "{IconLocation:\"alexscavesenriched:textures/item/guidebook.png\"}"
     },
     "title": {
         "translate": "advancements.alexscavesenriched.root.title"
@@ -13,7 +13,7 @@
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
-    "background": "alexscavesenriched:textures/block/block_of_enriched_uranium.png"
+    "background": "alexscavesenriched:textures/block/enriched_uranium_block.png"
   },
   "criteria": {
     "requirement": {

@@ -1,6 +1,9 @@
 {
     "replace": false,
     "values": [
-        "alexscavesenriched:block_of_enriched_uranium"
+        "alexscavesenriched:enriched_uranium_block",
+        "alexscavesenriched:neutron_bomb",
+        "alexscavesenriched:black_hole_bomb",
+        "alexscavesenriched:mini_nuke"
     ]
 }

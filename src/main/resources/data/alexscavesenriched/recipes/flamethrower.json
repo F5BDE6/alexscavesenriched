@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SSR",
+        "S/N",
+        "  S"
+    ],
+    "key": {
+        "R": {
+            "item": "minecraft:repeater"
+        },
+        "S": {
+            "item": "alexscaves:polymer_plate"
+        },
+        "/": {
+            "item": "minecraft:blaze_rod"
+        },
+        "N": {
+            "item": "minecraft:netherite_scrap"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:flamethrower",
+        "count": 1
+    }
+}

@@ -27,6 +27,7 @@ public class NukeBlastParticle extends SpriteBillboardParticle {
         this.velocityZ = vz;
     }
 
+    @Override
     public void tick() {
         super.tick();
         float f = (this.age - (float)(this.maxAge / 2)) / (float)this.maxAge;

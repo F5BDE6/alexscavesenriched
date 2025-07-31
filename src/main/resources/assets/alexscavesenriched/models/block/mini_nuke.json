@@ -1,0 +1,22 @@
+{
+    "parent": "block/block",
+    "textures": {
+        "bottom": "alexscavesenriched:block/mini_nuke_side_1",
+        "side1": "alexscavesenriched:block/mini_nuke_side_0",
+        "top": "alexscavesenriched:block/mini_nuke_side_1",
+        "particle": "alexscavesenriched:block/mini_nuke_side_0"
+    },
+    "elements": [
+        {   "from": [ 3, 0, 3 ],
+            "to": [ 13, 10, 13 ],
+            "faces": {
+                "down":  { "uv": [ 0, 0, 10, 10 ], "texture": "#top", "cullface": "down" },
+                "up":    { "uv": [ 0, 0, 10, 10 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [ 0, 0, 10, 10 ], "texture": "#side1", "cullface": "painting" },
+                "south": { "uv": [ 0, 0, 10, 10 ], "texture": "#side1", "cullface": "south" },
+                "west":  { "uv": [ 0, 0, 10, 10 ], "texture": "#side1", "cullface": "west" },
+                "east":  { "uv": [ 0, 0, 10, 10 ], "texture": "#side1", "cullface": "east" }
+            }
+        }
+    ]
+}

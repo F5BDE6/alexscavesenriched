@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "alexscavesenriched:block/enriched_uranium_block"
+    }
+}

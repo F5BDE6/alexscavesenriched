@@ -1,0 +1,11 @@
+{
+    "name": "Nuka Cola",
+    "icon": "alexscavesenriched:nuka_cola",
+    "category": "alexscavesenriched:misc",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A treasure item spawn in toxic ruins. Can be placed as a block, cures all radiation and poison when drunk as well as providing a decent saturation and hunger buff. A quantum variant also exists."
+        }
+    ]
+}

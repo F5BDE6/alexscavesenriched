@@ -102,7 +102,7 @@ public class EnrichedUraniumBlock extends BlockWithEntity {
             for (int[] offset : offsets) {
                 var newPos = top.add(offset[0], offset[1], offset[2]);
                 var state = level.getBlockState(newPos);
-                if (state.isIn(AlexsCavesEnriched.neutronReflectorTag)) {
+                if (state.isIn(AlexsCavesEnriched.NEUTRONREFLECTOR_TAG)) {
                     // no-op
                 }
                 else if (state.getBlock() instanceof EnrichedUraniumBlock)

@@ -1,0 +1,5 @@
+{
+    "type": "alexscavesenriched:neutron_kill",
+    "input": "#alexscavesenriched:weak_plants",
+    "output": "minecraft:air"
+}

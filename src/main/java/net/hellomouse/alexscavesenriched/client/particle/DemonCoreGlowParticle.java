@@ -110,7 +110,7 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
     }
 
     @OnlyIn(Dist.CLIENT)
-    ParticleTextureSheet PARTICLE_SHEET_DEMONCORE = new ParticleTextureSheet() {
+    public static ParticleTextureSheet PARTICLE_SHEET_DEMONCORE = new ParticleTextureSheet() {
         @Override
         public void begin(BufferBuilder builder, TextureManager textureManager) {
             RenderSystem.enableBlend();

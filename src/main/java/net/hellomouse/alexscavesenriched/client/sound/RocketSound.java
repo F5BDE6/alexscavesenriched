@@ -2,7 +2,6 @@ package net.hellomouse.alexscavesenriched.client.sound;
 
 import net.hellomouse.alexscavesenriched.entity.RocketEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundCategory;
@@ -66,7 +65,7 @@ public class RocketSound extends MovingSoundInstance {
     }
 
     private float getMinPitch() { return 0.5F; }
-    private float getMaxPitch() { return 2.0F; }
+    private float getMaxPitch() { return 1.5F; }
     public boolean shouldAlwaysPlay() { return true; }
 
     public boolean canPlay() {

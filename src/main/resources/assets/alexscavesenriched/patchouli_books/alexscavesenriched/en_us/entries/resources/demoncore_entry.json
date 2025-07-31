@@ -1,6 +1,6 @@
 {
     "name": "Demon Core",
-    "icon": "alexscavesenriched:block_of_enriched_uranium",
+    "icon": "alexscavesenriched:enriched_uranium_block",
     "category": "alexscavesenriched:resources",
     "pages": [
         {
@@ -18,7 +18,7 @@
                 ],
                 "mapping": {
                     "I": "#alexscavesenriched:neutron_reflector",
-                    "0": "alexscavesenriched:block_of_enriched_uranium"
+                    "0": "alexscavesenriched:enriched_uranium_block"
                 },
                 "symmetrical": true
             }

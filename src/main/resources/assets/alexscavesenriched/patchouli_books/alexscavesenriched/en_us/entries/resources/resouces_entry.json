@@ -19,7 +19,7 @@
         {
             "type": "patchouli:crafting",
             "text": "The block of enriched uranium glows and inflicts irradiated II to nearby entities. It cannot be moved by pistons nor be blown up by TNT.",
-            "recipe": "alexscavesenriched:block_of_enriched_uranium"
+            "recipe": "alexscavesenriched:enriched_uranium_block"
         }
     ]
 }

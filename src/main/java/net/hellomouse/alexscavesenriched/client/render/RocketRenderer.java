@@ -43,7 +43,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity> {
         RenderLayer renderType = ForgeRenderTypes.getUnlitTranslucent(this.getTexture(entity));
         VertexConsumer vertexconsumer = bufferSource.getBuffer(renderType);
 
-        if (entity.getIsNuclear()) {
+        if (entity.getIsNuclear() || entity.getIsNeutron()) {
             NUCLEAR_ROCKET_MODEL.setAngles(entity, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
             NUCLEAR_ROCKET_MODEL.render(poseStack, vertexconsumer, 240, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, alpha);
         } else {
@@ -60,7 +60,8 @@ public class RocketRenderer extends EntityRenderer<RocketEntity> {
             return Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/rocket_entity.png");
         else if (entity.getIsNuclear())
             return Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/rocket_entity_nuclear.png");
+        else if (entity.getIsNeutron())
+            return Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/rocket_entity_neutron.png");
         return Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/rocket_entity_normal.png");
     }
-
 }

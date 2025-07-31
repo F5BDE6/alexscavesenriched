@@ -96,7 +96,7 @@ public class NuclearExplosion2Entity extends Entity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    private boolean anyChunkVertexOutsideSphere(BlockPos chunkPos, float blockRadius, BlockPos center) {
+    public static boolean anyChunkVertexOutsideSphere(BlockPos chunkPos, float blockRadius, BlockPos center) {
         var radiusSquared = blockRadius * blockRadius * 0.2F; // because alex's caves scales radius^2 by random factor
         for (int i = 0; i <= 16; i += 16)
             for (int j = 0; j <= 16; j += 16)
@@ -127,10 +127,12 @@ public class NuclearExplosion2Entity extends Entity {
 
             // Shock wave
             final float SHOCKWAVE_VEL = 0.5F;
-            for (float theta = 0.0F; theta < 2 * Math.PI; theta += 0.05F) {
-                getEntityWorld().addImportantParticle(ACEParticleRegistry.NUKE_BLAST.get(), true,
-                        this.getX(), this.getY(), this.getZ(),
-                        SHOCKWAVE_VEL * Math.cos(theta), 0.0F, SHOCKWAVE_VEL * Math.sin(theta));
+            if (getSize() > 3) {
+                for (float theta = 0.0F; theta < 2 * Math.PI; theta += 0.05F) {
+                    getEntityWorld().addImportantParticle(ACEParticleRegistry.NUKE_BLAST.get(), true,
+                            this.getX(), this.getY(), this.getZ(),
+                            SHOCKWAVE_VEL * Math.cos(theta), 0.0F, SHOCKWAVE_VEL * Math.sin(theta));
+                }
             }
         }
         if (age > 40 && explosionState == ExplosionState.DONE) {
@@ -199,11 +201,11 @@ public class NuclearExplosion2Entity extends Entity {
                 explosionState = ExplosionState.CALCULATE_WHAT_TO_DAMAGE;
             } else if (explosionState == ExplosionState.CALCULATE_WHAT_TO_DAMAGE) {
                 explosionState = ExplosionState.DAMAGING;
-                this.toDamageRays = (chunksAffected + EXTRA_BLAST_RADIUS_CHUNKS) * 24;
+                this.toDamageRays = (chunksAffected + getExtraChunks()) * 24;
             } else if (explosionState == ExplosionState.DAMAGING) {
                 int chunkToDamageBudget = CHUNKS_TO_PROCESS_PER_TICK;
                 while (chunkToDamageBudget > 0 && this.toDamageRays > 0) {
-                    castDamageRay(radius + EXTRA_BLAST_RADIUS_CHUNKS * 16);
+                    castDamageRay(radius + getExtraChunks() * 16);
                     chunkToDamageBudget--;
                 }
                 if (this.toDamageRays <= 0)
@@ -242,13 +244,15 @@ public class NuclearExplosion2Entity extends Entity {
     }
 
     private void loadChunksAround(boolean load) {
-        World level = this.getEntityWorld();
+        loadChunksInRadius(getEntityWorld(), this, new ChunkPos(this.getBlockPos()), load, this.getChunksAffected() + getExtraChunks());
+    }
+
+    public static void loadChunksInRadius(World level, Entity owner, ChunkPos chunkPos, boolean load, int radius) {
         if (level instanceof ServerWorld serverLevel) {
-            ChunkPos chunkPos = new ChunkPos(this.getBlockPos());
-            int dist = Math.max(this.getChunksAffected() + EXTRA_BLAST_RADIUS_CHUNKS, serverLevel.getServer().getPlayerManager().getViewDistance() / 2);
+            int dist = Math.max(radius, serverLevel.getServer().getPlayerManager().getViewDistance() / 2);
             for (int i = -dist; i <= dist; ++i)
                 for (int j = -dist; j <= dist; ++j)
-                    ForgeChunkManager.forceChunk(serverLevel, AlexsCavesEnriched.MODID, this, chunkPos.x + i, chunkPos.z + j, load, load);
+                    ForgeChunkManager.forceChunk(serverLevel, AlexsCavesEnriched.MODID, owner, chunkPos.x + i, chunkPos.z + j, load, load);
         }
     }
 
@@ -424,7 +428,7 @@ public class NuclearExplosion2Entity extends Entity {
                     BlockState state = getEntityWorld().getBlockState(carve);
 
                     // Break breakable blocks if possible
-                    if (!state.isAir() && (state.isReplaceable() || state.isIn(BlockTags.LEAVES))) {
+                    if (!state.isAir() && (state.isReplaceable() || state.isIn(BlockTags.LEAVES) || state.isIn(AlexsCavesEnriched.WEAK_PLANTS_TAG))) {
                         this.getEntityWorld().removeBlock(carve, true);
                         continue;
                     }
@@ -456,11 +460,11 @@ public class NuclearExplosion2Entity extends Entity {
         var center = new Vec3d(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ());
         var direction = new Vec3d(getEntityWorld().getRandom().nextFloat() - 0.5F, 0.0F, getEntityWorld().getRandom().nextFloat() - 0.5F).normalize();
         var ctx = new BlockStateRaycastContext(
-                center.add(direction.multiply(radius - 16 * EXTRA_BLAST_RADIUS_CHUNKS)),
+                center.add(direction.multiply(radius - 16 * getExtraChunks())),
                 center.add(direction.multiply(radius)),
                 block -> false);
 
-        AtomicInteger resistance_quota = new AtomicInteger(600);
+        AtomicInteger resistance_quota = new AtomicInteger((int)(600 * getSize() / 6.0F));
         AtomicInteger blocks_affected = new AtomicInteger(0);
 
         BlockView.raycast(ctx.getStart(), ctx.getEnd(), ctx.getStatePredicate(), (_ctx, pos) -> {
@@ -478,7 +482,7 @@ public class NuclearExplosion2Entity extends Entity {
 
             BlockState state = getEntityWorld().getBlockState(pos);
             resistance_quota.addAndGet((int) -state.getBlock().getBlastResistance());
-            if (resistance_quota.get() < 0 || blocks_affected.get() > EXTRA_BLAST_RADIUS_CHUNKS * 16 + 32)
+            if (resistance_quota.get() < 0 || blocks_affected.get() > getExtraChunks() * 16 + 32)
                 return true;
             blocks_affected.incrementAndGet();
 
@@ -560,6 +564,10 @@ public class NuclearExplosion2Entity extends Entity {
 
     private int getChunksAffected() {
         return (int) Math.ceil(this.getSize());
+    }
+
+    private int getExtraChunks() {
+        return (int)Math.ceil(this.getSize() / AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get().floatValue() * EXTRA_BLAST_RADIUS_CHUNKS);
     }
 
     protected void initDataTracker() {

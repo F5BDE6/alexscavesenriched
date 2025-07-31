@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:flamethrower"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.flamethrower.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.flamethrower.desc"
+        }
+    },
+    "parent": "alexscavesenriched:root",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:flamethrower"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

@@ -1,0 +1,15 @@
+{
+    "type": "minecraft:smithing_transform",
+    "template": {
+        "item": "alexscavesenriched:raygun_upgrade_template"
+    },
+    "base": {
+        "item": "alexscaves:raygun"
+    },
+    "addition": {
+        "item": "alexscavesenriched:enriched_uranium_rod"
+    },
+    "result": {
+        "item": "alexscavesenriched:raygun_mk2"
+    }
+}

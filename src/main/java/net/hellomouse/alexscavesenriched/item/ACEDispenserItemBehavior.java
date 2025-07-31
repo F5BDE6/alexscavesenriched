@@ -57,5 +57,20 @@ public class ACEDispenserItemBehavior {
                 return 0.0F;
             }
         });
+
+        DispenserBlock.registerBehavior(ACEItemRegistry.ROCKET_NEUTRON.get(), new ProjectileDispenserBehavior() {
+            protected @NotNull ProjectileEntity createProjectile(@NotNull World level, @NotNull Position pos, @NotNull ItemStack itemStack) {
+                var e = new RocketEntity(level, pos.getX(), pos.getY(), pos.getZ());
+                e.setIsNeutron(true);
+                return e;
+            }
+
+            protected float getForce() {
+                return (float) AlexsCavesEnriched.CONFIG.rocket.nuclear.dispenserPower;
+            }
+            protected float getVariation() {
+                return 0.0F;
+            }
+        });
     }
 }

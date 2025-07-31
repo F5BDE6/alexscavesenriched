@@ -1,6 +1,7 @@
 package net.hellomouse.alexscavesenriched.mixins.entity;
 
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
+import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -48,7 +49,8 @@ public abstract class Monster extends PathAwareEntity implements net.minecraft.e
             at = @At(value = "HEAD")
     )
     private void check_radioactive(CallbackInfo ci) {
-        if (!alexscavesenriched$mutated && ACEffectRegistry.IRRADIATED.isPresent() && self().hasStatusEffect(ACEffectRegistry.IRRADIATED.get())) {
+        if (AlexsCavesEnriched.CONFIG.irradiationMutatesMobs && !alexscavesenriched$mutated &&
+                ACEffectRegistry.IRRADIATED.isPresent() && self().hasStatusEffect(ACEffectRegistry.IRRADIATED.get())) {
             var attributes = self().getAttributes();
             for (var attribute : attributes.custom.keySet()) {
                 if (alexscavesenriched$attributesWhiteList.contains(attribute)) {

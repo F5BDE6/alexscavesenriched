@@ -5,17 +5,20 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
 import net.hellomouse.alexscavesenriched.item.ACEDispenserItemBehavior;
+import net.hellomouse.alexscavesenriched.item.DeadmanSwitchItem;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,7 +33,11 @@ import org.slf4j.Logger;
 public class AlexsCavesEnriched {
     public static final String MODID = "alexscavesenriched";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final TagKey<Block> neutronReflectorTag = BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "neutron_reflector"));
+
+    public static final TagKey<Block> NEUTRONREFLECTOR_TAG = BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "neutron_reflector"));
+    public static final TagKey<Block> WEAK_PLANTS_TAG = BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "weak_plants"));
+    public static final TagKey<Item> FLAMETHROWER_FUEL_TAG = ItemTags.create(Identifier.fromNamespaceAndPath(MODID, "flamethrower_fuel"));
+
     public static ACEConfig CONFIG;
     public static final DeferredRegister<ItemGroup> CREATIVE_TAB_REG = DeferredRegister.create(RegistryKeys.ITEM_GROUP, MODID);
     public static final RegistryObject<ItemGroup> CREATIVE_TAB_ACE = CREATIVE_TAB_REG.register(MODID, () -> ItemGroup.builder()
@@ -45,9 +52,20 @@ public class AlexsCavesEnriched {
                 output.add(ACEItemRegistry.ROCKET_NORMAL.get());
                 output.add(ACEItemRegistry.ROCKET.get());
                 output.add(ACEItemRegistry.ROCKET_NUCLEAR.get());
+                output.add(ACEItemRegistry.ROCKET_NEUTRON.get());
                 output.add(ACEItemRegistry.URANIUM_ARROW.get());
                 output.add(ACEItemRegistry.URANIUM_CANDY.get());
                 output.add(ACEItemRegistry.RAYGUN.get());
+                output.add(ACEItemRegistry.RAYGUN_UPGRADE_TEMPLATE.get());
+                output.add(ACEItemRegistry.FLAMETHROWER.get());
+                output.add(ACEBlockRegistry.MINI_NUKE.get());
+                output.add(ACEBlockRegistry.NEUTRON_BOMB.get());
+                output.add(ACEBlockRegistry.BLACK_HOLE_BOMB.get());
+                output.add(ACEItemRegistry.DEADMAN_SWITCH.get());
+                output.add(ACEItemRegistry.GAMMA_FLASHLIGHT.get());
+                output.add(ACEItemRegistry.NUKA_COLA.get());
+                output.add(ACEItemRegistry.NUKA_COLA_QUANTUM.get());
+                output.add(ACEItemRegistry.NUKA_COLA_EMPTY.get());
             })
             .build());
 
@@ -75,5 +93,20 @@ public class AlexsCavesEnriched {
         ACEDispenserItemBehavior.bootStrap();
         ACECriterionTriggers.init();
         LOGGER.info("Alex's Caves Enriched has loaded");
+    }
+
+    // Deadman's switch
+    @Mod.EventBusSubscriber(modid = AlexsCavesEnriched.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class DeathEventHandler {
+        @SubscribeEvent
+        public static void onPlayerDeath(LivingDeathEvent event) {
+            if (!(event.getEntity() instanceof PlayerEntity player)) return;
+            for (var item : player.getInventory().main)
+                if (item.getItem() instanceof DeadmanSwitchItem && (DeadmanSwitchItem.isActive(item)))
+                    DeadmanSwitchItem.detonate(player.getWorld(), player, item);
+            for (var item : player.getInventory().offHand)
+                if (item.getItem() instanceof DeadmanSwitchItem && (DeadmanSwitchItem.isActive(item)))
+                    DeadmanSwitchItem.detonate(player.getWorld(), player, item);
+        }
     }
 }

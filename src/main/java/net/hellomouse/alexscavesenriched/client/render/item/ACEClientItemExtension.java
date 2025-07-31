@@ -1,6 +1,7 @@
 package net.hellomouse.alexscavesenriched.client.render.item;
 
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
@@ -11,6 +12,11 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 @OnlyIn(Dist.CLIENT)
 public class ACEClientItemExtension implements IClientItemExtensions {
     public static final ACEClientItemExtension INSTANCE = new ACEClientItemExtension();
+
+    @Override
+    public BuiltinModelItemRenderer getCustomRenderer() {
+        return new ACEItemstackRenderer();
+    }
 
     @Override
     public boolean applyForgeHandTransform(MatrixStack poseStack, ClientPlayerEntity player, Arm arm, ItemStack itemInHand, float partialTick, float equipProcess, float swingProcess) {

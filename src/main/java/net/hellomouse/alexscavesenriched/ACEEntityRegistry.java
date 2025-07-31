@@ -1,9 +1,7 @@
 package net.hellomouse.alexscavesenriched;
 
 import com.github.alexmodguy.alexscaves.server.entity.item.NuclearExplosionEntity;
-import net.hellomouse.alexscavesenriched.entity.NuclearExplosion2Entity;
-import net.hellomouse.alexscavesenriched.entity.RocketEntity;
-import net.hellomouse.alexscavesenriched.entity.UraniumArrowEntity;
+import net.hellomouse.alexscavesenriched.entity.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraftforge.registries.DeferredRegister;
@@ -35,4 +33,58 @@ public class ACEEntityRegistry {
                     .trackingTickInterval(10)
                     .maxTrackingRange(20)
                     .build("nuclear_explosion")));
+    public static final RegistryObject<EntityType<NeutronExplosionEntity>> NEUTRON_EXPLOSION = DEF_REG.register("neutron_explosion", () ->
+            (EntityType.Builder.create((EntityType.EntityFactory<NeutronExplosionEntity>) NeutronExplosionEntity::new, SpawnGroup.MISC)
+                    .setDimensions(0.99F, 0.99F)
+                    .setCustomClientFactory(NeutronExplosionEntity::new)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .trackingTickInterval(10)
+                    .maxTrackingRange(20)
+                    .build("neutron_explosion")));
+    public static final RegistryObject<EntityType<BlackHoleEntity>> BLACK_HOLE = DEF_REG.register("black_hole", () ->
+            (EntityType.Builder.create((EntityType.EntityFactory<BlackHoleEntity>) BlackHoleEntity::new, SpawnGroup.MISC)
+                    .setDimensions(0.99F, 0.99F)
+                    .setCustomClientFactory(BlackHoleEntity::new)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .trackingTickInterval(10)
+                    .maxTrackingRange(20)
+                    .build("black_hole")));
+    public static final RegistryObject<EntityType<MiniNukeEntity>> MINI_NUKE = DEF_REG.register("mini_nuke", () ->
+            (EntityType.Builder.create((EntityType.EntityFactory<MiniNukeEntity>) MiniNukeEntity::new, SpawnGroup.MISC)
+                    .setDimensions(0.7F, 0.7F)
+                    .setCustomClientFactory(MiniNukeEntity::new)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .trackingTickInterval(10)
+                    .maxTrackingRange(20)
+                    .build("mini_nuke")));
+    public static final RegistryObject<EntityType<NeutronBombEntity>> NEUTRON_BOMB = DEF_REG.register("neutron_bomb", () ->
+            (EntityType.Builder.create((EntityType.EntityFactory<NeutronBombEntity>) NeutronBombEntity::new, SpawnGroup.MISC)
+                    .setDimensions(0.98F, 0.98F)
+                    .setCustomClientFactory(NeutronBombEntity::new)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .trackingTickInterval(10)
+                    .maxTrackingRange(20)
+                    .build("neutron_bomb")));
+    public static final RegistryObject<EntityType<BlackHoleBombEntity>> BLACK_HOLE_BOMB = DEF_REG.register("black_hole_bomb", () ->
+            (EntityType.Builder.create((EntityType.EntityFactory<BlackHoleBombEntity>) BlackHoleBombEntity::new, SpawnGroup.MISC)
+                    .setDimensions(0.98F, 0.98F)
+                    .setCustomClientFactory(BlackHoleBombEntity::new)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .trackingTickInterval(10)
+                    .maxTrackingRange(20)
+                    .build("black_hole_bomb")));
+    public static final RegistryObject<EntityType<FlamethrowerProjectileEntity>> FLAMETHROWER_PROJECTILE = DEF_REG.register("flamethrower_projectile", () ->
+            (EntityType.Builder.create((EntityType.EntityFactory<FlamethrowerProjectileEntity>) FlamethrowerProjectileEntity::new, SpawnGroup.MISC)
+                    .setDimensions(0.5F, 0.5F)
+                    .setCustomClientFactory(FlamethrowerProjectileEntity::new)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .trackingTickInterval(10)
+                    .maxTrackingRange(64)
+                    .build("flamethrower_projectile")));
 }

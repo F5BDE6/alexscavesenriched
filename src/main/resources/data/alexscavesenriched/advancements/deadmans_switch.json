@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:deadmans_switch"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.deadmans_switch.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.deadmans_switch.desc"
+        }
+    },
+    "parent": "alexscavesenriched:root",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:deadmans_switch"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

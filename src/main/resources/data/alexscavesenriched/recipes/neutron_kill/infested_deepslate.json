@@ -1,0 +1,5 @@
+{
+    "type": "alexscavesenriched:neutron_kill",
+    "input": "minecraft:infested_deepslate",
+    "output": "minecraft:deepslate"
+}

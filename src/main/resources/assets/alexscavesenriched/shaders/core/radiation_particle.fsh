@@ -38,5 +38,6 @@ void main() {
     float decay = mix(1.0, 0.0, distanceFromCenterSquared / radiusSquared);
     color.a += 0.5 * decay * (random(st * 50.0 + vec2(GameTime)) - 0.5);
     color.a *= decay;
+    color.a *= vertexColor.a;
     fragColor = color;
 }

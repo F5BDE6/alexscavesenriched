@@ -26,6 +26,8 @@ import net.minecraft.util.math.Box;
 
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,6 +129,27 @@ public class EnrichedUraniumBlockEntity extends RadiationEmitterBlockEntity {
         super(ACEBlockEntityRegistry.ENRICHED_URANIUM.get(), pos, state);
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public static void clientTick(World level, BlockPos blockPos, BlockState p_155016_, EnrichedUraniumBlockEntity enrichedUraniumBlockEntity) {
+        if (enrichedUraniumBlockEntity.glowing &&
+                (enrichedUraniumBlockEntity.demonParticle == null || !enrichedUraniumBlockEntity.demonParticle.isAlive())) {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            ParticleManager particleManager = mc.particleManager;
+
+            DemonCoreGlowParticle particle = (DemonCoreGlowParticle)(new DemonCoreGlowParticle.Factory()).createParticle(ACEParticleRegistry.DEMONCORE_GLOW.get(), (ClientWorld) level,
+                    enrichedUraniumBlockEntity.center.getX(), enrichedUraniumBlockEntity.center.getY(), enrichedUraniumBlockEntity.center.getZ(),
+                    0.0, 0.0, 0.0);
+
+            particle.expandSize(enrichedUraniumBlockEntity.sizeBonus);
+            enrichedUraniumBlockEntity.demonParticle = particle;
+            particleManager.addParticle(particle);
+        } else if (!enrichedUraniumBlockEntity.glowing) {
+            if (enrichedUraniumBlockEntity.demonParticle != null && enrichedUraniumBlockEntity.demonParticle.isAlive())
+                enrichedUraniumBlockEntity.demonParticle.markDead();
+            enrichedUraniumBlockEntity.demonParticle = null;
+        }
+    }
+
     public static void tick(World level, BlockPos blockPos, BlockState p_155016_, EnrichedUraniumBlockEntity enrichedUraniumBlockEntity) {
         enrichedUraniumBlockEntity.setChecked(false);
         if (enrichedUraniumBlockEntity.isGlowing()) {
@@ -147,25 +170,8 @@ public class EnrichedUraniumBlockEntity extends RadiationEmitterBlockEntity {
         RadiationEmitterBlockEntity.tick(level, blockPos, p_155016_, enrichedUraniumBlockEntity);
 
         // Spawn particle for glow
-        if (level.isClient()) {
-            if (enrichedUraniumBlockEntity.glowing &&
-                    (enrichedUraniumBlockEntity.demonParticle == null || !enrichedUraniumBlockEntity.demonParticle.isAlive())) {
-                MinecraftClient mc = MinecraftClient.getInstance();
-                ParticleManager particleManager = mc.particleManager;
-
-                DemonCoreGlowParticle particle = (DemonCoreGlowParticle)(new DemonCoreGlowParticle.Factory()).createParticle(ACEParticleRegistry.DEMONCORE_GLOW.get(), (ClientWorld) level,
-                        enrichedUraniumBlockEntity.center.getX(), enrichedUraniumBlockEntity.center.getY(), enrichedUraniumBlockEntity.center.getZ(),
-                        0.0, 0.0, 0.0);
-
-                particle.expandSize(enrichedUraniumBlockEntity.sizeBonus);
-                enrichedUraniumBlockEntity.demonParticle = particle;
-                particleManager.addParticle(particle);
-            } else if (!enrichedUraniumBlockEntity.glowing) {
-                if (enrichedUraniumBlockEntity.demonParticle != null && enrichedUraniumBlockEntity.demonParticle.isAlive())
-                    enrichedUraniumBlockEntity.demonParticle.markDead();
-                enrichedUraniumBlockEntity.demonParticle = null;
-            }
-        }
+        if (level.isClient())
+            clientTick(level, blockPos, p_155016_, enrichedUraniumBlockEntity);
     }
 
     @Override

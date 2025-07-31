@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "iIi",
+        " i "
+    ],
+    "key": {
+        "i": {
+            "item": "minecraft:iron_ingot"
+        },
+        "I": {
+            "item": "alexscavesenriched:enriched_uranium_rod"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:gamma_flashlight",
+        "count": 1
+    }
+}

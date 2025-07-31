@@ -3,9 +3,9 @@ package net.hellomouse.alexscavesenriched;
 import com.github.alexmodguy.alexscaves.server.item.*;
 
 import com.github.alexthe666.citadel.item.BlockItemWithSupplier;
-import net.hellomouse.alexscavesenriched.block.EnrichedUraniumBlock;
-import net.hellomouse.alexscavesenriched.block.EnrichedUraniumRodBlock;
-import net.hellomouse.alexscavesenriched.block.NukeGlowingAir;
+import net.hellomouse.alexscavesenriched.block.*;
+import net.hellomouse.alexscavesenriched.item.NukaColaEmptyItem;
+import net.hellomouse.alexscavesenriched.item.NukaColaItem;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.Rarity;
@@ -17,9 +17,16 @@ import java.util.function.Supplier;
 
 public class ACEBlockRegistry {
     public static final DeferredRegister<Block> DEF_REG = DeferredRegister.create(ForgeRegistries.BLOCKS, AlexsCavesEnriched.MODID);
-    public static final RegistryObject<Block> ENRICHED_URANIUM = registerBlockAndItem("block_of_enriched_uranium", EnrichedUraniumBlock::new, 9);
+    public static final RegistryObject<Block> ENRICHED_URANIUM = registerBlockAndItem("enriched_uranium_block", EnrichedUraniumBlock::new, 9);
     public static final RegistryObject<Block> ENRICHED_URANIUM_ROD = registerBlockAndItem("enriched_uranium_rod", EnrichedUraniumRodBlock::new, 9);
     public static final RegistryObject<Block> NUKE_GLOWING_AIR = DEF_REG.register("nuke_glowing_air", NukeGlowingAir::new);
+    public static final RegistryObject<Block> BLACK_HOLE_BOMB = registerBlockAndItem("black_hole_bomb", BlackHoleBombBlock::new,  7);
+    public static final RegistryObject<Block> NEUTRON_BOMB = registerBlockAndItem("neutron_bomb", NeutronBombBlock::new,  7);
+    public static final RegistryObject<Block> MINI_NUKE = registerBlockAndItem("mini_nuke", MiniNukeBlock::new,  7);
+
+    public static final RegistryObject<Block> NUKA_COLA = DEF_REG.register("nuka_cola", NukaColaBlock::new);
+    public static final RegistryObject<Block> NUKA_COLA_QUANTUM = DEF_REG.register("nuka_cola_quantum", NukaColaQuantumBlock::new);
+    public static final RegistryObject<Block> NUKA_COLA_EMPTY = DEF_REG.register("nuka_cola_empty", NukaColaEmptyBlock::new);
 
     private static RegistryObject<Block> registerBlockAndItem(String name, Supplier<Block> block) {
         return registerBlockAndItem(name, block, 0);

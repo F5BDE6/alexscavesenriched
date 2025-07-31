@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:neutron_bomb"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.neutron_bomb.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.neutron_bomb.desc"
+        }
+    },
+    "parent": "alexscavesenriched:enriched_uranium_rod",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:neutron_bomb"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

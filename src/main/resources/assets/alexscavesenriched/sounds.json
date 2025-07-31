@@ -1,7 +1,22 @@
 {
   "rocket_whistle": {
-    "category": "ambient",
     "subtitle": "alexscavesenriched.subtitle.rocket_whistle",
     "sounds": [ "alexscavesenriched:item/rocket_whistle" ]
+  },
+  "flamethrower": {
+    "subtitle": "alexscavesenriched.subtitle.flamethrower",
+    "sounds": [ "alexscavesenriched:item/flamethrower" ]
+  },
+  "flamethrower_reload": {
+    "subtitle": "alexscavesenriched.subtitle.flamethrower_reload",
+    "sounds": [ "alexscavesenriched:item/flamethrower_reload" ]
+  },
+  "flamethrower_empty": {
+    "subtitle": "alexscavesenriched.subtitle.flamethrower_empty",
+    "sounds": [ "alexscaves:item/raygun/raygun_empty" ]
+  },
+  "black_hole": {
+    "subtitle": "alexscavesenriched.subtitle.black_hole",
+    "sounds": [ "alexscavesenriched:entity/black_hole" ]
   }
 }

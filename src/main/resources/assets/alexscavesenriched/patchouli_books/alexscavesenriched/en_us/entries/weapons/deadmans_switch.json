@@ -1,0 +1,16 @@
+{
+    "name": "Dead Man's Switch",
+    "icon": "alexscavesenriched:deadmans_switch",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The dead man's switch is like a remote detonator but it triggers upon player death. Have any amount anywhere in your inventory to detonate bombs up to 5k blocks away. Right click a dead man's switch to disarm it."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "",
+            "recipe": "alexscavesenriched:deadmans_switch"
+        }
+    ]
+}

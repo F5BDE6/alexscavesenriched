@@ -10,8 +10,14 @@ public class ACEConfig implements ConfigData {
     private static final long REASONABLE_MAX_SMALL = 1024; // Integer.MAX_VALUE makes the GUI slider unusable for any int config
     @ConfigEntry.Gui.Excluded
     private static final int REASONABLE_DURATION_MAX = 24 * 60 * 60 * 20;
+
     @ConfigEntry.BoundedDiscrete(min = 0, max = 1024)
     public double enrichedRodFuelMultiplier = 12.0;
+    @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_MAX_SMALL)
+    public int raygunCooldownTicks = 15;
+    public boolean irradiationMutatesMobs = false;
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 10)
+    public int miniNukeRadius = 2;
 
     @ConfigEntry.Gui.CollapsibleObject
     public DemonCoreConfig demonCore = new DemonCoreConfig();
@@ -26,7 +32,16 @@ public class ACEConfig implements ConfigData {
     public NuclearExplosionConfig nuclear = new NuclearExplosionConfig();
 
     @ConfigEntry.Gui.CollapsibleObject
+    public NeutronExplosionConfig neutron = new NeutronExplosionConfig();
+
+    @ConfigEntry.Gui.CollapsibleObject
+    public BlackHoleConfig blackHole = new BlackHoleConfig();
+
+    @ConfigEntry.Gui.CollapsibleObject
     public UraniumArrowConfig uraniumArrow = new UraniumArrowConfig();
+
+    @ConfigEntry.Gui.CollapsibleObject
+    public GammaFlashlightConfig gammaFlashlightConfig = new GammaFlashlightConfig();
 
     public static class RocketConfig {
         public boolean reliableWithPortals = true;
@@ -98,11 +113,34 @@ public class ACEConfig implements ConfigData {
         public int irradiationPotionTime = 3000;
     }
 
+    public static class NeutronExplosionConfig {
+        @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_DURATION_MAX)
+        public int irradiationPotionTime = 48000;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 9)
+        public int irradiationPotionPower = 9;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 64)
+        public int radius = 8;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_DURATION_MAX)
+        public int burstDamage = 200;
+    }
+
+    public static class BlackHoleConfig {
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 64)
+        public int radius = 8;
+    }
+
     public static class UraniumArrowConfig {
         @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_DURATION_MAX)
         public int irradiationTime = 40;
         @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_MAX_SMALL)
         public double baseDamage = 4;
+    }
+
+    public static class GammaFlashlightConfig {
+        @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_DURATION_MAX)
+        public double range = 20D;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_DURATION_MAX)
+        public double spread = 0.6;
     }
 
     public static class DemonCoreConfig {

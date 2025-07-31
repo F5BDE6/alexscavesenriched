@@ -1,0 +1,15 @@
+{
+    "name": "Mini Nuke",
+    "icon": "alexscavesenriched:mini_nuke",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Stonecutter a nuke to make a mini nuke! It's like a nuke but smaller. Has explosion radius of 2 by default."
+        },
+        {
+            "type": "patchouli:spotlight",
+            "item": "alexscavesenriched:mini_nuke"
+        }
+    ]
+}

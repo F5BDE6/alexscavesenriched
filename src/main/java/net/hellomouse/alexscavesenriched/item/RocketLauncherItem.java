@@ -37,6 +37,7 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
     public RocketLauncherItem() {
         super(new Item.Settings()
                 .rarity(Rarity.UNCOMMON)
+                .fireproof()
                 .maxCount(1)
         );
     }

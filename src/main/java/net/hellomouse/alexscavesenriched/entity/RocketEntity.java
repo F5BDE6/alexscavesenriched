@@ -9,11 +9,13 @@ import com.github.alexmodguy.alexscaves.server.entity.item.NuclearExplosionEntit
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.*;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
+import net.hellomouse.alexscavesenriched.client.sound.RocketSound;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.EndGatewayBlock;
 import net.minecraft.block.EndPortalBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -38,6 +40,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
@@ -51,13 +55,18 @@ import static net.hellomouse.alexscavesenriched.ACESounds.ROCKET_WHISTLE;
 
 public class RocketEntity extends PersistentProjectileEntity implements IRocketEntity {
     private static final TrackedData<Byte> IS_FLAME = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Byte> IS_NUCLEAR = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Integer> TYPE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> EXPLOSION_STRENGTH = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Byte> RADIOACTIVE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BYTE);
+
+    // Bit flags
+    public static final int TYPE_RADIOACTIVE = 1;
+    public static final int TYPE_NUCLEAR = 1 << 1;
+    public static final int TYPE_NEUTRON = 1 << 2;
 
     // I give up getting portals to work - set vel to 0 at portal then save speed
     // to post portal speed, if non-0 restore it
     private static final TrackedData<Vector3f> POST_PORTAL_SPEED = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
+
     private boolean spawnedWhistleSound = false;
 
     public RocketEntity(EntityType entityType, World level) {
@@ -88,9 +97,7 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     @Override
     public void readCustomDataFromNbt(@NotNull NbtCompound compoundTag) {
         super.readCustomDataFromNbt(compoundTag);
-        this.setIsFlame(compoundTag.getBoolean("is_flame"));
-        this.setIsNuclear(compoundTag.getBoolean("is_nuclear"));
-        this.setIsRadioactive(compoundTag.getBoolean("is_radioactive"));
+        this.dataTracker.set(TYPE, compoundTag.getInt("type"));
         this.setPostPortalSpeed(new Vec3d(
                 compoundTag.getFloat("post_portal_speed_x"),
                 compoundTag.getFloat("post_portal_speed_y"),
@@ -101,9 +108,7 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     @Override
     public void writeCustomDataToNbt(@NotNull NbtCompound compoundTag) {
         super.writeCustomDataToNbt(compoundTag);
-        compoundTag.putBoolean("is_flame", this.getIsFlame());
-        compoundTag.putBoolean("is_nuclear", this.getIsNuclear());
-        compoundTag.putBoolean("is_radioactive", this.getIsRadioactive());
+        compoundTag.putInt("type", this.dataTracker.get(TYPE));
         compoundTag.putDouble("post_portal_speed_x", this.getPostPortalSpeed().x);
         compoundTag.putDouble("post_portal_speed_y", this.getPostPortalSpeed().y);
         compoundTag.putDouble("post_portal_speed_z", this.getPostPortalSpeed().z);
@@ -113,9 +118,8 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(IS_FLAME, (byte) 0);
-        this.dataTracker.startTracking(IS_NUCLEAR, (byte) 0);
+        this.dataTracker.startTracking(TYPE, 0);
         this.dataTracker.startTracking(EXPLOSION_STRENGTH, (float) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.normal.explosionPower);
-        this.dataTracker.startTracking(RADIOACTIVE, (byte) 0);
         this.dataTracker.startTracking(POST_PORTAL_SPEED, new Vector3f(0.0F, 0.0F, 0.0F));
     }
 
@@ -136,19 +140,27 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     }
 
     public void setIsRadioactive(boolean f) {
-        this.dataTracker.set(RADIOACTIVE, (byte) (f ? 1 : 0));
+        this.dataTracker.set(TYPE, f ? TYPE_RADIOACTIVE : 0);
     }
 
     public boolean getIsRadioactive() {
-        return this.dataTracker.get(RADIOACTIVE) != 0;
+        return (this.dataTracker.get(TYPE) & TYPE_RADIOACTIVE) != 0;
     }
 
     public void setIsNuclear(boolean f) {
-        this.dataTracker.set(IS_NUCLEAR, (byte) (f ? 1 : 0));
+        this.dataTracker.set(TYPE, f ? TYPE_NUCLEAR : 0);
     }
 
     public boolean getIsNuclear() {
-        return this.dataTracker.get(IS_NUCLEAR) != 0;
+        return (this.dataTracker.get(TYPE) & TYPE_NUCLEAR) != 0;
+    }
+
+    public void setIsNeutron(boolean f) {
+        this.dataTracker.set(TYPE, f ? TYPE_NEUTRON : 0);
+    }
+
+    public boolean getIsNeutron() {
+        return (this.dataTracker.get(TYPE) & TYPE_NEUTRON) != 0;
     }
 
     public void setPostPortalSpeed(Vec3d x) {
@@ -174,6 +186,8 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
         if (!this.getEntityWorld().isClient) {
             if (this.getIsNuclear())
                 this.detonateNuclear();
+            else if (this.getIsNeutron())
+                this.detonateNeutron();
             else
                 this.detonateNormal();
         }
@@ -204,6 +218,15 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
             ((NuclearExplosionEntity) explosion).setSize((AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get()).floatValue());
         else if (explosion instanceof NuclearExplosion2Entity)
             ((NuclearExplosion2Entity) explosion).setSize((AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get()).floatValue());
+        this.getEntityWorld().spawnEntity(explosion);
+        this.discard();
+    }
+
+    protected void detonateNeutron() {
+        Entity explosion = ((EntityType<?>) ACEEntityRegistry.NEUTRON_EXPLOSION.get()).create(this.getEntityWorld());
+        assert explosion != null;
+        explosion.copyPositionAndRotation(this);
+        ((NeutronExplosionEntity) explosion).setSize(AlexsCavesEnriched.CONFIG.neutron.radius);
         this.getEntityWorld().spawnEntity(explosion);
         this.discard();
     }
@@ -329,14 +352,12 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
         }
     }
 
-    private void loadChunk() {
-        if (this.getEntityWorld().isClient) return;
-        for (int i = -16 * 2; i < 16 * 2; i += 16) {
-            for (int j = -16 * 2; j < 16 * 2; j += 16) {
-                for (int k = -16 * 2; k < 16 * 2; k += 16) {
-                    ForgeChunkManager.forceChunk((ServerWorld) getEntityWorld(), AlexsCavesEnriched.MODID, this, i + this.getBlockX(), j + this.getBlockY(), true, true);
-                }
-            }
+    @OnlyIn(Dist.CLIENT)
+    public void clientTick() {
+        if (!spawnedWhistleSound) {
+            var rocketSoundInstance = new RocketSound(this, ACESounds.ROCKET_WHISTLE, SoundCategory.AMBIENT);
+            MinecraftClient.getInstance().getSoundManager().playNextTick(rocketSoundInstance);
+            this.spawnedWhistleSound = true;
         }
     }
 
@@ -357,10 +378,11 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
                     this.getEntityWorld().addParticle(ParticleTypes.FIREWORK, true, center2.x, center2.y, center2.z,
                             0, 0, 0);
                 }
-                this.getWorld().playSound(this, this.getBlockPos(), ROCKET_WHISTLE, SoundCategory.AMBIENT, 1, 1);
+
+                this.clientTick();
             } else {
-                //this.loadChunk();
-                if (this.getIsNuclear() && (this.age + this.getId()) % 10 == 0) {
+                // this.loadChunk();
+                if ((this.getIsNuclear() || this.getIsNeutron()) && (this.age + this.getId()) % 10 == 0) {
                     if (this.getEntityWorld() instanceof ServerWorld serverLevel)
                         this.getNearbySirens(serverLevel, 256).forEach(this::activateSiren);
                 }
