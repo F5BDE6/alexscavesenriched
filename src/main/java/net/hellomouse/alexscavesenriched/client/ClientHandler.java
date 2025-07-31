@@ -7,10 +7,7 @@ import net.hellomouse.alexscavesenriched.*;
 import net.hellomouse.alexscavesenriched.client.entity.BlackHoleModel;
 import net.hellomouse.alexscavesenriched.client.entity.RocketModel;
 import net.hellomouse.alexscavesenriched.client.entity.RocketNuclearModel;
-import net.hellomouse.alexscavesenriched.client.particle.DemonCoreGlowParticle;
-import net.hellomouse.alexscavesenriched.client.particle.FlamethrowerParticle;
-import net.hellomouse.alexscavesenriched.client.particle.NeutronBlastParticle;
-import net.hellomouse.alexscavesenriched.client.particle.NukeBlastParticle;
+import net.hellomouse.alexscavesenriched.client.particle.*;
 import net.hellomouse.alexscavesenriched.client.render.*;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEItemRenderProperties;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEItemstackRenderer;
@@ -54,6 +51,7 @@ public class ClientHandler {
         event.registerSpriteSet(ACEParticleRegistry.NEUTRON_BLAST.get(), NeutronBlastParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.DEMONCORE_GLOW.get(), DemonCoreGlowParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.FLAMETHROWER.get(), FlamethrowerParticle.Factory::new);
+        event.registerSpriteSet(ACEParticleRegistry.BLACK_HOLE_SMOKE.get(), BlackHoleSmokeParticle.Factory::new);
     }
 
     @SubscribeEvent

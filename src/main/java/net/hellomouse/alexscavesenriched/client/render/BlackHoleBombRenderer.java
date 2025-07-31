@@ -39,7 +39,7 @@ public class BlackHoleBombRenderer extends EntityRenderer<BlackHoleBombEntity> {
 
         poseStack.push();
         poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(spinSpeed));
-        poseStack.scale(1.0F + progress * 0.03F, 1.0F, 1.0F + progress * 0.03F);
+        poseStack.scale(progress, progress, progress);
         poseStack.push();
         poseStack.scale(expandScale, expandScale - progress * 0.3F, expandScale);
         poseStack.translate(-0.5, 0.0, -0.5);

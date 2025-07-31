@@ -37,7 +37,6 @@ public class BlackHoleBombEntity extends AbstractNuclearTntEntity {
         this.prevY = y;
         this.prevZ = z;
         this.causingEntity = igniter;
-        this.setGlowing(true);
     }
 
     @Override

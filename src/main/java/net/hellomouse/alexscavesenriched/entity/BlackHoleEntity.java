@@ -4,10 +4,8 @@ import com.github.alexmodguy.alexscaves.client.ClientProxy;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
-import net.hellomouse.alexscavesenriched.ACEDamageSources;
-import net.hellomouse.alexscavesenriched.ACEEntityRegistry;
-import net.hellomouse.alexscavesenriched.ACESounds;
-import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
+import net.hellomouse.alexscavesenriched.*;
+import net.hellomouse.alexscavesenriched.client.particle.BlackHoleSmokeParticle;
 import net.hellomouse.alexscavesenriched.client.sound.BlackHoleSound;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -41,6 +39,7 @@ import java.util.Stack;
 
 public class BlackHoleEntity extends Entity {
     private static final int DEFAULT_DURATION = 40 * 60;
+    private static final int EXPLOSION_DURATION = 20 * 45;
     private static final float DEFAULT_SIZE = 10;
 
     private boolean spawnedSound = false;
@@ -92,6 +91,16 @@ public class BlackHoleEntity extends Entity {
         }
     }
 
+    private void suckEntity(Entity entity, float powerMultiplier) {
+        if (entity instanceof PlayerEntity player && player.isCreative() && player.getAbilities().flying)
+            return;
+        Vec3d dir = this.getPos().subtract(entity.getPos());
+        double dis = Math.max(0.1, dir.length() - this.getCurrentSize());
+        double suckPower = powerMultiplier * Math.min(0.5F / dis, 1F);
+        suckPower = Math.min(10F, suckPower);
+        entity.addVelocity(dir.normalize().multiply(suckPower));
+    }
+
     @Override
     public void tick() {
         if (this.isExplosive()) {
@@ -100,6 +109,7 @@ public class BlackHoleEntity extends Entity {
             this.postExplodeTick();
         }
     }
+
 
     protected void explodeTick() {
         if (this.getWorld().isClient)
@@ -112,12 +122,28 @@ public class BlackHoleEntity extends Entity {
             ClientProxy.renderNukeFlashFor = 8;
             playSound(ACSoundRegistry.NUCLEAR_EXPLOSION_RINGING.get(), 100, 50);
         }
-        if (age > 40 && explosionState == BlackHoleEntity.ExplosionState.DONE) {
-            this.remove(RemovalReason.DISCARDED);
-            return;
-        }
 
         this.setCurrentSize(Math.min(this.getCurrentSize() + 1, this.getExplosionSize() * 5));
+
+        if (getEntityWorld().isClient) {
+            if (explosionState != ExplosionState.DONE || age < EXPLOSION_DURATION - BlackHoleSmokeParticle.DEFAULT_AGE * 2) {
+                for (int i = 0; i < 5; i++) {
+                    Vec3d center = this.getPos().add(0, this.getCurrentSize() * 0.5, 0);
+                    final double VEL = 7;
+                    Vec3d delta = new Vec3d(
+                            this.getWorld().random.nextFloat() - 0.5,
+                            this.getWorld().random.nextFloat() - 0.5,
+                            this.getWorld().random.nextFloat() - 0.5
+                    ).normalize().multiply(BlackHoleSmokeParticle.DEFAULT_AGE * VEL * 2 + this.getCurrentSize() * 2F);
+                    Vec3d delta2 = delta.normalize().multiply(-VEL * 0.5);
+                    this.getWorld().addParticle(ACEParticleRegistry.BLACK_HOLE_SMOKE.get(),
+                            center.x + delta.x, center.y + delta.y, center.z + delta.z,
+                            delta2.x, delta2.y, delta2.z);
+                }
+            }
+
+            this.clientTick();
+        }
 
         if (!getEntityWorld().isClient && !isNoGriefing()) {
             if (!loadingChunks && !this.isRemoved()) {
@@ -158,17 +184,24 @@ public class BlackHoleEntity extends Entity {
                 }
                 if (toDestroyPartialChunks.isEmpty() && toDestroyFullChunks.isEmpty()) {
                     explosionState = ExplosionState.DONE;
-                    this.setIsExplosive(false);
                 }
+            } else if (explosionState == ExplosionState.DONE && age > EXPLOSION_DURATION) {
+                this.setIsExplosive(false);
             }
         }
 
         // Damage entities
-        Box killBox = this.getBoundingBox().expand(radius * 1.1F, radius * 1.1F, radius * 1.1F);
+        Box killBox = this.getBoundingBox().expand(0.5);
         for (var entity : this.getEntityWorld().getNonSpectatingEntities(Entity.class, killBox)) {
             entity.damage(ACEDamageSources.causeBlackHoleDamage(getEntityWorld().getRegistryManager()), 500);
             if (!(entity instanceof LivingEntity) && !(entity instanceof BlackHoleEntity))
                 entity.remove(RemovalReason.KILLED);
+        }
+
+        // Suck in entities
+        Box suckBox = this.getBoundingBox().expand(radius * 1.1F, radius * 1.1F, radius * 1.1F);
+        for (var entity : this.getEntityWorld().getNonSpectatingEntities(Entity.class, suckBox)) {
+            this.suckEntity(entity, 10F);
         }
     }
 
@@ -187,11 +220,13 @@ public class BlackHoleEntity extends Entity {
         }
 
         if (this.getDecayDurationLeft() > 0) {
-            var targetSize = (this.getDecayDurationLeft() / (float) DEFAULT_DURATION) * this.getSize();
-            if (targetSize < this.getCurrentSize() - 5)
-                this.setCurrentSize(this.getCurrentSize() - 1);
-            else
-                this.setCurrentSize(targetSize);
+            if (getEntityWorld().getTime() % 2 == 0) {
+                var targetSize = (this.getDecayDurationLeft() / (float) DEFAULT_DURATION) * this.getSize();
+                if (targetSize < this.getCurrentSize() - 5)
+                    this.setCurrentSize(this.getCurrentSize() - 1);
+                else
+                    this.setCurrentSize(targetSize);
+            }
             if (!this.isNonDecaying())
                 this.setDecayDurationLeft(this.getDecayDurationLeft() - 1);
         } else {
@@ -214,11 +249,7 @@ public class BlackHoleEntity extends Entity {
 
         Box suckBox = this.getBoundingBox().expand( 20F);
         for (var entity : this.getWorld().getOtherEntities(this, suckBox)) {
-            if (entity instanceof PlayerEntity player && player.isCreative() && player.getAbilities().flying)
-                continue;
-            Vec3d dir = this.getPos().subtract(entity.getPos());
-            double dis = Math.max(0.1, dir.length() - this.getCurrentSize());
-            entity.addVelocity(dir.normalize().multiply(Math.min(0.5F / dis, 1F)));
+            this.suckEntity(entity, 1.8F);
         }
 
         Box killBox = this.getBoundingBox().expand( 0.5F);
