@@ -9,4 +9,5 @@ public class ACESounds {
     public static final SoundEvent FLAMETHROWER = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "flamethrower"), 32F);
     public static final SoundEvent FLAMETHROWER_EMPTY = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "flamethrower_empty"), 32F);
     public static final SoundEvent FLAMETHROWER_RELOAD = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "flamethrower_reload"), 32F);
+    public static final SoundEvent FUMO_SQUEAK = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "fumo_squeak"), 16F);
 }

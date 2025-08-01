@@ -18,6 +18,11 @@
   "block.alexscavesenriched.neutron_bomb": "Neutron Bomb",
   "block.alexscavesenriched.mini_nuke": "Mini Nuke",
   "block.alexscavesenriched.black_hole_bomb": "Black Hole Bomb",
+  "block.alexscavesenriched.xiaoyu_fumo": "Xiaoyu Fumo",
+  "block.alexscavesenriched.xeno_fumo": "Xenonomous Fumo",
+  "block.alexscavesenriched.xiaoyu_fumo.tooltip": "Kemonomimi enthusiast",
+  "block.alexscavesenriched.xeno_fumo.tooltip": "Single lesbian firearms enjoyer",
+
   "itemGroup.alexscavesenriched.creative_tab": "Alex's Caves Enriched",
   "item.alexscavesenriched.enriched_uranium": "Enriched Uranium",
   "item.alexscavesenriched.rocket_launcher": "Rocket Launcher",
@@ -47,6 +52,7 @@
   "alexscavesenriched.subtitle.flamethrower": "Flamethrower burns",
   "alexscavesenriched.subtitle.flamethrower_empty": "Flamethrower empty",
   "alexscavesenriched.subtitle.black_hole": "Black hole whooshes",
+  "alexscavesenriched.subtitle.fumo_squeak": "Fumo squeaks",
 
   "advancements.alexscavesenriched.root.title": "Alex's Caves Enriched",
   "advancements.alexscavesenriched.root.desc": "The start of your nuclear journey",
@@ -86,6 +92,8 @@
   "advancements.alexscavesenriched.black_hole_bomb.desc": "Craft a black hole bomb",
   "advancements.alexscavesenriched.mini_nuke.title": "Little Boy",
   "advancements.alexscavesenriched.mini_nuke.desc": "Craft a mini-nuke",
+  "advancements.alexscavesenriched.fumo.title": "You did what to a sheep?",
+  "advancements.alexscavesenriched.fumo.desc": "Obtain the secret fumos",
 
   "emi.category.alexscavesenriched.nuclear_furnace": "Nuclear Furnace (Additional)",
   "emi.category.alexscavesenriched.nuclear_transmutation": "Nuclear Transmutation",

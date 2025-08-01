@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=east": {
+            "model": "alexscavesenriched:block/xeno_fumo",
+            "y": 270
+        },
+        "facing=north": {
+            "model": "alexscavesenriched:block/xeno_fumo",
+            "y": 180
+        },
+        "facing=south": {
+            "model": "alexscavesenriched:block/xeno_fumo"
+        },
+        "facing=west": {
+            "model": "alexscavesenriched:block/xeno_fumo",
+            "y": 90
+        }
+    }
+}

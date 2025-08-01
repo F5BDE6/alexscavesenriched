@@ -1,0 +1,11 @@
+{
+    "name": "Fumos",
+    "icon": "alexscavesenriched:xeno_fumo",
+    "category": "alexscavesenriched:misc",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Secret fumos of the mod creators! The process involves the uranium rod from Alex's Caves (not enriched) and a piston..."
+        }
+    ]
+}

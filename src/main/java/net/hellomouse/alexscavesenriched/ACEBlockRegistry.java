@@ -4,8 +4,8 @@ import com.github.alexmodguy.alexscaves.server.item.*;
 
 import com.github.alexthe666.citadel.item.BlockItemWithSupplier;
 import net.hellomouse.alexscavesenriched.block.*;
-import net.hellomouse.alexscavesenriched.item.NukaColaEmptyItem;
-import net.hellomouse.alexscavesenriched.item.NukaColaItem;
+import net.hellomouse.alexscavesenriched.block.fumo.XenoFumoBlock;
+import net.hellomouse.alexscavesenriched.block.fumo.XiaoyuFumoBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.Rarity;
@@ -28,6 +28,9 @@ public class ACEBlockRegistry {
     public static final RegistryObject<Block> NUKA_COLA_QUANTUM = DEF_REG.register("nuka_cola_quantum", NukaColaQuantumBlock::new);
     public static final RegistryObject<Block> NUKA_COLA_EMPTY = DEF_REG.register("nuka_cola_empty", NukaColaEmptyBlock::new);
 
+    public static final RegistryObject<Block> XIAOYU_FUMO = registerBlockAndItem("xiaoyu_fumo", XiaoyuFumoBlock::new, 10);
+    public static final RegistryObject<Block> XENO_FUMO = registerBlockAndItem("xeno_fumo", XenoFumoBlock::new, 10);
+
     private static RegistryObject<Block> registerBlockAndItem(String name, Supplier<Block> block) {
         return registerBlockAndItem(name, block, 0);
     }
@@ -48,6 +51,7 @@ public class ACEBlockRegistry {
             case 7 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Settings()).rarity(Rarity.UNCOMMON).fireproof());
             case 8 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Settings()).rarity(Rarity.UNCOMMON).fireproof().rarity(ACItemRegistry.RARITY_NUCLEAR));
             case 9 -> () -> new RadioactiveBlockItem(blockObj, (new Item.Settings()).rarity(Rarity.UNCOMMON).fireproof().rarity(ACItemRegistry.RARITY_NUCLEAR), 0.001F);
+            case 10 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Settings()).rarity(Rarity.EPIC).fireproof());
             default -> () -> new BlockItemWithSupplier(blockObj, new Item.Settings());
         };
     }

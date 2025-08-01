@@ -18,5 +18,9 @@
   "black_hole": {
     "subtitle": "alexscavesenriched.subtitle.black_hole",
     "sounds": [ "alexscavesenriched:entity/black_hole" ]
+  },
+  "fumo_squeak": {
+    "subtitle": "alexscavesenriched.subtitle.fumo_squeak",
+    "sounds": [ "alexscavesenriched:block/fumo_squeak" ]
   }
 }

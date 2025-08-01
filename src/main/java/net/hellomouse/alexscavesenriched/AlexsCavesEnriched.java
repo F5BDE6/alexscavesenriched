@@ -5,9 +5,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
 import net.hellomouse.alexscavesenriched.item.ACEDispenserItemBehavior;
-import net.hellomouse.alexscavesenriched.item.DeadmanSwitchItem;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
@@ -18,9 +16,7 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -93,20 +89,5 @@ public class AlexsCavesEnriched {
         ACEDispenserItemBehavior.bootStrap();
         ACECriterionTriggers.init();
         LOGGER.info("Alex's Caves Enriched has loaded");
-    }
-
-    // Deadman's switch
-    @Mod.EventBusSubscriber(modid = AlexsCavesEnriched.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class DeathEventHandler {
-        @SubscribeEvent
-        public static void onPlayerDeath(LivingDeathEvent event) {
-            if (!(event.getEntity() instanceof PlayerEntity player)) return;
-            for (var item : player.getInventory().main)
-                if (item.getItem() instanceof DeadmanSwitchItem && (DeadmanSwitchItem.isActive(item)))
-                    DeadmanSwitchItem.detonate(player.getWorld(), player, item);
-            for (var item : player.getInventory().offHand)
-                if (item.getItem() instanceof DeadmanSwitchItem && (DeadmanSwitchItem.isActive(item)))
-                    DeadmanSwitchItem.detonate(player.getWorld(), player, item);
-        }
     }
 }

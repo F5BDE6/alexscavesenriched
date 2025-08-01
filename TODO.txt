@@ -1,0 +1,3 @@
+tesla cannon - fires ball that explodes into lightning
+
+railgun - fire iron nuggets

@@ -346,6 +346,11 @@ public class BlackHoleEntity extends Entity {
     }
 
     @Override
+    public Box getVisibilityBoundingBox() {
+        return this.getBoundingBox().expand(this.getCurrentSize() * 2);
+    }
+
+    @Override
     protected Box calculateBoundingBox() {
         return this.getDimensions(null).scaled(this.getCurrentSize()).getBoxAt(this.getPos());
     }
