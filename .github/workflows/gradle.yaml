@@ -9,7 +9,6 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "*" ]
     tags:
       - 'v*'
   pull_request:
@@ -90,6 +89,7 @@ jobs:
               --repo="$GITHUB_REPOSITORY" \
               --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
               --generate-notes
+          tree $GITHUB_WORKSPACE
           gh release upload "$tag" \
               --repo="$GITHUB_REPOSITORY" \
-              $GITHUB_WORKSPACE/artifact/alexscavesenriched-*.jar
+              $GITHUB_WORKSPACE/alexscavesenriched-*.jar
