@@ -65,6 +65,8 @@ public class AlexsCavesEnriched {
                 output.add(ACEItemRegistry.NUKA_COLA_EMPTY.get());
                 output.add(ACEItemRegistry.RAILGUN.get());
                 output.add(ACEItemRegistry.RAILGUN_AMMO.get());
+                output.add(ACEBlockRegistry.XENO_FUMO.get());
+                output.add(ACEBlockRegistry.XIAOYU_FUMO.get());
             })
             .build());
 
