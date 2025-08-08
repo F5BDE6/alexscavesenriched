@@ -86,3 +86,6 @@ jobs:
               --repo="$GITHUB_REPOSITORY" \
               --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
               --generate-notes
+          gh release upload "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              build/libs/alexscavesenriched-*.jar
