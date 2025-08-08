@@ -92,4 +92,4 @@ jobs:
               --generate-notes
           gh release upload "$tag" \
               --repo="$GITHUB_REPOSITORY" \
-              artifact/alexscavesenriched-*.jar
+              $GITHUB_WORKSPACE/artifact/alexscavesenriched-*.jar
