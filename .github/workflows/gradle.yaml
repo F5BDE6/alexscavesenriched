@@ -92,4 +92,4 @@ jobs:
           tree $GITHUB_WORKSPACE
           gh release upload "$tag" \
               --repo="$GITHUB_REPOSITORY" \
-              $GITHUB_WORKSPACE/artifact/alexscavesenriched-*.jar
+              $GITHUB_WORKSPACE/alexscavesenriched-*.jar
