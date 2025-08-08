@@ -49,6 +49,7 @@ public class AlexsCavesEnriched {
                 output.add(ACEItemRegistry.ROCKET.get());
                 output.add(ACEItemRegistry.ROCKET_NUCLEAR.get());
                 output.add(ACEItemRegistry.ROCKET_NEUTRON.get());
+                output.add(ACEItemRegistry.ROCKET_MINI_NUKE.get());
                 output.add(ACEItemRegistry.URANIUM_ARROW.get());
                 output.add(ACEItemRegistry.URANIUM_CANDY.get());
                 output.add(ACEItemRegistry.RAYGUN.get());
@@ -62,6 +63,8 @@ public class AlexsCavesEnriched {
                 output.add(ACEItemRegistry.NUKA_COLA.get());
                 output.add(ACEItemRegistry.NUKA_COLA_QUANTUM.get());
                 output.add(ACEItemRegistry.NUKA_COLA_EMPTY.get());
+                output.add(ACEItemRegistry.RAILGUN.get());
+                output.add(ACEItemRegistry.RAILGUN_AMMO.get());
             })
             .build());
 

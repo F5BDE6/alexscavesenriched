@@ -33,7 +33,7 @@ public class BlackHoleSmokeParticle extends SpriteBillboardParticle {
         super.tick();
         float f = this.age / (float)this.maxAge;
         float f2 = (float)Math.pow(f, 0.5);
-        this.setAlpha(f2);
+        this.setAlpha(f2 * 0.6F);
         float newScale = (1.0F - f) * DEFAULT_SCALE;
         this.scale(newScale);
         this.scale = newScale;

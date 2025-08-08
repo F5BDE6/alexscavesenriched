@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "PUP",
+        "ITI",
+        " F "
+    ],
+    "key": {
+        "P": { "item": "alexscaves:polymer_plate" },
+        "T": { "item": "alexscavesenriched:mini_nuke" },
+        "I": { "item": "minecraft:iron_block" },
+        "U": { "tag": "forge:storage_blocks/uranium" },
+        "F": { "item": "minecraft:firework_rocket" }
+    },
+    "result": {
+        "item": "alexscavesenriched:rocket_mini_nuke",
+        "count": 1
+    }
+}

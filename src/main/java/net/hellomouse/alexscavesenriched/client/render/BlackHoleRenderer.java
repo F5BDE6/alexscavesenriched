@@ -1,6 +1,7 @@
 package net.hellomouse.alexscavesenriched.client.render;
 
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
+import net.hellomouse.alexscavesenriched.client.entity.BlackHoleDiskModel;
 import net.hellomouse.alexscavesenriched.client.entity.BlackHoleModel;
 import net.hellomouse.alexscavesenriched.entity.BlackHoleEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -13,14 +14,15 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.ForgeRenderTypes;
 
 public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
-    protected final BlackHoleModel MODEL;
+    protected final BlackHoleModel<BlackHoleEntity> MODEL;
+    protected final BlackHoleDiskModel<BlackHoleEntity> MODEL_DISK;
 
     public BlackHoleRenderer(EntityRendererFactory.Context renderManager) {
         super(renderManager);
-        MODEL = new BlackHoleModel(renderManager.getPart(BlackHoleModel.LAYER_LOCATION));
+        MODEL = new BlackHoleModel<>(renderManager.getPart(BlackHoleModel.LAYER_LOCATION));
+        MODEL_DISK = new BlackHoleDiskModel<>(renderManager.getPart(BlackHoleDiskModel.LAYER_LOCATION));
     }
 
     @Override
@@ -28,8 +30,8 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         float ageInTicks = entity.age + partialTicks;
         float alpha = 1.0F;
         float s = entity.getCurrentSize();
-        RenderLayer renderType = ForgeRenderTypes.getUnlitTranslucent(this.getTexture(entity));
-        VertexConsumer vertexconsumer = bufferSource.getBuffer(renderType);
+        RenderLayer renderType = RenderLayer.getEntityCutout(this.getTexture(entity));
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
 
         if (entity.getDecayDurationLeft() < 60)
             s *= Math.pow(entity.getDecayDurationLeft() / 60F, 4);
@@ -42,14 +44,34 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         poseStack.translate(scaleCenter.x, scaleCenter.y, scaleCenter.z);
         poseStack.scale(s, s, s);
         poseStack.translate(-scaleCenter.x, -scaleCenter.y, -scaleCenter.z);
-
         poseStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(pitch));
-        poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(70.0F * ageInTicks));
 
+        // The hole
+        poseStack.push();
+        poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(70.0F * ageInTicks));
         MODEL.setAngles(entity, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
-        MODEL.render(poseStack, vertexconsumer, 240, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, alpha);
+        MODEL.render(poseStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, alpha);
+        poseStack.pop();
+
+        // The disk, drawn as a sandwich since emmisive transparent layer is behind water
+        MODEL_DISK.setAngles(entity, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
+        drawDisk(0, ageInTicks, vertexConsumer, poseStack);
+
+        RenderLayer renderTypeEmissive = RenderLayer.getEntityTranslucentEmissive(this.getTexture(entity));
+        VertexConsumer vertexConsumerEmissive = bufferSource.getBuffer(renderTypeEmissive);
+        drawDisk(1, ageInTicks, vertexConsumerEmissive, poseStack);
+        drawDisk(-1, ageInTicks, vertexConsumerEmissive, poseStack);
+
         poseStack.pop();
         super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, lighting);
+    }
+
+    private void drawDisk(int offset, float ageInTicks, VertexConsumer vertexConsumer, MatrixStack poseStack) {
+        poseStack.push();
+        poseStack.translate(0, offset * 0.01F, 0);
+        poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((-70.0F + offset) * ageInTicks));
+        MODEL_DISK.render(poseStack, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+        poseStack.pop();
     }
 
     @Override

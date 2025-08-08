@@ -1,3 +1,30 @@
 tesla cannon - fires ball that explodes into lightning
 
-railgun - fire iron nuggets
+neutron grenade
+
+atomic force furnace
+3x3x3 multi block for nuclear transmutation
+- mini nuclear explosion as well
+
+---------------
+
+done:
+nuke - dont affect spectator players
+entities dont render with sahders
+nuke + black hole save some more properties
+radiation leaking
+- radius config
+- fix blackblast
+- fix nuke area effect cloud
+- railgun
+nuke dispenser behavior
+-----
+
+new enriched uranium
++ update guidebook
+uranium block -> partially enriched nugget
+partially enriched nugget -> partially enriched ingot -> block
+partially enriched block -> centrifudge -> enriched block
+
+or smelt an entire block -> then put into centrifuge -> block idk
+

@@ -18,6 +18,11 @@ public class ACEConfig implements ConfigData {
     public boolean irradiationMutatesMobs = false;
     @ConfigEntry.BoundedDiscrete(min = 0, max = 10)
     public int miniNukeRadius = 2;
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 30)
+    public float nuclearFurnaceLeakRadius = 5.0F;
+
+    @ConfigEntry.Gui.CollapsibleObject
+    public RailgunConfig railgun = new RailgunConfig();
 
     @ConfigEntry.Gui.CollapsibleObject
     public DemonCoreConfig demonCore = new DemonCoreConfig();
@@ -42,6 +47,17 @@ public class ACEConfig implements ConfigData {
 
     @ConfigEntry.Gui.CollapsibleObject
     public GammaFlashlightConfig gammaFlashlightConfig = new GammaFlashlightConfig();
+
+    public static class RailgunConfig {
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 4096)
+        public int damage = 60;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 1000)
+        public int chargeRate = 10;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 512)
+        public int range = 256;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 512)
+        public int blockBreakRange = 64;
+    }
 
     public static class RocketConfig {
         public boolean reliableWithPortals = true;

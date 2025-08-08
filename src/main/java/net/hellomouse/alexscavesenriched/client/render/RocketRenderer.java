@@ -14,7 +14,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraftforge.client.ForgeRenderTypes;
 
 public class RocketRenderer extends EntityRenderer<RocketEntity> {
     protected final RocketModel MODEL;
@@ -40,7 +39,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity> {
         }
         float ageInTicks = entity.age + partialTicks;
         float alpha = 1.0F;
-        RenderLayer renderType = ForgeRenderTypes.getUnlitTranslucent(this.getTexture(entity));
+        RenderLayer renderType = RenderLayer.getEntityCutout(this.getTexture(entity));
         VertexConsumer vertexconsumer = bufferSource.getBuffer(renderType);
 
         if (entity.getIsNuclear() || entity.getIsNeutron()) {
@@ -56,7 +55,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity> {
 
     @Override
     public Identifier getTexture(RocketEntity entity) {
-        if (entity.getIsRadioactive())
+        if (entity.getIsRadioactive() || entity.getIsMiniNuke())
             return Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/rocket_entity.png");
         else if (entity.getIsNuclear())
             return Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/rocket_entity_nuclear.png");

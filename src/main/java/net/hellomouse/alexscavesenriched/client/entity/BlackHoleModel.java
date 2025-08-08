@@ -13,12 +13,10 @@ public class BlackHoleModel<T extends Entity> extends EntityModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
     public static final EntityModelLayer LAYER_LOCATION = new EntityModelLayer(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "blackhole"), "main");
     private final ModelPart parent;
-    private final ModelPart disk;
     private final ModelPart bone;
 
     public BlackHoleModel(ModelPart root) {
         this.parent = root.getChild("parent");
-        this.disk = this.parent.getChild("disk");
         this.bone = this.parent.getChild("bone");
     }
 
@@ -27,9 +25,6 @@ public class BlackHoleModel<T extends Entity> extends EntityModel<T> {
         ModelPartData partdefinition = meshdefinition.getRoot();
 
         ModelPartData parent = partdefinition.addChild("parent", ModelPartBuilder.create(), ModelTransform.of(0.0F, 24.0F, 0.0F, 0F, 0.0F, 0.0F));
-        ModelPartData disk = parent.addChild("disk", ModelPartBuilder.create().uv(-64, 48)
-                .cuboid(-31.0F, -4.0F, -33.0F, 64.0F, 0.0F, 64.0F, new Dilation(0.0F)),
-                ModelTransform.pivot(0.0F, 0.0F, 0.0F));
         ModelPartData bone = parent.addChild("bone", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
         ModelPartData black_hole_r2 = bone.addChild("black_hole_r2",
                 ModelPartBuilder.create().uv(0, 32).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F)),

@@ -62,6 +62,7 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     public static final int TYPE_RADIOACTIVE = 1;
     public static final int TYPE_NUCLEAR = 1 << 1;
     public static final int TYPE_NEUTRON = 1 << 2;
+    public static final int TYPE_MINI_NUKE = 1 << 3;
 
     // I give up getting portals to work - set vel to 0 at portal then save speed
     // to post portal speed, if non-0 restore it
@@ -126,7 +127,6 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     public void setExplosionStrength(float f) {
         this.dataTracker.set(EXPLOSION_STRENGTH, f);
     }
-
     public float getExplosionStrength() {
         return this.dataTracker.get(EXPLOSION_STRENGTH);
     }
@@ -134,7 +134,6 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     public void setIsFlame(boolean f) {
         this.dataTracker.set(IS_FLAME, (byte) (f ? 1 : 0));
     }
-
     public boolean getIsFlame() {
         return this.dataTracker.get(IS_FLAME) != 0;
     }
@@ -142,7 +141,6 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     public void setIsRadioactive(boolean f) {
         this.dataTracker.set(TYPE, f ? TYPE_RADIOACTIVE : 0);
     }
-
     public boolean getIsRadioactive() {
         return (this.dataTracker.get(TYPE) & TYPE_RADIOACTIVE) != 0;
     }
@@ -150,18 +148,20 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     public void setIsNuclear(boolean f) {
         this.dataTracker.set(TYPE, f ? TYPE_NUCLEAR : 0);
     }
-
     public boolean getIsNuclear() {
         return (this.dataTracker.get(TYPE) & TYPE_NUCLEAR) != 0;
     }
 
+
     public void setIsNeutron(boolean f) {
         this.dataTracker.set(TYPE, f ? TYPE_NEUTRON : 0);
     }
-
     public boolean getIsNeutron() {
         return (this.dataTracker.get(TYPE) & TYPE_NEUTRON) != 0;
     }
+
+    public void setIsMiniNuke(boolean f) { this.dataTracker.set(TYPE, f ? TYPE_MINI_NUKE : 0); }
+    public boolean getIsMiniNuke() { return (this.dataTracker.get(TYPE) & TYPE_MINI_NUKE) != 0; }
 
     public void setPostPortalSpeed(Vec3d x) {
         this.dataTracker.set(POST_PORTAL_SPEED, new Vector3f(
@@ -177,7 +177,7 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     @Nullable
     public Entity changeDimension(ServerWorld level, net.minecraftforge.common.util.ITeleporter teleporter) {
         var out = super.changeDimension(level, teleporter);
-        if (out != null && this.getIsNuclear() && this.getOwner() != null)
+        if (out != null && (this.getIsNuclear() || this.getIsMiniNuke()) && this.getOwner() != null)
             ACECriterionTriggers.FIRE_NUKE_THROUGH_PORTAL.triggerForEntity(this.getOwner());
         return out;
     }
@@ -188,6 +188,8 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
                 this.detonateNuclear();
             else if (this.getIsNeutron())
                 this.detonateNeutron();
+            else if (this.getIsMiniNuke())
+                this.detonateMiniNuke();
             else
                 this.detonateNormal();
         }
@@ -218,6 +220,20 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
             ((NuclearExplosionEntity) explosion).setSize((AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get()).floatValue());
         else if (explosion instanceof NuclearExplosion2Entity)
             ((NuclearExplosion2Entity) explosion).setSize((AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get()).floatValue());
+        this.getEntityWorld().spawnEntity(explosion);
+        this.discard();
+    }
+
+    protected void detonateMiniNuke() {
+        Entity explosion = AlexsCavesEnriched.CONFIG.nuclear.useNewNuke ?
+                (NuclearExplosion2Entity) ((EntityType<?>) ACEEntityRegistry.NUCLEAR_EXPLOSION2.get()).create(this.getEntityWorld()) :
+                (NuclearExplosionEntity) ((EntityType<?>) ACEntityRegistry.NUCLEAR_EXPLOSION.get()).create(this.getEntityWorld());
+        assert explosion != null;
+        explosion.copyPositionAndRotation(this);
+        if (explosion instanceof NuclearExplosionEntity)
+            ((NuclearExplosionEntity) explosion).setSize((float)AlexsCavesEnriched.CONFIG.miniNukeRadius);
+        else if (explosion instanceof NuclearExplosion2Entity)
+            ((NuclearExplosion2Entity) explosion).setSize((float)AlexsCavesEnriched.CONFIG.miniNukeRadius);
         this.getEntityWorld().spawnEntity(explosion);
         this.discard();
     }
@@ -382,7 +398,7 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
                 this.clientTick();
             } else {
                 // this.loadChunk();
-                if ((this.getIsNuclear() || this.getIsNeutron()) && (this.age + this.getId()) % 10 == 0) {
+                if ((this.getIsNuclear() || this.getIsNeutron() || this.getIsMiniNuke()) && (this.age + this.getId()) % 10 == 0) {
                     if (this.getEntityWorld() instanceof ServerWorld serverLevel)
                         this.getNearbySirens(serverLevel, 256).forEach(this::activateSiren);
                 }

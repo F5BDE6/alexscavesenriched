@@ -13,4 +13,5 @@ public class ACEParticleRegistry {
     public static final RegistryObject<DefaultParticleType> DEMONCORE_GLOW = DEF_REG.register("demon_core", () -> new DefaultParticleType(true));
     public static final RegistryObject<DefaultParticleType> FLAMETHROWER = DEF_REG.register("flamethrower_flame", () -> new DefaultParticleType(true));
     public static final RegistryObject<DefaultParticleType> BLACK_HOLE_SMOKE = DEF_REG.register("black_hole_smoke", () -> new DefaultParticleType(true));
+    public static final RegistryObject<DefaultParticleType> RAILGUN_SHOCKWAVE = DEF_REG.register("railgun_shockwave", () -> new DefaultParticleType(true));
 }

@@ -92,7 +92,7 @@ public class BlackHoleEntity extends Entity {
     }
 
     private void suckEntity(Entity entity, float powerMultiplier) {
-        if (entity instanceof PlayerEntity player && player.isCreative() && player.getAbilities().flying)
+        if (entity instanceof PlayerEntity player && ((player.isCreative() && player.getAbilities().flying) || player.isSpectator()))
             return;
         Vec3d dir = this.getPos().subtract(entity.getPos());
         double dis = Math.max(0.1, dir.length() - this.getCurrentSize());
@@ -377,22 +377,27 @@ public class BlackHoleEntity extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound compoundTag) {
-        if (compoundTag.contains("decayDurationLeft")) this.setDecayDurationLeft(compoundTag.getInt("decayDurationLeft"));
-        if (compoundTag.contains("nonDecaying")) this.setNonDecaying(compoundTag.getBoolean("nonDecaying"));
-        if (compoundTag.contains("currentSize")) this.setCurrentSize(compoundTag.getFloat("currentSize"));
-        if (compoundTag.contains("size")) this.setSize(compoundTag.getFloat("size"));
-        if (compoundTag.contains("explosionSize")) this.setExplosionSize(compoundTag.getInt("explosionSize"));
-        if (compoundTag.contains("explosionTicks")) this.setIsExplosive(compoundTag.getBoolean("isExplosive"));
+        this.setDecayDurationLeft(compoundTag.getInt("DecayDurationLeft"));
+        this.setNonDecaying(compoundTag.getBoolean("NonDecaying"));
+        this.setCurrentSize(compoundTag.getFloat("CurrentSize"));
+        this.setSize(compoundTag.getFloat("Size"));
+        this.setExplosionSize(compoundTag.getInt("ExplosionSize"));
+        this.setIsExplosive(compoundTag.getBoolean("IsExplosive"));
+        this.loadingChunks = compoundTag.getBoolean("WasLoadingChunks");
+
+        if (this.isExplosive())
+            explosionState = ExplosionState.CALCULATE_WHAT_TO_DESTROY; // Reset calculation on reload
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound compoundTag) {
-        compoundTag.putInt("decayDurationLeft", this.getDecayDurationLeft());
-        compoundTag.putBoolean("nonDecaying", this.isNonDecaying());
-        compoundTag.putFloat("currentSize", this.getCurrentSize());
-        compoundTag.putFloat("size", this.getSize());
-        compoundTag.putBoolean("isExplosive", this.isExplosive());
-        compoundTag.putInt("explosionSize", this.getExplosionSize());
+        compoundTag.putInt("DecayDurationLeft", this.getDecayDurationLeft());
+        compoundTag.putBoolean("NonDecaying", this.isNonDecaying());
+        compoundTag.putFloat("CurrentSize", this.getCurrentSize());
+        compoundTag.putFloat("Size", this.getSize());
+        compoundTag.putBoolean("IsExplosive", this.isExplosive());
+        compoundTag.putInt("ExplosionSize", this.getExplosionSize());
+        compoundTag.putBoolean("WasLoadingChunks", this.loadingChunks);
     }
 
     static {

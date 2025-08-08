@@ -1,0 +1,24 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:railgun"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.railgun.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.railgun.desc"
+        }
+    },
+    "parent": "alexscavesenriched:enriched_uranium_rod",
+	"criteria": {
+		"requirement": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{"items": ["alexscavesenriched:railgun"]}
+				]
+			}
+		}
+	}
+}

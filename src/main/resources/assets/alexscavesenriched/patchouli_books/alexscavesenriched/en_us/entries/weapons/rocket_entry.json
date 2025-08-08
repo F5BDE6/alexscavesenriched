@@ -30,6 +30,11 @@
             "type": "patchouli:crafting",
             "text": "Neutron bomb in rocket form. Dispensers will fire neutron rockets with zero spread and faster speed as well.",
             "recipe": "alexscavesenriched:rocket_neutron"
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "Mini-nuke in rocket form. Dispensers will fire mini nuke rockets with zero spread and faster speed as well.",
+            "recipe": "alexscavesenriched:rocket_mini_nuke"
         }
     ]
 }

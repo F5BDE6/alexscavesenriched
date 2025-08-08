@@ -133,6 +133,8 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
                 Box bashBox = new Box(new BlockPos((int) launchPos.getX(), (int) launchPos.getY(), (int) launchPos.getZ()))
                         .stretch(launchDir.multiply(-(AlexsCavesEnriched.CONFIG.rocketLauncher.backblastRange + 1.0)));
                 for (LivingEntity entity : level.getNonSpectatingEntities(LivingEntity.class, bashBox)) {
+                    if (entity == player)
+                        continue;
                     Vec3d delta = entity.getLerpedPos(1.0F).subtract(rpgBackPos);
 
                     // Compare bottom, center and top of bounding box because I'm too lazy

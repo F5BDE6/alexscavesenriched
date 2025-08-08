@@ -1,0 +1,17 @@
+{
+    "name": "Railgun",
+    "icon": "alexscavesenriched:railgun",
+    "category": "alexscavesenriched:weapons",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Railgun. Hold down to load and charge, fires railgun ammo which pierces through mobs and shatters weak blocks. The shot goes through all but the highest blast resistance blocks."
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "",
+            "recipe": "alexscavesenriched:railgun",
+            "recipe2": "alexscavesenriched:railgun_ammo"
+        }
+    ]
+}

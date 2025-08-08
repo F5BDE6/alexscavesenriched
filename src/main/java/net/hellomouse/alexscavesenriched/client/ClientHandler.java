@@ -4,13 +4,13 @@ import com.github.alexmodguy.alexscaves.client.render.entity.EmptyRenderer;
 import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.hellomouse.alexscavesenriched.*;
+import net.hellomouse.alexscavesenriched.client.entity.BlackHoleDiskModel;
 import net.hellomouse.alexscavesenriched.client.entity.BlackHoleModel;
 import net.hellomouse.alexscavesenriched.client.entity.RocketModel;
 import net.hellomouse.alexscavesenriched.client.entity.RocketNuclearModel;
 import net.hellomouse.alexscavesenriched.client.particle.*;
 import net.hellomouse.alexscavesenriched.client.render.*;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEItemRenderProperties;
-import net.hellomouse.alexscavesenriched.client.render.item.ACEItemstackRenderer;
 import net.hellomouse.alexscavesenriched.item.DeadmanSwitchItem;
 import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
 import net.minecraft.client.gl.ShaderProgram;
@@ -42,6 +42,7 @@ public class ClientHandler {
         event.registerLayerDefinition(RocketModel.LAYER_LOCATION, RocketModel::createBodyLayer);
         event.registerLayerDefinition(RocketNuclearModel.LAYER_LOCATION, RocketNuclearModel::createBodyLayer);
         event.registerLayerDefinition(BlackHoleModel.LAYER_LOCATION, BlackHoleModel::createBodyLayer);
+        event.registerLayerDefinition(BlackHoleDiskModel.LAYER_LOCATION, BlackHoleDiskModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -52,6 +53,7 @@ public class ClientHandler {
         event.registerSpriteSet(ACEParticleRegistry.DEMONCORE_GLOW.get(), DemonCoreGlowParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.FLAMETHROWER.get(), FlamethrowerParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.BLACK_HOLE_SMOKE.get(), BlackHoleSmokeParticle.Factory::new);
+        event.registerSpriteSet(ACEParticleRegistry.RAILGUN_SHOCKWAVE.get(), RailgunShockwaveParticle.Factory::new);
     }
 
     @SubscribeEvent

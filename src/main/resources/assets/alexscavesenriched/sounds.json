@@ -22,5 +22,21 @@
   "fumo_squeak": {
     "subtitle": "alexscavesenriched.subtitle.fumo_squeak",
     "sounds": [ "alexscavesenriched:block/fumo_squeak" ]
+  },
+  "railgun_reload": {
+    "subtitle": "alexscavesenriched.subtitle.railgun_reload",
+    "sounds": [ "alexscavesenriched:item/railgun/railgun_reload" ]
+  },
+  "railgun_charge": {
+    "subtitle": "alexscavesenriched.subtitle.railgun_charge",
+    "sounds": [ "alexscavesenriched:item/railgun/railgun_charge" ]
+  },
+  "railgun_empty": {
+    "subtitle": "alexscavesenriched.subtitle.railgun_empty",
+    "sounds": [ "alexscavesenriched:item/railgun/railgun_empty" ]
+  },
+  "railgun_fire": {
+    "subtitle": "alexscavesenriched.subtitle.railgun_fire",
+    "sounds": [ "alexscavesenriched:item/railgun/railgun_fire" ]
   }
 }

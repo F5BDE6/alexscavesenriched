@@ -1,0 +1,28 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:rocket_mini_nuke"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.rocket_mini_nuke.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.rocket_mini_nuke.desc"
+        }
+    },
+    "parent": "alexscavesenriched:rocket_launcher",
+	  "criteria": {
+		"requirement": {
+		  "trigger": "minecraft:inventory_changed",
+		  "conditions": {
+			"items": [
+			  {
+				"items": [
+					"alexscavesenriched:rocket_mini_nuke"
+				]
+			  }
+			]
+		  }
+		}
+	  }
+}

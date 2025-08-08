@@ -28,12 +28,15 @@ public class ACEItemRegistry {
     public static final RegistryObject<Item> ROCKET_NORMAL = DEF_REG.register("rocket_normal", RocketNormalItem::new);
     public static final RegistryObject<Item> ROCKET_NUCLEAR = DEF_REG.register("rocket_nuclear", RocketNuclearItem::new);
     public static final RegistryObject<Item> ROCKET_NEUTRON = DEF_REG.register("rocket_neutron", RocketNeutronItem::new);
+    public static final RegistryObject<Item> ROCKET_MINI_NUKE = DEF_REG.register("rocket_mini_nuke", RocketMiniNukeItem::new);
+
     public static final RegistryObject<Item> URANIUM_ARROW = DEF_REG.register("uranium_arrow", UraniumArrowItem::new);
     public static final RegistryObject<Item> URANIUM_CANDY = DEF_REG.register("uranium_candy", UraniumCandyItem::new);
     public static final RegistryObject<Item> NUKA_COLA = DEF_REG.register("nuka_cola", () -> new NukaColaItem(ACEBlockRegistry.NUKA_COLA.get()));
     public static final RegistryObject<Item> NUKA_COLA_QUANTUM = DEF_REG.register("nuka_cola_quantum", () -> new NukaColaQuantumItem(ACEBlockRegistry.NUKA_COLA_QUANTUM.get()));
     public static final RegistryObject<Item> NUKA_COLA_EMPTY = DEF_REG.register("nuka_cola_empty", () -> new NukaColaEmptyItem(ACEBlockRegistry.NUKA_COLA_EMPTY.get()));
     public static final RegistryObject<Item> RAYGUN = DEF_REG.register("raygun_mk2", RayGunMk2Item::new);
+    public static final RegistryObject<Item> RAILGUN = DEF_REG.register("railgun", RailgunItem::new);
     public static final RegistryObject<Item> RAYGUN_UPGRADE_TEMPLATE = DEF_REG.register("raygun_upgrade_template",
             () -> new SmithingTemplateItem(
                     Text.translatable("item.alexscavesenriched.raygun_upgrade_template.applies_to"),
@@ -48,4 +51,5 @@ public class ACEItemRegistry {
     public static final RegistryObject<Item> FLAMETHROWER = DEF_REG.register("flamethrower", FlamethrowerItem::new);
     public static final RegistryObject<Item> DEADMAN_SWITCH = DEF_REG.register("deadmans_switch", DeadmanSwitchItem::new);
     public static final RegistryObject<Item> GAMMA_FLASHLIGHT = DEF_REG.register("gamma_flashlight", GammaFlashlightItem::new);
+    public static final RegistryObject<Item> RAILGUN_AMMO = DEF_REG.register("railgun_ammo", RailgunAmmoItem::new);
 }

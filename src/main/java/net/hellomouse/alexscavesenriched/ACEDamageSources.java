@@ -13,13 +13,19 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ACEDamageSources {
-    public static final RegistryKey<DamageType> BLACKHOLE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "black_hole"));;
+    public static final RegistryKey<DamageType> BLACKHOLE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "black_hole"));
+    public static final RegistryKey<DamageType> RAILGUN = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "railgun"));
 
     public ACEDamageSources() {}
 
     public static DamageSource causeBlackHoleDamage(DynamicRegistryManager registryAccess) {
         return new DamageSourceRandomMessages(
                 ((Registry)registryAccess.getOptional(RegistryKeys.DAMAGE_TYPE).get()).entryOf(BLACKHOLE), 4);
+    }
+
+    public static DamageSource causeRailgunDamage(DynamicRegistryManager registryAccess, Entity source) {
+        return new DamageSourceRandomMessages(
+                ((Registry)registryAccess.getOptional(RegistryKeys.DAMAGE_TYPE).get()).entryOf(RAILGUN), source, 3);
     }
 
     private static class DamageSourceRandomMessages extends DamageSource {

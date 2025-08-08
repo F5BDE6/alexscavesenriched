@@ -65,17 +65,17 @@ public class NuclearExplosion2Entity extends Entity {
 
     private static final TrackedData<Float> SIZE;
     private static final TrackedData<Boolean> NO_GRIEFING;
+    private static final TrackedData<Integer> EXPLOSION_STAGE;
 
     public enum ExplosionState {
         CALCULATE_WHAT_TO_DESTROY, DESTORYING, CALCULATE_WHAT_TO_DISTORT, DISTORTING, CALCULATE_WHAT_TO_DAMAGE, // Secondary block damage like broken windows
         DAMAGING, ACID_SCATTER, DONE
     }
 
-    private ExplosionState explosionState = ExplosionState.CALCULATE_WHAT_TO_DESTROY;
-
     public static int EXTRA_BLAST_RADIUS_CHUNKS = 3;
     public static int ACID_SCATTER_RADIUS_BLOCKS = 12;
     public static float MAX_FLING_VELOCITY = 20.0F;
+    public static int CHUNKS_AFFECTED_RADIUS_MULTIPLIER = 15;
 
     public NuclearExplosion2Entity(EntityType<?> entityType, World level) {
         super(entityType, level);
@@ -117,7 +117,7 @@ public class NuclearExplosion2Entity extends Entity {
     public void tick() {
         super.tick();
         int chunksAffected = getChunksAffected();
-        int radius = chunksAffected * 15;
+        int radius = chunksAffected * CHUNKS_AFFECTED_RADIUS_MULTIPLIER;
         if (!spawnedParticle) {
             spawnedParticle = true;
             int particleY = (int) Math.ceil(this.getY());
@@ -135,7 +135,7 @@ public class NuclearExplosion2Entity extends Entity {
                 }
             }
         }
-        if (age > 40 && explosionState == ExplosionState.DONE) {
+        if (age > 40 && getExplosionState() == ExplosionState.DONE) {
             this.remove(RemovalReason.DISCARDED);
             return;
         }
@@ -148,32 +148,13 @@ public class NuclearExplosion2Entity extends Entity {
 
             final int CHUNKS_TO_PROCESS_PER_TICK = 12;
             // Can't do anything anyways /shrug
-            if (explosionState == ExplosionState.CALCULATE_WHAT_TO_DESTROY && AlexsCaves.COMMON_CONFIG.nukeMaxBlockExplosionResistance.get() <= 0)
-                explosionState = ExplosionState.DONE;
+            if (getExplosionState() == ExplosionState.CALCULATE_WHAT_TO_DESTROY && AlexsCaves.COMMON_CONFIG.nukeMaxBlockExplosionResistance.get() <= 0)
+                setExplosionStage(ExplosionState.DONE);
 
-            if (explosionState == ExplosionState.CALCULATE_WHAT_TO_DESTROY) {
-                explosionState = ExplosionState.DESTORYING;
-                BlockPos center = this.getBlockPos();
-                for (int i = -chunksAffected; i <= chunksAffected; i++)
-                    for (int j = -chunksAffected; j <= chunksAffected; j++)
-                        for (int k = -chunksAffected; k <= chunksAffected; k++) {
-                            var chunkPos = center.add(i * 16, j * 16, k * 16);
-                            if (chunkPos.getSquaredDistance(center) < Math.pow(Math.max(0, 16 * (chunksAffected - 4)), 2) ||
-                                    !anyChunkVertexOutsideSphere(chunkPos, radius, center))
-                                toDestroyFullChunks.push(chunkPos);
-                            else {
-                                toDistortChunks.push(chunkPos);
-                                toDestroyPartialChunks.push(chunkPos);
-                            }
-                        }
-
-                toDestroyFullChunks.sort((blockPos1, blockPos2) -> Double.compare(
-                        chunkBlockPosToDis(blockPos2, this.getBlockPos()), chunkBlockPosToDis(blockPos1, this.getBlockPos())));
-                toDestroyPartialChunks.sort((blockPos1, blockPos2) -> Double.compare(
-                        chunkBlockPosToDis(blockPos2, this.getBlockPos()), chunkBlockPosToDis(blockPos1, this.getBlockPos())));
-                toDistortChunks.sort((blockPos1, blockPos2) ->
-                        Double.compare(blockPos2.getManhattanDistance(this.getBlockPos()), blockPos1.getManhattanDistance(this.getBlockPos())));
-            } else if (explosionState == ExplosionState.DESTORYING) {
+            if (getExplosionState() == ExplosionState.CALCULATE_WHAT_TO_DESTROY) {
+                setExplosionStage(ExplosionState.DESTORYING);
+                gatherChunksToAffect();
+            } else if (getExplosionState() == ExplosionState.DESTORYING) {
                 int chunkToDestroyBudget = CHUNKS_TO_PROCESS_PER_TICK; // Chunks can destroy per tick
                 while (chunkToDestroyBudget > 0 && !toDestroyFullChunks.isEmpty()) {
                     destroyFullChunk();
@@ -185,31 +166,32 @@ public class NuclearExplosion2Entity extends Entity {
                 }
 
                 if (toDestroyPartialChunks.isEmpty() && toDestroyFullChunks.isEmpty())
-                    explosionState = ExplosionState.CALCULATE_WHAT_TO_DISTORT;
-            } else if (explosionState == ExplosionState.CALCULATE_WHAT_TO_DISTORT) {
+                    setExplosionStage(ExplosionState.CALCULATE_WHAT_TO_DISTORT);
+            } else if (getExplosionState() == ExplosionState.CALCULATE_WHAT_TO_DISTORT) {
                 // Shock wave effects
-                explosionState = ExplosionState.DISTORTING;
-            } else if (explosionState == ExplosionState.DISTORTING) {
+                setExplosionStage(ExplosionState.DISTORTING);
+            } else if (getExplosionState() == ExplosionState.DISTORTING) {
                 int chunkToDistortBudget = CHUNKS_TO_PROCESS_PER_TICK;
                 while (chunkToDistortBudget > 0 && !toDistortChunks.isEmpty()) {
                     distortChunk(radius);
                     chunkToDistortBudget--;
                 }
-                if (toDistortChunks.isEmpty()) explosionState = ExplosionState.ACID_SCATTER;
-            } else if (explosionState == ExplosionState.ACID_SCATTER) {
+                if (toDistortChunks.isEmpty())
+                    setExplosionStage(ExplosionState.ACID_SCATTER);
+            } else if (getExplosionState() == ExplosionState.ACID_SCATTER) {
                 scatterAcid(radius);
-                explosionState = ExplosionState.CALCULATE_WHAT_TO_DAMAGE;
-            } else if (explosionState == ExplosionState.CALCULATE_WHAT_TO_DAMAGE) {
-                explosionState = ExplosionState.DAMAGING;
+                setExplosionStage(ExplosionState.CALCULATE_WHAT_TO_DAMAGE);
+            } else if (getExplosionState() == ExplosionState.CALCULATE_WHAT_TO_DAMAGE) {
+                setExplosionStage(ExplosionState.DAMAGING);
                 this.toDamageRays = (chunksAffected + getExtraChunks()) * 24;
-            } else if (explosionState == ExplosionState.DAMAGING) {
+            } else if (getExplosionState() == ExplosionState.DAMAGING) {
                 int chunkToDamageBudget = CHUNKS_TO_PROCESS_PER_TICK;
                 while (chunkToDamageBudget > 0 && this.toDamageRays > 0) {
                     castDamageRay(radius + getExtraChunks() * 16);
                     chunkToDamageBudget--;
                 }
                 if (this.toDamageRays <= 0)
-                    explosionState = ExplosionState.DONE;
+                    setExplosionStage(ExplosionState.DONE);
             }
         }
 
@@ -222,6 +204,9 @@ public class NuclearExplosion2Entity extends Entity {
             float damage = calculateDamage(dist, maximumDistance);
             Vec3d vec3 = entity.getPos().subtract(this.getPos()).add(0, 0.3, 0).normalize();
             float playerFling = entity instanceof PlayerEntity ? 0.5F * flingStrength : flingStrength;
+            if (entity instanceof PlayerEntity player && ((player.isCreative() && player.getAbilities().flying) || player.isSpectator()))
+                playerFling = 0;
+
             if (damage > 0) {
                 if (entity instanceof RaycatEntity) {
                     damage = 0;
@@ -241,6 +226,35 @@ public class NuclearExplosion2Entity extends Entity {
             entity.setVelocity(vec3.multiply(Math.min(damage * 0.1F * playerFling, MAX_FLING_VELOCITY)));
             entity.addStatusEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(), 48000, getSize() <= 1.5F ? 1 : 2, false, false, true));
         }
+    }
+
+    private void gatherChunksToAffect() {
+        int chunksAffected = getChunksAffected();
+        int radius = chunksAffected * CHUNKS_AFFECTED_RADIUS_MULTIPLIER;
+        toDestroyPartialChunks.clear();
+        toDestroyFullChunks.clear();
+        toDistortChunks.clear();
+
+        BlockPos center = this.getBlockPos();
+        for (int i = -chunksAffected; i <= chunksAffected; i++)
+            for (int j = -chunksAffected; j <= chunksAffected; j++)
+                for (int k = -chunksAffected; k <= chunksAffected; k++) {
+                    var chunkPos = center.add(i * 16, j * 16, k * 16);
+                    if (chunkPos.getSquaredDistance(center) < Math.pow(Math.max(0, 16 * (chunksAffected - 4)), 2) ||
+                            !anyChunkVertexOutsideSphere(chunkPos, radius, center))
+                        toDestroyFullChunks.push(chunkPos);
+                    else {
+                        toDistortChunks.push(chunkPos);
+                        toDestroyPartialChunks.push(chunkPos);
+                    }
+                }
+
+        toDestroyFullChunks.sort((blockPos1, blockPos2) -> Double.compare(
+                chunkBlockPosToDis(blockPos2, this.getBlockPos()), chunkBlockPosToDis(blockPos1, this.getBlockPos())));
+        toDestroyPartialChunks.sort((blockPos1, blockPos2) -> Double.compare(
+                chunkBlockPosToDis(blockPos2, this.getBlockPos()), chunkBlockPosToDis(blockPos1, this.getBlockPos())));
+        toDistortChunks.sort((blockPos1, blockPos2) ->
+                Double.compare(blockPos2.getManhattanDistance(this.getBlockPos()), blockPos1.getManhattanDistance(this.getBlockPos())));
     }
 
     private void loadChunksAround(boolean load) {
@@ -440,14 +454,17 @@ public class NuclearExplosion2Entity extends Entity {
                     if (Math.cos(distToCenter / 300.0) < 0) // cos(x^2)
                         continue;
 
-                    if (!state.isAir() && !state.isReplaceable() && isDestroyable(state) && !(state.getBlock() instanceof BlockEntityProvider)) {
+                    if (!state.isAir() && !state.isReplaceable() && isDestroyable(state) &&
+                            !(state.getBlock() instanceof BlockEntityProvider)) {
                         int blastHeight = 1 + (int) (getEntityWorld().getRandom().nextFloat() * (int) (Math.min(1.0, distToCenter / (radius * radius)) * MAX_SHOCKWAVE_DELTA * 2));
                         blastHeight = Math.min(MAX_SHOCKWAVE_DELTA, blastHeight);
                         carveAbove.set(carve.getX(), Math.min(carve.getY() + blastHeight, getEntityWorld().getTopY()), carve.getZ());
                         BlockState aboveState = getEntityWorld().getBlockState(carveAbove);
                         if (aboveState.isAir() || !aboveState.getFluidState().isEmpty() || aboveState.isReplaceable()) {
-                            this.getEntityWorld().removeBlock(carve, true);
-                            this.getEntityWorld().setBlockState(carveAbove, state);
+                            if (state.canPlaceAt(this.getEntityWorld(), carveAbove.offset(Direction.Axis.Y, 1))) {
+                                this.getEntityWorld().removeBlock(carve, true);
+                                this.getEntityWorld().setBlockState(carveAbove, state);
+                            }
                         }
                     }
                 }
@@ -532,14 +549,14 @@ public class NuclearExplosion2Entity extends Entity {
             }
 
             if (i == 0 && AlexsCavesEnriched.CONFIG.nuclear.irradiationTime > 0) {
-                AreaEffectCloudEntity areaeffectcloud = new AreaEffectCloudEntity(this.getEntityWorld(), this.getX(), this.getY() - deltaY + 1.2f, this.getZ());
-                areaeffectcloud.setParticleType(ACParticleRegistry.FALLOUT.get());
-                areaeffectcloud.setColor(0);
-                areaeffectcloud.addEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(), AlexsCavesEnriched.CONFIG.nuclear.irradiationTime, 4));
-                areaeffectcloud.setRadius((float)radius);
-                areaeffectcloud.setDuration(AlexsCavesEnriched.CONFIG.nuclear.irradiationPotionTime);
-                areaeffectcloud.setRadiusGrowth(-areaeffectcloud.getRadius() / (float) areaeffectcloud.getDuration());
-                this.getEntityWorld().spawnEntity(areaeffectcloud);
+                AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.getEntityWorld(), this.getX(), this.getY() - deltaY + 1.2f, this.getZ());
+                areaEffectCloudEntity.setParticleType(ACParticleRegistry.GAMMAROACH.get());
+                areaEffectCloudEntity.setColor(0);
+                areaEffectCloudEntity.addEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(), AlexsCavesEnriched.CONFIG.nuclear.irradiationPotionTime, 4));
+                areaEffectCloudEntity.setRadius((float)radius);
+                areaEffectCloudEntity.setDuration(AlexsCavesEnriched.CONFIG.nuclear.irradiationTime);
+                areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float) areaEffectCloudEntity.getDuration());
+                this.getEntityWorld().spawnEntity(areaEffectCloudEntity);
             }
         }
     }
@@ -573,6 +590,7 @@ public class NuclearExplosion2Entity extends Entity {
     protected void initDataTracker() {
         this.dataTracker.startTracking(SIZE, 1.0F);
         this.dataTracker.startTracking(NO_GRIEFING, false);
+        this.dataTracker.startTracking(EXPLOSION_STAGE, 0);
     }
 
     public float getSize() {
@@ -581,6 +599,15 @@ public class NuclearExplosion2Entity extends Entity {
 
     public void setSize(float f) {
         this.dataTracker.set(SIZE, f);
+    }
+
+    public ExplosionState getExplosionState() { return ExplosionState.values()[this.dataTracker.get(EXPLOSION_STAGE)]; }
+
+    public void setExplosionStage(ExplosionState state) {
+        this.dataTracker.set(EXPLOSION_STAGE, state.ordinal());
+    }
+    public void setExplosionStage(int state) {
+        this.dataTracker.set(EXPLOSION_STAGE, state < ExplosionState.values().length ? state : 0);
     }
 
     public boolean isNoGriefing() {
@@ -593,14 +620,22 @@ public class NuclearExplosion2Entity extends Entity {
 
     protected void readCustomDataFromNbt(NbtCompound compoundTag) {
         this.loadingChunks = compoundTag.getBoolean("WasLoadingChunks");
+        this.setSize(compoundTag.getFloat("Size"));
+        this.setNoGriefing(compoundTag.getBoolean("NoGriefing"));
+        this.setExplosionStage(compoundTag.getInt("ExplosionStage"));
+        gatherChunksToAffect();
     }
 
     protected void writeCustomDataToNbt(NbtCompound compoundTag) {
         compoundTag.putBoolean("WasLoadingChunks", this.loadingChunks);
+        compoundTag.putFloat("Size", this.getSize());
+        compoundTag.putBoolean("NoGriefing", this.isNoGriefing());
+        compoundTag.putInt("ExplosionStage", this.getExplosionState().ordinal());
     }
 
     static {
         SIZE = DataTracker.registerData(NuclearExplosion2Entity.class, TrackedDataHandlerRegistry.FLOAT);
         NO_GRIEFING = DataTracker.registerData(NuclearExplosion2Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        EXPLOSION_STAGE = DataTracker.registerData(NuclearExplosion2Entity.class, TrackedDataHandlerRegistry.INTEGER);
     }
 }

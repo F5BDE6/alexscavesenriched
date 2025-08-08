@@ -78,8 +78,7 @@ public class RaygunMk2Model extends AdvancedEntityModel<Entity> {
 
     @Override
     public Iterable<AdvancedModelBox> getAllParts() {
-        return ImmutableList.of(this.root, partA, partB, partC, partD, partE,
-                partF, partG, partH, partI, partJ, partK, partL, partM);
+        return ImmutableList.of(this.root);
     }
 
     @Override

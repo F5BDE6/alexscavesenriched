@@ -21,13 +21,17 @@ public class NeutronBombBlock extends AbstractTntBlock {
         this.setDefaultState(this.getDefaultState().with(UNSTABLE, false));
     }
 
-    @Override
-    public void detonate(World world, BlockPos pos, @org.jetbrains.annotations.Nullable LivingEntity igniter) {
+    public static void detonateStatic(World world, BlockPos pos, @org.jetbrains.annotations.Nullable LivingEntity igniter) {
         if (!world.isClient) {
             NeutronBombEntity primedtnt = new NeutronBombEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, igniter);
             world.spawnEntity(primedtnt);
             world.playSound(null, primedtnt.getX(), primedtnt.getY(), primedtnt.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos);
         }
+    }
+
+    @Override
+    public void detonate(World world, BlockPos pos, @org.jetbrains.annotations.Nullable LivingEntity igniter) {
+        detonateStatic(world, pos, igniter);
     }
 }
