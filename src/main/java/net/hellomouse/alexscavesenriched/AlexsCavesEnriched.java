@@ -70,7 +70,8 @@ public class AlexsCavesEnriched {
 
     public AlexsCavesEnriched(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
-
+        AutoConfig.register(ACEConfig.class, Toml4jConfigSerializer::new);
+        CONFIG = AutoConfig.getConfigHolder(ACEConfig.class).getConfig();
         modEventBus.addListener(this::commonSetup);
         ACERecipeRegistry.DEF_REG.register(modEventBus);
         ACERecipeRegistry.TYPE_DEF_REG.register(modEventBus);
@@ -82,9 +83,7 @@ public class AlexsCavesEnriched {
         ACEParticleRegistry.DEF_REG.register(modEventBus);
 
         CREATIVE_TAB_REG.register(modEventBus);
-        AutoConfig.register(ACEConfig.class, Toml4jConfigSerializer::new);
 
-        CONFIG = AutoConfig.getConfigHolder(ACEConfig.class).getConfig();
         modEventBus.register(this);
     }
 

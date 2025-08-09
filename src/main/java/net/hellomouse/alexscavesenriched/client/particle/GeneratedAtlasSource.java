@@ -2,6 +2,7 @@ package net.hellomouse.alexscavesenriched.client.particle;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.client.ClientHandler;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.SpriteContents;
@@ -28,9 +29,8 @@ public class GeneratedAtlasSource implements AtlasSource {
     public void load(ResourceManager resourceManager, SpriteRegions regions) {
         if (resource.equals(RadiationGlowTexture.ID)) {
             RadiationGlowTexture.init();
-            RadiationGlowTexture.tick();
             regions.add(RadiationGlowTexture.ID, () -> new SpriteContents(RadiationGlowTexture.ID,
-                    new SpriteDimensions(RadiationGlowTexture.WIDTH, RadiationGlowTexture.HEIGHT),
+                    new SpriteDimensions(AlexsCavesEnriched.CONFIG.demonCore.sprite.resolution, AlexsCavesEnriched.CONFIG.demonCore.sprite.resolution),
                     RadiationGlowTexture.CURRENT,
                     AnimationResourceMetadata.EMPTY));
         } else {

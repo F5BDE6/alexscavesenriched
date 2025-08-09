@@ -1,7 +1,6 @@
 {
   "alexscavesenriched.guidebook.title": "Alex's Caves Enriched",
   "alexscavesenriched.guidebook.subtitle": "A guide for your nuclear journey.",
-
   "entity.alexscavesenriched.black_hole": "Black Hole",
   "entity.alexscavesenriched.neutron_bomb": "Neutron Bomb",
   "entity.alexscavesenriched.black_hole_bomb": "Black Hole Bomb",
@@ -11,7 +10,6 @@
   "entity.alexscavesenriched.uranium_arrow": "Uranium Arrow",
   "entity.alexscavesenriched.rocket": "Rocket",
   "entity.alexscavesenriched.mini_nuke": "Mini Nuke",
-
   "block.alexscavesenriched.enriched_uranium_block": "Block of Enriched Uranium",
   "block.alexscavesenriched.enriched_uranium_rod": "Enriched Uranium Rod",
   "block.alexscavesenriched.nuke_glowing_air": "Nuke Glowing Air",
@@ -22,7 +20,6 @@
   "block.alexscavesenriched.xeno_fumo": "Xenonomous Fumo",
   "block.alexscavesenriched.xiaoyu_fumo.tooltip": "Kemonomimi enthusiast",
   "block.alexscavesenriched.xeno_fumo.tooltip": "Single lesbian firearms enjoyer",
-
   "itemGroup.alexscavesenriched.creative_tab": "Alex's Caves Enriched",
   "item.alexscavesenriched.enriched_uranium": "Enriched Uranium",
   "item.alexscavesenriched.rocket_launcher": "Rocket Launcher",
@@ -49,7 +46,6 @@
   "block.alexscavesenriched.nuka_cola": "Nuka Cola",
   "block.alexscavesenriched.nuka_cola_quantum": "Nuka Cola Quantum",
   "block.alexscavesenriched.nuka_cola_empty": "Nuka Cola Bottle",
-
   "alexscavesenriched.subtitle.rocket_whistle": "Rocket whistles",
   "alexscavesenriched.subtitle.flamethrower_reload": "Flameflower reload",
   "alexscavesenriched.subtitle.flamethrower": "Flamethrower burns",
@@ -60,7 +56,6 @@
   "alexscavesenriched.subtitle.railgun_charge": "Railgun charges",
   "alexscavesenriched.subtitle.railgun_empty": "Railgun empty",
   "alexscavesenriched.subtitle.railgun_reload": "Railgun reloads",
-
   "advancements.alexscavesenriched.root.title": "Alex's Caves Enriched",
   "advancements.alexscavesenriched.root.desc": "The start of your nuclear journey",
   "advancements.alexscavesenriched.enriched_uranium.title": "A Screwdriver and a Dumb Idea",
@@ -107,12 +102,10 @@
   "advancements.alexscavesenriched.mini_nuke.desc": "Craft a mini-nuke",
   "advancements.alexscavesenriched.fumo.title": "Better than End Rods",
   "advancements.alexscavesenriched.fumo.desc": "Obtain the secret fumos",
-
   "emi.category.alexscavesenriched.nuclear_furnace": "Nuclear Furnace (Additional)",
   "emi.category.alexscavesenriched.nuclear_transmutation": "Nuclear Transmutation",
   "emi.category.alexscavesenriched.neutron_kill": "Neutron Kill",
   "emi.transmutation_chance": "%s %% Chance",
-
   "death.attack.black_hole_0": "%s was spaghetified",
   "death.attack.black_hole_1": "%s fell into a black hole",
   "death.attack.black_hole_2": "%s was spaghetified by your mom",
@@ -123,7 +116,6 @@
   "death.attack.railgun_0.entity": "%s was pierced by %s's Railgun",
   "death.attack.railgun_1.entity": "%s was annihilated by %s's Railgun",
   "death.attack.railgun_2.entity": "%s experienced a hypervelocity impact from %s's Railgun",
-
   "text.autoconfig.alexscavesenriched.title": "Alex's Caves Enriched",
   "text.autoconfig.alexscavesenriched.option.raygunCooldownTicks": "Raygun Cooldown (ticks)",
   "text.autoconfig.alexscavesenriched.option.irradiationMutatesMobs": "Randomize irradiated mob attributes",
@@ -146,6 +138,12 @@
   "text.autoconfig.alexscavesenriched.option.demonCore.renderDistance": "Render distance",
   "text.autoconfig.alexscavesenriched.option.demonCore.damage": "Damage",
   "text.autoconfig.alexscavesenriched.option.demonCore.maxSize": "Max size of demon core (in blocks)",
+  "text.autoconfig.alexscavesenriched.option.demonCore.sprite": "Glow sprite",
+  "text.autoconfig.alexscavesenriched.option.demonCore.sprite.resolution": "Resolution of the glow sprite (require restart)",
+  "text.autoconfig.alexscavesenriched.option.demonCore.sprite.resolution.@Tooltip": "Larger value create smoother edge (less pixelated) and smoother gradient, compared to smaller value",
+  "text.autoconfig.alexscavesenriched.option.demonCore.sprite.animationFrames": "Number of frame to generate (require restart)",
+  "text.autoconfig.alexscavesenriched.option.demonCore.sprite.animationFrames.@Tooltip": "Larger value create smoother animation",
+  "text.autoconfig.alexscavesenriched.option.demonCore.sprite.fluctuation": "Fluctuation of core's radius",
   "text.autoconfig.alexscavesenriched.option.demonCore.boundingBoxFillProportion": "Min required fill % of bounding box (to keep somewhat convex)",
   "text.autoconfig.alexscavesenriched.option.enrichedRodFuelMultiplier": "Enriched rod fuel multiplier",
   "text.autoconfig.alexscavesenriched.option.rocket": "Rocket",

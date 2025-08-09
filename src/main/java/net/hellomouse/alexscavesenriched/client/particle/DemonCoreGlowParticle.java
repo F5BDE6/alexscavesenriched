@@ -61,8 +61,6 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
             float a = Math.min(1f, Math.max(0f, colour.w));
             RenderSystem.setShaderColor(r, g, b, a);
             builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-            //RenderSystem.setShaderColor(1, 1, 1, 1);
-
         }
 
         @Override
@@ -169,7 +167,7 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
                                        double x, double y, double z,
                                        double xd, double yd, double zd) {
             var particle = new DemonCoreGlowParticle(level, x, y, z, xd, yd, zd);
-            particle.setSprite(this.spriteProvider.getSprite(level.random));
+            particle.setSprite(this.spriteProvider);
             return particle;
         }
     }
