@@ -16,6 +16,8 @@ import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.atlas.AtlasSourceManager;
+import net.minecraft.client.texture.atlas.AtlasSourceType;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,9 +35,12 @@ import java.io.IOException;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = AlexsCavesEnriched.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @OnlyIn(Dist.CLIENT)
 public class ClientHandler {
+    public static final AtlasSourceType thing = AtlasSourceManager.register("alexscavesenriched", GeneratedAtlasSource.CODEC);
     private static final ACEItemRenderProperties ITEM_RENDER_PROPERTIES = new ACEItemRenderProperties();
 
-    public static ACEItemRenderProperties getItemRenderProperties() { return ITEM_RENDER_PROPERTIES; }
+    public static ACEItemRenderProperties getItemRenderProperties() {
+        return ITEM_RENDER_PROPERTIES;
+    }
 
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -91,6 +96,7 @@ public class ClientHandler {
         ModelPredicateProviderRegistry.register(ACEItemRegistry.GAMMA_FLASHLIGHT.get(), Identifier.withDefaultNamespace("active"), (stack, level, living, j) -> GammaFlashlightItem.isOn(stack) ? 1.0F : 0.0F);
         ModelPredicateProviderRegistry.register(ACEItemRegistry.DEADMAN_SWITCH.get(), Identifier.withDefaultNamespace("active"), (stack, level, living, j) -> DeadmanSwitchItem.isActive(stack) ? 1.0F : 0.0F);
         ModelPredicateProviderRegistry.register(ACEItemRegistry.RAYGUN.get(), Identifier.withDefaultNamespace("gamma"), (stack, level, living, j) ->
-                stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0? 1.0F : 0.0F);
+                stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0 ? 1.0F : 0.0F);
+        // RadiationGlowTexture.init();
     }
 }

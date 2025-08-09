@@ -17,6 +17,7 @@
         "items.ArrowFireEnchantmentMixin"
     ],
     "client": [
+        "client.SpriteMixin"
     ],
     "injectors": {
         "defaultRequire": 1

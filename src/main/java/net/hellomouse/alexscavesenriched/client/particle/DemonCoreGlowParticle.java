@@ -2,7 +2,6 @@ package net.hellomouse.alexscavesenriched.client.particle;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
-import net.hellomouse.alexscavesenriched.client.render.ACEInternalShaders;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -15,6 +14,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
 
@@ -43,9 +43,44 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
         this.scale = AlexsCavesEnriched.CONFIG.demonCore.diameter + bonus;
     }
 
-    @Override
-    public ParticleTextureSheet getType() {
-        return PARTICLE_SHEET_DEMONCORE;
+    @OnlyIn(Dist.CLIENT)
+    public static ParticleTextureSheet PARTICLE_SHEET_DEMONCORE_CPU = new ParticleTextureSheet() {
+        @Override
+        public void begin(BufferBuilder builder, TextureManager textureManager) {
+            RenderSystem.enableBlend();
+            RenderSystem.disableCull();
+            RenderSystem.blendEquation(GL_FUNC_ADD);
+            RenderSystem.enableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.setShader(GameRenderer::getParticleProgram);
+            RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
+            var colour = cpuShader();
+            float r = Math.min(1f, Math.max(0f, colour.x));
+            float g = Math.min(1f, Math.max(0f, colour.y));
+            float b = Math.min(1f, Math.max(0f, colour.z));
+            float a = Math.min(1f, Math.max(0f, colour.w));
+            RenderSystem.setShaderColor(r, g, b, a);
+            builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            //RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        }
+
+        @Override
+        public void draw(Tessellator tessellator) {
+            tessellator.draw();
+            RenderSystem.depthMask(true);
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+            RenderSystem.enableCull();
+        }
+
+        public String toString() {
+            return "PARTICLE_SHEET_DEMONCORE";
+        }
+    };
+
+    public static ParticleTextureSheet getParticleSheet() {
+        return PARTICLE_SHEET_DEMONCORE_CPU;
+
     }
 
     @Override
@@ -53,12 +88,24 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
         return false;
     }
 
+    private static Vector4f cpuShader() {
+        float time = RenderSystem.getShaderGameTime();
+        var animation = time * 2000;
+        var animation1 = (float) (Math.sin(animation) + 1);
+        return new Vector4f(0, animation1 * 0.15F + 0.85F, animation1 * 0.15F + 0.85F, 0.8F - (0.2F * animation1));
+    }
+
+    @Override
+    public ParticleTextureSheet getType() {
+        return getParticleSheet();
+    }
+
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
         Vec3d vec3d = camera.getPos();
-        float tx = (float)(MathHelper.lerp(tickDelta, this.prevPosX, this.x) - vec3d.getX());
-        float ty = (float)(MathHelper.lerp(tickDelta, this.prevPosY, this.y) - vec3d.getY());
-        float tz = (float)(MathHelper.lerp(tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
+        float tx = (float) (MathHelper.lerp(tickDelta, this.prevPosX, this.x) - vec3d.getX());
+        float ty = (float) (MathHelper.lerp(tickDelta, this.prevPosY, this.y) - vec3d.getY());
+        float tz = (float) (MathHelper.lerp(tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
 
         double len = (new Vec3d(tx, ty, tz)).length();
         final boolean inside = len < this.scale;
@@ -110,56 +157,20 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static ParticleTextureSheet PARTICLE_SHEET_DEMONCORE = new ParticleTextureSheet() {
-        @Override
-        public void begin(BufferBuilder builder, TextureManager textureManager) {
-            RenderSystem.enableBlend();
-            RenderSystem.disableCull();
-            RenderSystem.blendEquation(GL_FUNC_ADD);
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.setShader(ACEInternalShaders::getRadiationParticleShader);
-            RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-            builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-        }
-
-        @Override
-        public void draw(Tessellator tessellator) {
-            tessellator.draw();
-        }
-
-        public String toString() {
-            return "PARTICLE_SHEET_DEMONCORE";
-        }
-    };
-
-    @Override
-    protected float getMinU() {
-        return 0.0F;
-    }
-    @Override
-    protected float getMaxU() {
-        return 1.0F;
-    }
-    @Override
-    protected float getMinV() {
-        return 0.0F;
-    }
-    @Override
-    protected float getMaxV() {
-        return 1.0F;
-    }
-
-    @OnlyIn(Dist.CLIENT)
     public static class Factory implements ParticleFactory<DefaultParticleType> {
-        public Factory() {}
-        public Factory(SpriteProvider _unused) {}
+        private final SpriteProvider spriteProvider;
+
+        public Factory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
+        }
 
         @Override
         public Particle createParticle(DefaultParticleType type, ClientWorld level,
                                        double x, double y, double z,
                                        double xd, double yd, double zd) {
-            return new DemonCoreGlowParticle(level, x, y, z, xd, yd, zd);
+            var particle = new DemonCoreGlowParticle(level, x, y, z, xd, yd, zd);
+            particle.setSprite(this.spriteProvider.getSprite(level.random));
+            return particle;
         }
     }
 }

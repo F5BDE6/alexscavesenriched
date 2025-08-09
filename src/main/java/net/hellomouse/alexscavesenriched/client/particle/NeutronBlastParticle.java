@@ -41,7 +41,7 @@ public class NeutronBlastParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-        return DemonCoreGlowParticle.PARTICLE_SHEET_DEMONCORE;
+        return DemonCoreGlowParticle.getParticleSheet();
     }
 
     @Override
