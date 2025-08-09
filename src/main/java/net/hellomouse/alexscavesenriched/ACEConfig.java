@@ -11,6 +11,9 @@ public class ACEConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     private static final int REASONABLE_DURATION_MAX = 24 * 60 * 60 * 20;
 
+    @ConfigEntry.Gui.CollapsibleObject
+    public ClientConfig client = new ClientConfig();
+
     @ConfigEntry.BoundedDiscrete(min = 0, max = 1024)
     public double enrichedRodFuelMultiplier = 12.0;
     @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_MAX_SMALL)
@@ -48,15 +51,25 @@ public class ACEConfig implements ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     public GammaFlashlightConfig gammaFlashlightConfig = new GammaFlashlightConfig();
 
+    public static class ClientConfig {
+        public boolean overrideSkyColor = true;
+        public boolean nukeParticleEffects = true;
+    }
+
     public static class RailgunConfig {
         @ConfigEntry.BoundedDiscrete(min = 0, max = 4096)
         public int damage = 60;
         @ConfigEntry.BoundedDiscrete(min = 0, max = 1000)
-        public int chargeRate = 10;
+        public int chargeRate = 7;
         @ConfigEntry.BoundedDiscrete(min = 0, max = 512)
         public int range = 256;
         @ConfigEntry.BoundedDiscrete(min = 0, max = 512)
         public int blockBreakRange = 64;
+
+        // Can these enchants work?
+        public boolean infinity = true;
+        public boolean multishot = true;
+        public boolean quickCharge = true;
     }
 
     public static class RocketConfig {

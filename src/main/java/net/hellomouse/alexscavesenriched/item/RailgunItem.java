@@ -1,12 +1,13 @@
 package net.hellomouse.alexscavesenriched.item;
 
+import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
 import com.github.alexmodguy.alexscaves.server.item.UpdatesStackTags;
 import net.hellomouse.alexscavesenriched.*;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
-import net.hellomouse.alexscavesenriched.client.ClientHandler;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEClientItemExtension;
 import net.hellomouse.alexscavesenriched.entity.BlackHoleEntity;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
@@ -16,8 +17,6 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +27,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
+import org.joml.AxisAngle4d;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -37,7 +40,10 @@ import java.util.function.Predicate;
 
 public class RailgunItem extends RangedWeaponItem implements UpdatesStackTags {
     public static int MAX_CHARGE = 1000;
+    public static int FIRE_TICK_TIME = 10;
+
     private boolean wasChargingInitiallyOnUse = false;
+    private int fireTick = 0; // For shooting glow
 
     public RailgunItem() {
         super(new Settings()
@@ -53,12 +59,18 @@ public class RailgunItem extends RangedWeaponItem implements UpdatesStackTags {
         consumer.accept(ACEClientItemExtension.INSTANCE);
     }
 
-    public void shoot(World world, LivingEntity user) {
-        world.playSound(user.getX(), user.getY(), user.getZ(),
-                ACESounds.RAILGUN_FIRE, SoundCategory.MASTER, 1.0F, 1.0F, true);
-
+    public void shoot(World world, LivingEntity user, float angle) {
         Vec3d start = user.getEyePos();
         Vec3d look = user.getRotationVector();
+
+        if (angle != 0) {
+            Vec3d rotationAxis = Vec3d.fromPolar(user.getPitch() + 90, user.getYaw());
+            Quaterniond angleQuat = new Quaterniond(new AxisAngle4d(angle / 180F * 3.1415926535F, rotationAxis.x, rotationAxis.y, rotationAxis.z));
+            Vector3d look2 = angleQuat.transform(new Vector3d(look.x, look.y, look.z));
+            look = new Vec3d(look2.x, look2.y, look2.z);
+            look = look.normalize();
+        }
+
         // Vec3d vel = look.multiply(15);
         // world.addParticle(ParticleTypes.FIREWORK, true, start.x, start.y, start.z,  vel.x, vel.y, vel.z);
         // No supersonic particle because mojang clamps velocity in netcode :(
@@ -93,7 +105,11 @@ public class RailgunItem extends RangedWeaponItem implements UpdatesStackTags {
                     if (entity instanceof LivingEntity living) {
                         living.damage(ACEDamageSources.causeRailgunDamage(world.getRegistryManager(), user),
                                 AlexsCavesEnriched.CONFIG.railgun.damage);
-                        living.addVelocity(look.x, look.y, look.z);
+
+                        if (living.getBoundingBox().getAverageSideLength() < 5)
+                            living.addVelocity(look.x, look.y, look.z);
+                        else
+                            living.addVelocity(look.x * 0.1, look.y * 0.1, look.z * 0.1);
                         if (living instanceof SkeletonEntity && living.getHealth() <= 0.0)
                             ACECriterionTriggers.KILL_SKELETON_WITH_RAILGUN.triggerForEntity(user);
                     }
@@ -106,7 +122,19 @@ public class RailgunItem extends RangedWeaponItem implements UpdatesStackTags {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (!wasChargingInitiallyOnUse && getCharge(stack) == MAX_CHARGE && isLoaded(stack)) {
-            this.shoot(world, user);
+            world.playSound(user.getX(), user.getY(), user.getZ(),
+                    ACESounds.RAILGUN_FIRE, SoundCategory.MASTER, 1.0F, 1.0F, true);
+
+            boolean multishot = stack.getEnchantmentLevel(Enchantments.MULTISHOT) > 0 && AlexsCavesEnriched.CONFIG.railgun.multishot;
+            if (multishot) {
+                final float ANGLE = 20;
+                this.shoot(world, user, -ANGLE);
+                this.shoot(world, user, ANGLE);
+            }
+
+            this.shoot(world, user, 0);
+
+            this.fireTick = FIRE_TICK_TIME;
             if (!world.isClient) {
                 setLoaded(stack, false);
                 setCharge(stack, 0);
@@ -120,8 +148,14 @@ public class RailgunItem extends RangedWeaponItem implements UpdatesStackTags {
             if (world.getTime() % 25 == 0)
                 world.playSound(user.getX(), user.getY(), user.getZ(),
                         ACESounds.RAILGUN_CHARGE, SoundCategory.MASTER, 1.0F, 1.0F, true);
-            if (!world.isClient)
-                setCharge(stack, Math.min(MAX_CHARGE, getCharge(stack) + AlexsCavesEnriched.CONFIG.railgun.chargeRate));
+            if (!world.isClient) {
+                int chargeRate = AlexsCavesEnriched.CONFIG.railgun.chargeRate;
+                int quickCharge = stack.getEnchantmentLevel(Enchantments.QUICK_CHARGE);
+                if (!AlexsCavesEnriched.CONFIG.railgun.quickCharge)
+                    quickCharge = 0;
+                chargeRate = chargeRate + (int)(chargeRate * 0.22 * quickCharge);
+                setCharge(stack, Math.min(MAX_CHARGE, getCharge(stack) + chargeRate));
+            }
         }
     }
 
@@ -146,7 +180,10 @@ public class RailgunItem extends RangedWeaponItem implements UpdatesStackTags {
                             ACESounds.RAILGUN_RELOAD, SoundCategory.MASTER, 1.0F, 1.0F, true);
                 if (!world.isClient) {
                     setLoaded(itemStack,true);
-                    if (!user.isCreative())
+                    boolean infinity = stack.getEnchantmentLevel(Enchantments.INFINITY) > 0;
+                    if (!AlexsCavesEnriched.CONFIG.railgun.infinity)
+                        infinity = false;
+                    if (!user.isCreative() && !infinity)
                         ammo.decrement(1);
                 }
             }
@@ -236,13 +273,11 @@ public class RailgunItem extends RangedWeaponItem implements UpdatesStackTags {
         return stack.isOf(this);
     }
 
-    // TODO
-    private SoundEvent getQuickChargeSound(int stage) {
-        return switch (stage) {
-            case 1 -> SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_1;
-            case 2 -> SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_2;
-            case 3 -> SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_3;
-            default -> SoundEvents.ITEM_CROSSBOW_LOADING_START;
-        };
+    @Override
+    public void inventoryTick(ItemStack itemStack, World level, Entity entity, int i, boolean b) {
+        if (this.fireTick > 0)
+            this.fireTick--;
     }
+
+    public int getFireTick() { return this.fireTick; }
 }

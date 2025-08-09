@@ -13,8 +13,7 @@
         "entity.NuclearBombEntityMixin",
         "entity.NuclearExplosionEntityMixin",
         "entity.TremorzillaEntityMixin",
-        "items.ArrowDamageEnchantmentMixin",
-        "items.ArrowFireEnchantmentMixin"
+        "items.EnchantmentMixin"
     ],
     "client": [
     ],

@@ -7,19 +7,6 @@ atomic force furnace
 - mini nuclear explosion as well
 
 ---------------
-
-done:
-nuke - dont affect spectator players
-entities dont render with sahders
-nuke + black hole save some more properties
-radiation leaking
-- radius config
-- fix blackblast
-- fix nuke area effect cloud
-- railgun
-nuke dispenser behavior
------
-
 new enriched uranium
 + update guidebook
 uranium block -> partially enriched nugget
@@ -28,3 +15,15 @@ partially enriched block -> centrifudge -> enriched block
 
 or smelt an entire block -> then put into centrifuge -> block idk
 
+-------------
+
+done:
+client tick still runs when paused
+select highest progress sky
+    - blend between skies ig
+blackhole sky darker
+nuke pushes player
+
+done:
+railgun enchantments
+nuke turns sky red + ash

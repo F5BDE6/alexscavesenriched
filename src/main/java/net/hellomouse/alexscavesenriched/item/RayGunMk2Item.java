@@ -14,7 +14,7 @@ import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.IrradiatedEffect;
 import net.hellomouse.alexscavesenriched.ACEItemRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
-import net.hellomouse.alexscavesenriched.client.ClientHandler;
+import net.hellomouse.alexscavesenriched.client.ACEClientHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
@@ -50,7 +50,7 @@ public class RayGunMk2Item extends RaygunItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(ClientHandler.getItemRenderProperties());
+        consumer.accept(ACEClientHandler.getItemRenderProperties());
     }
 
     @Override

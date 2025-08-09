@@ -32,7 +32,7 @@ import java.io.IOException;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = AlexsCavesEnriched.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @OnlyIn(Dist.CLIENT)
-public class ClientHandler {
+public class ACEClientHandler {
     private static final ACEItemRenderProperties ITEM_RENDER_PROPERTIES = new ACEItemRenderProperties();
 
     public static ACEItemRenderProperties getItemRenderProperties() { return ITEM_RENDER_PROPERTIES; }

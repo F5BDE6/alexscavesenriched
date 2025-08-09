@@ -14,6 +14,7 @@ import net.hellomouse.alexscavesenriched.ACEEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEParticleRegistry;
 import net.hellomouse.alexscavesenriched.ACERecipeRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
+import net.hellomouse.alexscavesenriched.client.ACEClientMod;
 import net.hellomouse.alexscavesenriched.recipe.NeutronKillRecipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -32,6 +33,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
@@ -74,8 +77,15 @@ public class NeutronExplosionEntity extends Entity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public void clientTick() {
+        ACEClientMod.setNukeSky(ACEClientMod.NukeSkyType.NEUTRON, 1F - age / 100F);
+    }
+
+    @Override
     public void tick() {
         super.tick();
+        this.clientTick();
         int chunksAffected = getChunksAffected();
         int radius = chunksAffected * 15;
         if (!spawnedParticle) {

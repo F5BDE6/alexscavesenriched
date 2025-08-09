@@ -74,6 +74,10 @@ public class ACEItemstackRenderer extends BuiltinModelItemRenderer {
             pullAmount = RaygunItem.getLerpedUseTime(itemStackIn, partialTick) / 5.0F;
             pulseAlpha = (float)RailgunItem.getCharge(itemStackIn) / RailgunItem.MAX_CHARGE;
 
+            RailgunItem railgunItem = (RailgunItem)itemStackIn.getItem();
+            float raygunFireProgress = (float)railgunItem.getFireTick() / RailgunItem.FIRE_TICK_TIME;
+            pulseAlpha = Math.max(pulseAlpha, raygunFireProgress > 0.8 ? 1.5F : raygunFireProgress);
+
             poseStack.push();
             poseStack.translate(0F, 1.5F, 0F);
             poseStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-180.0F));
@@ -90,8 +94,9 @@ public class ACEItemstackRenderer extends BuiltinModelItemRenderer {
                 eyeTexture = RAILGUN_GLOW_TEXTURE2;
             else
                 eyeTexture = RAILGUN_GLOW_TEXTURE3;
+
             RAILGUN_MODEL.render(poseStack, getVertexConsumerFoil(bufferIn, RenderLayer.getEntityCutoutNoCull(texture), texture, itemStackIn.hasGlint()), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
-            RAILGUN_MODEL.render(poseStack, getVertexConsumer(bufferIn, ACRenderTypes.getEyesAlphaEnabled(eyeTexture), eyeTexture), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, pulseAlpha * 0.8F);
+            RAILGUN_MODEL.render(poseStack, getVertexConsumer(bufferIn, ACRenderTypes.getEyesAlphaEnabled(eyeTexture), eyeTexture), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, Math.min(pulseAlpha * 0.8F, 1F));
             poseStack.pop();
         }
     }

@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.misc.ACMath;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import net.hellomouse.alexscavesenriched.*;
+import net.hellomouse.alexscavesenriched.client.ACEClientMod;
 import net.hellomouse.alexscavesenriched.client.particle.BlackHoleSmokeParticle;
 import net.hellomouse.alexscavesenriched.client.sound.BlackHoleSound;
 import net.minecraft.block.BlockState;
@@ -110,10 +111,16 @@ public class BlackHoleEntity extends Entity {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public void explodeClientTick() {
+        ACEClientMod.setNukeSky(ACEClientMod.NukeSkyType.BLACK_HOLE, 1F - (float)age / (EXPLOSION_DURATION * 2F));
+    }
 
     protected void explodeTick() {
-        if (this.getWorld().isClient)
+        if (this.getWorld().isClient) {
+            this.explodeClientTick();
             this.clientTick();
+        }
 
         int chunksAffected = getChunksAffected();
         int radius = chunksAffected * 15;

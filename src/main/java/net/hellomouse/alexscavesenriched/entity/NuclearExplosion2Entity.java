@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.*;
+import net.hellomouse.alexscavesenriched.client.ACEClientMod;
 import net.hellomouse.alexscavesenriched.recipe.NuclearTransmutationRecipe;
 import net.minecraft.block.*;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -42,6 +43,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
@@ -114,8 +117,16 @@ public class NuclearExplosion2Entity extends Entity {
         return dz + dx + dy * 2;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public void clientTick() {
+        ACEClientMod.setNukeSky(ACEClientMod.NukeSkyType.NUKE, 1F - age / (this.getSize() > 3 ? 600F : 200F));
+    }
+
+    @Override
     public void tick() {
         super.tick();
+        this.clientTick();
+
         int chunksAffected = getChunksAffected();
         int radius = chunksAffected * CHUNKS_AFFECTED_RADIUS_MULTIPLIER;
         if (!spawnedParticle) {
@@ -204,8 +215,6 @@ public class NuclearExplosion2Entity extends Entity {
             float damage = calculateDamage(dist, maximumDistance);
             Vec3d vec3 = entity.getPos().subtract(this.getPos()).add(0, 0.3, 0).normalize();
             float playerFling = entity instanceof PlayerEntity ? 0.5F * flingStrength : flingStrength;
-            if (entity instanceof PlayerEntity player && ((player.isCreative() && player.getAbilities().flying) || player.isSpectator()))
-                playerFling = 0;
 
             if (damage > 0) {
                 if (entity instanceof RaycatEntity) {
@@ -223,6 +232,9 @@ public class NuclearExplosion2Entity extends Entity {
                 if (AlexsCavesEnriched.CONFIG.nuclear.letNukeKillWither && entity instanceof WitherEntity)
                     entity.damage(ACDamageTypes.causeIntentionalGameDesign(getEntityWorld().getRegistryManager()), damage);
             }
+            if (entity instanceof PlayerEntity player && ((player.isCreative() && player.getAbilities().flying) || player.isSpectator()))
+                playerFling = 0;
+
             entity.setVelocity(vec3.multiply(Math.min(damage * 0.1F * playerFling, MAX_FLING_VELOCITY)));
             entity.addStatusEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(), 48000, getSize() <= 1.5F ? 1 : 2, false, false, true));
         }
