@@ -2,7 +2,6 @@ package net.hellomouse.alexscavesenriched.block.block_entity;
 
 import com.github.alexmodguy.alexscaves.server.misc.ACDamageTypes;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
-
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEParticleRegistry;
@@ -10,11 +9,10 @@ import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.client.particle.DemonCoreGlowParticle;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
@@ -23,7 +21,6 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,18 +42,51 @@ public class EnrichedUraniumBlockEntity extends RadiationEmitterBlockEntity {
     public boolean isChecked() {
         return checked;
     }
+
     public void setChecked(boolean checked) {
         this.checked = checked;
     }
+
     public boolean isGlowing() {
         return glowing;
     }
+
     public void setGlowing(boolean glowing) {
         this.glowing = glowing;
     }
-    public int getNumBlocks() { return numBlocks; }
-    public void setNumBlocks(int num) { numBlocks = num; }
-    public void setFirst(boolean f) { isFirst = f; }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void clientTick(World level, BlockPos blockPos, BlockState p_155016_, EnrichedUraniumBlockEntity enrichedUraniumBlockEntity) {
+        if (enrichedUraniumBlockEntity.glowing &&
+                (enrichedUraniumBlockEntity.demonParticle == null || !enrichedUraniumBlockEntity.demonParticle.isAlive())) {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            ParticleManager particleManager = mc.particleManager;
+
+            Particle spawned = particleManager.addParticle(
+                    ACEParticleRegistry.DEMONCORE_GLOW.get(),
+                    enrichedUraniumBlockEntity.center.getX(), enrichedUraniumBlockEntity.center.getY(), enrichedUraniumBlockEntity.center.getZ(),
+                    0.0, 0.0, 0.0
+            );
+            var dc = (DemonCoreGlowParticle) spawned;
+            assert dc != null;
+            dc.expandSize(enrichedUraniumBlockEntity.sizeBonus);
+            enrichedUraniumBlockEntity.demonParticle = dc;
+            particleManager.addParticle(dc);
+        } else if (!enrichedUraniumBlockEntity.glowing) {
+            if (enrichedUraniumBlockEntity.demonParticle != null && enrichedUraniumBlockEntity.demonParticle.isAlive())
+                enrichedUraniumBlockEntity.demonParticle.markDead();
+            enrichedUraniumBlockEntity.demonParticle = null;
+        }
+    }
+
+    public int getNumBlocks() {
+        return numBlocks;
+    }
+
+    public void setNumBlocks(int num) {
+        numBlocks = num;
+    }
+
     public void setCenter(Vec3d c, float radiusBonus) {
         center = c;
         sizeBonus = radiusBonus;
@@ -75,15 +105,8 @@ public class EnrichedUraniumBlockEntity extends RadiationEmitterBlockEntity {
         numBlocks = tag.getInt("numBlocks");
     }
 
-    private void writeMyNbt(NbtCompound nbt) {
-        nbt.putBoolean("checked", checked);
-        nbt.putBoolean("glowing", glowing);
-        nbt.putBoolean("first", isFirst);
-        nbt.putFloat("centerX", (float)center.getX());
-        nbt.putFloat("centerY", (float)center.getY());
-        nbt.putFloat("centerZ", (float)center.getZ());
-        nbt.putFloat("sizeBonus", sizeBonus);
-        nbt.putInt("numBlocks", numBlocks);
+    public void setFirst(boolean f) {
+        isFirst = f;
     }
 
     @Override
@@ -129,25 +152,15 @@ public class EnrichedUraniumBlockEntity extends RadiationEmitterBlockEntity {
         super(ACEBlockEntityRegistry.ENRICHED_URANIUM.get(), pos, state);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static void clientTick(World level, BlockPos blockPos, BlockState p_155016_, EnrichedUraniumBlockEntity enrichedUraniumBlockEntity) {
-        if (enrichedUraniumBlockEntity.glowing &&
-                (enrichedUraniumBlockEntity.demonParticle == null || !enrichedUraniumBlockEntity.demonParticle.isAlive())) {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            ParticleManager particleManager = mc.particleManager;
-
-            DemonCoreGlowParticle particle = (DemonCoreGlowParticle)(new DemonCoreGlowParticle.Factory()).createParticle(ACEParticleRegistry.DEMONCORE_GLOW.get(), (ClientWorld) level,
-                    enrichedUraniumBlockEntity.center.getX(), enrichedUraniumBlockEntity.center.getY(), enrichedUraniumBlockEntity.center.getZ(),
-                    0.0, 0.0, 0.0);
-
-            particle.expandSize(enrichedUraniumBlockEntity.sizeBonus);
-            enrichedUraniumBlockEntity.demonParticle = particle;
-            particleManager.addParticle(particle);
-        } else if (!enrichedUraniumBlockEntity.glowing) {
-            if (enrichedUraniumBlockEntity.demonParticle != null && enrichedUraniumBlockEntity.demonParticle.isAlive())
-                enrichedUraniumBlockEntity.demonParticle.markDead();
-            enrichedUraniumBlockEntity.demonParticle = null;
-        }
+    private void writeMyNbt(NbtCompound nbt) {
+        nbt.putBoolean("checked", checked);
+        nbt.putBoolean("glowing", glowing);
+        nbt.putBoolean("first", isFirst);
+        nbt.putFloat("centerX", (float) center.getX());
+        nbt.putFloat("centerY", (float) center.getY());
+        nbt.putFloat("centerZ", (float) center.getZ());
+        nbt.putFloat("sizeBonus", sizeBonus);
+        nbt.putInt("numBlocks", numBlocks);
     }
 
     public static void tick(World level, BlockPos blockPos, BlockState p_155016_, EnrichedUraniumBlockEntity enrichedUraniumBlockEntity) {
