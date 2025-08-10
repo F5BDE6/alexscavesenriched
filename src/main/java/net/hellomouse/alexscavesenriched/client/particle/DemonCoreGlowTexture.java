@@ -11,7 +11,7 @@ import java.util.List;
 
 import static java.lang.Math.*;
 
-public class RadiationGlowTexture {
+public class DemonCoreGlowTexture {
     public static final Identifier ID = Identifier.of(AlexsCavesEnriched.MODID, "demon_core_glow_sprite");
     public static List<NativeImage> IMAGES;
     public static NativeImage CURRENT;

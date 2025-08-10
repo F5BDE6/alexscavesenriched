@@ -3,7 +3,7 @@ package net.hellomouse.alexscavesenriched.client.particle;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
-import net.hellomouse.alexscavesenriched.client.ClientHandler;
+import net.hellomouse.alexscavesenriched.client.ACEClientHandler;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteDimensions;
@@ -27,11 +27,11 @@ public class GeneratedAtlasSource implements AtlasSource {
 
     @Override
     public void load(ResourceManager resourceManager, SpriteRegions regions) {
-        if (resource.equals(RadiationGlowTexture.ID)) {
-            RadiationGlowTexture.init();
-            regions.add(RadiationGlowTexture.ID, () -> new SpriteContents(RadiationGlowTexture.ID,
+        if (resource.equals(DemonCoreGlowTexture.ID)) {
+            DemonCoreGlowTexture.init();
+            regions.add(DemonCoreGlowTexture.ID, () -> new SpriteContents(DemonCoreGlowTexture.ID,
                     new SpriteDimensions(AlexsCavesEnriched.CONFIG.demonCore.sprite.resolution, AlexsCavesEnriched.CONFIG.demonCore.sprite.resolution),
-                    RadiationGlowTexture.CURRENT,
+                    DemonCoreGlowTexture.CURRENT,
                     AnimationResourceMetadata.EMPTY));
         } else {
             throw new IllegalStateException();
@@ -40,6 +40,6 @@ public class GeneratedAtlasSource implements AtlasSource {
 
     @Override
     public AtlasSourceType getType() {
-        return ClientHandler.thing;
+        return ACEClientHandler.thing;
     }
 }

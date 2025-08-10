@@ -1,7 +1,9 @@
 package net.hellomouse.alexscavesenriched.client;
 
 import com.github.alexmodguy.alexscaves.client.ClientProxy;
+import com.mojang.brigadier.CommandDispatcher;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
+import net.hellomouse.alexscavesenriched.client.command.ReloadDemonCoreTextureCommand;
 import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -11,11 +13,13 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
@@ -30,7 +34,8 @@ public class ACEClientMod {
     private static final Identifier FLASHLIGHT_SHADER = Identifier.of(AlexsCavesEnriched.MODID, "shaders/post/flashlight.json");
 
     // In increasing priority:
-    public enum NukeSkyType { NONE, NEUTRON, NUKE, BLACK_HOLE };
+    public enum NukeSkyType { NONE, NEUTRON, NUKE, BLACK_HOLE }
+
     private static final float[] nukeSkyProgressPerType = new float[NukeSkyType.values().length];
     private static final float[] nukeSkyDecayRates = { 1, 0.002F, 0.0003F, 0.001F };
     private static long lastTickTime = 0;
@@ -60,6 +65,11 @@ public class ACEClientMod {
         }
     }
 
+    @SubscribeEvent
+    public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
+        CommandDispatcher<ServerCommandSource> dispatcher = event.getDispatcher();
+        ReloadDemonCoreTextureCommand.register(dispatcher);
+    }
     private static void attemptLoadShader(Identifier resourceLocation) {
         GameRenderer renderer = MinecraftClient.getInstance().gameRenderer;
         if (ClientProxy.shaderLoadAttemptCooldown <= 0) {

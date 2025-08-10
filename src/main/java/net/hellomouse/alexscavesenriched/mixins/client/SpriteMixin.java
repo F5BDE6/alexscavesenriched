@@ -1,6 +1,6 @@
 package net.hellomouse.alexscavesenriched.mixins.client;
 
-import net.hellomouse.alexscavesenriched.client.particle.RadiationGlowTexture;
+import net.hellomouse.alexscavesenriched.client.particle.DemonCoreGlowTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import org.spongepowered.asm.mixin.Final;
@@ -19,13 +19,13 @@ public class SpriteMixin {
 
     @Inject(method = "createAnimation", at = @At("HEAD"), cancellable = true)
     public void animation(CallbackInfoReturnable<Sprite.TickableAnimation> cir) {
-        if (this.contents.getId().equals(RadiationGlowTexture.ID)) {
+        if (this.contents.getId().equals(DemonCoreGlowTexture.ID)) {
             Sprite sprite = (Sprite) (Object) this;
             cir.setReturnValue(
                     new Sprite.TickableAnimation() {
                         @Override
                         public void tick() {
-                            RadiationGlowTexture.tick();
+                            DemonCoreGlowTexture.tick();
                             contents.upload(sprite.getX(), sprite.getY());
                         }
 
