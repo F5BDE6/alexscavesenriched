@@ -1,42 +1,68 @@
 {
-  "rocket_whistle": {
-    "subtitle": "alexscavesenriched.subtitle.rocket_whistle",
-    "sounds": [ "alexscavesenriched:item/rocket_whistle" ]
-  },
-  "flamethrower": {
-    "subtitle": "alexscavesenriched.subtitle.flamethrower",
-    "sounds": [ "alexscavesenriched:item/flamethrower" ]
-  },
-  "flamethrower_reload": {
-    "subtitle": "alexscavesenriched.subtitle.flamethrower_reload",
-    "sounds": [ "alexscavesenriched:item/flamethrower_reload" ]
-  },
-  "flamethrower_empty": {
-    "subtitle": "alexscavesenriched.subtitle.flamethrower_empty",
-    "sounds": [ "alexscaves:item/raygun/raygun_empty" ]
-  },
-  "black_hole": {
-    "subtitle": "alexscavesenriched.subtitle.black_hole",
-    "sounds": [ "alexscavesenriched:entity/black_hole" ]
-  },
-  "fumo_squeak": {
-    "subtitle": "alexscavesenriched.subtitle.fumo_squeak",
-    "sounds": [ "alexscavesenriched:block/fumo_squeak" ]
-  },
-  "railgun_reload": {
-    "subtitle": "alexscavesenriched.subtitle.railgun_reload",
-    "sounds": [ "alexscavesenriched:item/railgun/railgun_reload" ]
-  },
-  "railgun_charge": {
-    "subtitle": "alexscavesenriched.subtitle.railgun_charge",
-    "sounds": [ "alexscavesenriched:item/railgun/railgun_charge" ]
-  },
-  "railgun_empty": {
-    "subtitle": "alexscavesenriched.subtitle.railgun_empty",
-    "sounds": [ "alexscavesenriched:item/railgun/railgun_empty" ]
-  },
-  "railgun_fire": {
-    "subtitle": "alexscavesenriched.subtitle.railgun_fire",
-    "sounds": [ "alexscavesenriched:item/railgun/railgun_fire" ]
-  }
+    "rocket_whistle": {
+        "subtitle": "alexscavesenriched.subtitle.rocket_whistle",
+        "sounds": [
+            "alexscavesenriched:item/rocket_whistle"
+        ]
+    },
+    "flamethrower": {
+        "subtitle": "alexscavesenriched.subtitle.flamethrower",
+        "sounds": [
+            "alexscavesenriched:item/flamethrower"
+        ]
+    },
+    "flamethrower_reload": {
+        "subtitle": "alexscavesenriched.subtitle.flamethrower_reload",
+        "sounds": [
+            "alexscavesenriched:item/flamethrower_reload"
+        ]
+    },
+    "flamethrower_empty": {
+        "subtitle": "alexscavesenriched.subtitle.flamethrower_empty",
+        "sounds": [
+            "alexscaves:item/raygun/raygun_empty"
+        ]
+    },
+    "black_hole": {
+        "subtitle": "alexscavesenriched.subtitle.black_hole",
+        "sounds": [
+            "alexscavesenriched:entity/black_hole"
+        ]
+    },
+    "fumo_squeak": {
+        "subtitle": "alexscavesenriched.subtitle.fumo_squeak",
+        "sounds": [
+            "alexscavesenriched:block/fumo_squeak"
+        ]
+    },
+    "railgun_reload": {
+        "subtitle": "alexscavesenriched.subtitle.railgun_reload",
+        "sounds": [
+            "alexscavesenriched:item/railgun/railgun_reload"
+        ]
+    },
+    "railgun_charge": {
+        "subtitle": "alexscavesenriched.subtitle.railgun_charge",
+        "sounds": [
+            "alexscavesenriched:item/railgun/railgun_charge"
+        ]
+    },
+    "railgun_empty": {
+        "subtitle": "alexscavesenriched.subtitle.railgun_empty",
+        "sounds": [
+            "alexscavesenriched:item/railgun/railgun_empty"
+        ]
+    },
+    "railgun_fire": {
+        "subtitle": "alexscavesenriched.subtitle.railgun_fire",
+        "sounds": [
+            "alexscavesenriched:item/railgun/railgun_fire"
+        ]
+    },
+    "centrifuge": {
+        "subtitle": "alexscavesenriched.subtitle.centrifuge",
+        "sounds": [
+            "alexscavesenriched:block/centrifuge"
+        ]
+    }
 }

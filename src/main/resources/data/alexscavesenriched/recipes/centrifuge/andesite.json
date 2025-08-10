@@ -1,0 +1,9 @@
+{
+    "type": "alexscavesenriched:centrifuge",
+    "input": "minecraft:andesite",
+    "chance": 0.005,
+    "outputs": [
+        "minecraft:cobblestone",
+        "minecraft:diorite"
+    ]
+}

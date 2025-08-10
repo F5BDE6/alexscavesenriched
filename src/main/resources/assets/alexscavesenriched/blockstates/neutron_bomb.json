@@ -1,7 +1,9 @@
-{"variants": {
-    "": [
-        {
-            "model": "alexscavesenriched:block/neutron_bomb"
-        }
-    ]
-}}
+{
+    "variants": {
+        "": [
+            {
+                "model": "alexscavesenriched:block/neutron_bomb"
+            }
+        ]
+    }
+}

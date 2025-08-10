@@ -11,18 +11,18 @@
         }
     },
     "parent": "alexscavesenriched:enriched_uranium",
-	  "criteria": {
-		"requirement": {
-		  "trigger": "minecraft:inventory_changed",
-		  "conditions": {
-			"items": [
-			  {
-				"items": [
-					"alexscavesenriched:rocket_launcher"
-				]
-			  }
-			]
-		  }
-		}
-	  }
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscavesenriched:rocket_launcher"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }

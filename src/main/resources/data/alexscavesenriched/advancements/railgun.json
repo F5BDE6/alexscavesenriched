@@ -11,14 +11,18 @@
         }
     },
     "parent": "alexscavesenriched:enriched_uranium_rod",
-	"criteria": {
-		"requirement": {
-			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
-					{"items": ["alexscavesenriched:railgun"]}
-				]
-			}
-		}
-	}
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscavesenriched:railgun"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }

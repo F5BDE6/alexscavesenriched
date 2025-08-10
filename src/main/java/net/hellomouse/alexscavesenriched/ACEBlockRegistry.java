@@ -4,6 +4,10 @@ import com.github.alexmodguy.alexscaves.server.item.*;
 
 import com.github.alexthe666.citadel.item.BlockItemWithSupplier;
 import net.hellomouse.alexscavesenriched.block.*;
+import net.hellomouse.alexscavesenriched.block.centrifuge.CentrifugeBaseBlock;
+import net.hellomouse.alexscavesenriched.block.centrifuge.CentrifugeMultiBlockBaseBlock;
+import net.hellomouse.alexscavesenriched.block.centrifuge.CentrifugeMultiBlockProxyBlock;
+import net.hellomouse.alexscavesenriched.block.centrifuge.CentrifugeTopBlock;
 import net.hellomouse.alexscavesenriched.block.fumo.XenoFumoBlock;
 import net.hellomouse.alexscavesenriched.block.fumo.XiaoyuFumoBlock;
 import net.minecraft.block.Block;
@@ -30,6 +34,14 @@ public class ACEBlockRegistry {
 
     public static final RegistryObject<Block> XIAOYU_FUMO = registerBlockAndItem("xiaoyu_fumo", XiaoyuFumoBlock::new, 10);
     public static final RegistryObject<Block> XENO_FUMO = registerBlockAndItem("xeno_fumo", XenoFumoBlock::new, 10);
+
+    public static final RegistryObject<Block> CENTRIFUGE = registerBlockAndItem("centrifuge", CentrifugeMultiBlockBaseBlock::new, 0);
+    public static final RegistryObject<Block> CENTRIFUGE_PROXY = registerBlockAndItem("centrifuge_proxy", CentrifugeMultiBlockProxyBlock::new, 0);
+    public static final RegistryObject<Block> CENTRIFUGE_BASE = registerBlockAndItem("centrifuge_base", CentrifugeBaseBlock::new, 0);
+    public static final RegistryObject<Block> CENTRIFUGE_TOP = registerBlockAndItem("centrifuge_top", CentrifugeTopBlock::new, 0);
+
+    public static final RegistryObject<Block> SALTED_URANIUM = registerBlockAndItem("salted_uranium_block", SaltedUraniumBlock::new, 3);
+
 
     private static RegistryObject<Block> registerBlockAndItem(String name, Supplier<Block> block) {
         return registerBlockAndItem(name, block, 0);

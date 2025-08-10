@@ -5,11 +5,16 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Enriched uranium is produced by smelting uranium in a nuclear furnace. This recipe will take about an hour by default!"
+            "text": "Enriched uranium is produced in a multi-step process. First, smelt uranium blocks in a nuclear furnace to get a block of salted uranium."
         },
         {
             "type": "patchouli:spotlight",
-            "item": "alexscavesenriched:enriched_uranium"
+            "item": "alexscavesenriched:salted_uranium_block",
+            "text": "Put the salted uranium block in a $(l:alexscavesenriched:resources/centrifuge_entry)Centrifuge$(/l) and wait (a while) to get an enriched uranium chunk, which you can craft into enriched uranium."
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "alexscavesenriched:enriched_uranium"
         },
         {
             "type": "patchouli:crafting",

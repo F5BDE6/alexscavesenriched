@@ -10,19 +10,19 @@
             "translate": "advancements.alexscavesenriched.enriched_uranium.desc"
         }
     },
-    "parent": "alexscavesenriched:root",
-	  "criteria": {
-		"requirement": {
-		  "trigger": "minecraft:inventory_changed",
-		  "conditions": {
-			"items": [
-			  {
-				"items": [
-					"alexscavesenriched:enriched_uranium"
-				]
-			  }
-			]
-		  }
-		}
-	  }
+    "parent": "alexscavesenriched:centrifuge",
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscavesenriched:enriched_uranium"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }

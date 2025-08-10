@@ -11,18 +11,18 @@
         }
     },
     "parent": "alexscavesenriched:root",
-	  "criteria": {
-		"requirement": {
-		  "trigger": "minecraft:inventory_changed",
-		  "conditions": {
-			"items": [
-			  {
-				"items": [
-					"alexscavesenriched:deadmans_switch"
-				]
-			  }
-			]
-		  }
-		}
-	  }
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscavesenriched:deadmans_switch"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }

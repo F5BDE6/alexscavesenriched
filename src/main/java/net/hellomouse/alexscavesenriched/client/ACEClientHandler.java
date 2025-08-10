@@ -8,14 +8,18 @@ import net.hellomouse.alexscavesenriched.client.entity.BlackHoleDiskModel;
 import net.hellomouse.alexscavesenriched.client.entity.BlackHoleModel;
 import net.hellomouse.alexscavesenriched.client.entity.RocketModel;
 import net.hellomouse.alexscavesenriched.client.entity.RocketNuclearModel;
+import net.hellomouse.alexscavesenriched.client.gui.CentrifugeBlockScreen;
 import net.hellomouse.alexscavesenriched.client.particle.*;
 import net.hellomouse.alexscavesenriched.client.render.*;
+import net.hellomouse.alexscavesenriched.client.render.block.CentrifugeTopRenderer;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEItemRenderProperties;
 import net.hellomouse.alexscavesenriched.item.DeadmanSwitchItem;
 import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
 import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -92,5 +96,10 @@ public class ACEClientHandler {
         ModelPredicateProviderRegistry.register(ACEItemRegistry.DEADMAN_SWITCH.get(), Identifier.withDefaultNamespace("active"), (stack, level, living, j) -> DeadmanSwitchItem.isActive(stack) ? 1.0F : 0.0F);
         ModelPredicateProviderRegistry.register(ACEItemRegistry.RAYGUN.get(), Identifier.withDefaultNamespace("gamma"), (stack, level, living, j) ->
                 stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0? 1.0F : 0.0F);
+
+        event.enqueueWork(
+            () -> HandledScreens.register(ACEMenuRegistry.CENTRIFUGE.get(), CentrifugeBlockScreen::new));
+
+        BlockEntityRendererFactories.register(ACEBlockEntityRegistry.CENTRIFUGE_PROXY.get(), CentrifugeTopRenderer::new);
     }
 }

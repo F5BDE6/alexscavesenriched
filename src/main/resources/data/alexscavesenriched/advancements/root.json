@@ -1,32 +1,32 @@
 {
-  "display": {
-    "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscavesenriched:textures/item/guidebook.png\"}"
+    "display": {
+        "icon": {
+            "item": "citadel:icon_item",
+            "nbt": "{IconLocation:\"alexscavesenriched:textures/item/guidebook.png\"}"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.root.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.root.desc"
+        },
+        "frame": "task",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "background": "alexscavesenriched:textures/block/enriched_uranium_block.png"
     },
-    "title": {
-        "translate": "advancements.alexscavesenriched.root.title"
-    },
-    "description": {
-        "translate": "advancements.alexscavesenriched.root.desc"
-    },
-    "frame": "task",
-    "show_toast": true,
-    "announce_to_chat": true,
-    "background": "alexscavesenriched:textures/block/enriched_uranium_block.png"
-  },
-  "criteria": {
-    "requirement": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-				"alexscaves:uranium"
-            ]
-          }
-        ]
-      }
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscaves:uranium"
+                        ]
+                    }
+                ]
+            }
+        }
     }
-  }
 }

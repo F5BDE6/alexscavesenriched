@@ -22,9 +22,11 @@
   "block.alexscavesenriched.xeno_fumo": "Xenonomous Fumo",
   "block.alexscavesenriched.xiaoyu_fumo.tooltip": "Kemonomimi enthusiast",
   "block.alexscavesenriched.xeno_fumo.tooltip": "Single lesbian firearms enjoyer",
+  "block.alexscavesenriched.salted_uranium_block": "Block of Salted Uranium",
 
   "itemGroup.alexscavesenriched.creative_tab": "Alex's Caves Enriched",
   "item.alexscavesenriched.enriched_uranium": "Enriched Uranium",
+  "item.alexscavesenriched.enriched_uranium_nugget": "Enriched Uranium Nugget",
   "item.alexscavesenriched.rocket_launcher": "Rocket Launcher",
   "item.alexscavesenriched.rocket": "Uranium Rocket",
   "item.alexscavesenriched.rocket_normal": "Rocket",
@@ -49,6 +51,11 @@
   "block.alexscavesenriched.nuka_cola": "Nuka Cola",
   "block.alexscavesenriched.nuka_cola_quantum": "Nuka Cola Quantum",
   "block.alexscavesenriched.nuka_cola_empty": "Nuka Cola Bottle",
+  "block.alexscavesenriched.centrifuge": "Centrifuge",
+  "block.alexscavesenriched.centrifuge.cannot_open": "Cannot open active centrifuge",
+  "block.alexscavesenriched.centrifuge_base": "Centrifuge Base",
+  "block.alexscavesenriched.centrifuge_top": "Centrifuge Top",
+  "block.alexscavesenriched.centrifuge_proxy": "Centrifuge Multiblock Proxy",
 
   "alexscavesenriched.subtitle.rocket_whistle": "Rocket whistles",
   "alexscavesenriched.subtitle.flamethrower_reload": "Flameflower reload",
@@ -60,9 +67,12 @@
   "alexscavesenriched.subtitle.railgun_charge": "Railgun charges",
   "alexscavesenriched.subtitle.railgun_empty": "Railgun empty",
   "alexscavesenriched.subtitle.railgun_reload": "Railgun reloads",
+  "alexscavesenriched.subtitle.centrifuge": "Centrifuge spins",
 
   "advancements.alexscavesenriched.root.title": "Alex's Caves Enriched",
   "advancements.alexscavesenriched.root.desc": "The start of your nuclear journey",
+  "advancements.alexscavesenriched.centrifuge.title": "Stuxnet Proof!",
+  "advancements.alexscavesenriched.centrifuge.desc": "Obtain the centrifuge components",
   "advancements.alexscavesenriched.enriched_uranium.title": "A Screwdriver and a Dumb Idea",
   "advancements.alexscavesenriched.enriched_uranium.desc": "Obtain your first enriched uranium",
   "advancements.alexscavesenriched.enriched_uranium_block.title": "Expensive Paperweight",
@@ -111,7 +121,9 @@
   "emi.category.alexscavesenriched.nuclear_furnace": "Nuclear Furnace (Additional)",
   "emi.category.alexscavesenriched.nuclear_transmutation": "Nuclear Transmutation",
   "emi.category.alexscavesenriched.neutron_kill": "Neutron Kill",
-  "emi.transmutation_chance": "%s %% Chance",
+  "emi.category.alexscavesenriched.centrifuge": "Centrifuge",
+  "emi.transmutation_chance": "%s%% Chance",
+  "emi.centrifuge_chance": "(1/%s)/t",
 
   "death.attack.black_hole_0": "%s was spaghetified",
   "death.attack.black_hole_1": "%s fell into a black hole",
@@ -188,5 +200,8 @@
   "text.autoconfig.alexscavesenriched.option.uraniumArrow.baseDamage": "Base damage",
   "text.autoconfig.alexscavesenriched.option.gammaFlashlightConfig": "Gamma Flashlight",
   "text.autoconfig.alexscavesenriched.option.gammaFlashlightConfig.range": "Range (blocks)",
-  "text.autoconfig.alexscavesenriched.option.gammaFlashlightConfig.spread": "Spread (per block)"
+  "text.autoconfig.alexscavesenriched.option.gammaFlashlightConfig.spread": "Spread (per block)",
+  "text.autoconfig.alexscavesenriched.option.centrifuge": "Centrifuge",
+  "text.autoconfig.alexscavesenriched.option.centrifuge.cantInteractWithActive": "Lock inventory when spinning",
+  "text.autoconfig.alexscavesenriched.option.centrifuge.maxSpeed": "Warmup time (ticks)"
 }

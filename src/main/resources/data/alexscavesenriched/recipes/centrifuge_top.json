@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "PSP",
+        "iSi",
+        "PSP"
+    ],
+    "key": {
+        "i": {
+            "item": "minecraft:iron_ingot"
+        },
+        "S": {
+            "item": "alexscaves:nuclear_furnace_component"
+        },
+        "P": {
+            "item": "alexscaves:polymer_plate"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:centrifuge_top",
+        "count": 2
+    }
+}

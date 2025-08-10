@@ -1,5 +1,6 @@
 package net.hellomouse.alexscavesenriched;
 
+import net.hellomouse.alexscavesenriched.recipe.CentrifugeRecipe;
 import net.hellomouse.alexscavesenriched.recipe.NeutronKillRecipe;
 import net.hellomouse.alexscavesenriched.recipe.NuclearFurnanceRecipeAdditional;
 import net.hellomouse.alexscavesenriched.recipe.NuclearTransmutationRecipe;
@@ -24,4 +25,8 @@ public class ACERecipeRegistry {
     public static final RegistryObject<RecipeType<NeutronKillRecipe>> NEUTRON_KILL_TYPE = TYPE_DEF_REG.register("neutron_kill", () -> new RecipeType<>() {});
     public static final RegistryObject<RecipeSerializer<NeutronKillRecipe>> NEUTRON_KILL =
             DEF_REG.register("neutron_kill", NeutronKillRecipe.NeutronKillRecipeSerializer::new);
+
+    public static final RegistryObject<RecipeType<CentrifugeRecipe>> CENTRIFUGE_TYPE = TYPE_DEF_REG.register("centrifuge", () -> new RecipeType<>() {});
+    public static final RegistryObject<RecipeSerializer<CentrifugeRecipe>> CENTRIFUGE =
+            DEF_REG.register("centrifuge", CentrifugeRecipe.CentrifugeRecipeSerializer::new);
 }

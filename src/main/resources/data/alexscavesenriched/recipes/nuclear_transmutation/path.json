@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:dirt_path",
+    "input": "minecraft:dirt_path",
     "output": "alexscaves:muck"
 }

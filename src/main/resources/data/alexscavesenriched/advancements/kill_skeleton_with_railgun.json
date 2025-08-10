@@ -1,21 +1,21 @@
 {
-  "parent": "alexscavesenriched:railgun",
-  "display": {
-    "description": {
-      "translate": "advancements.alexscavesenriched.railgun_skeleton_kill.desc"
+    "parent": "alexscavesenriched:railgun",
+    "display": {
+        "description": {
+            "translate": "advancements.alexscavesenriched.railgun_skeleton_kill.desc"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.railgun_skeleton_kill.title"
+        },
+        "frame": "challenge",
+        "icon": {
+            "item": "alexscavesenriched:railgun"
+        },
+        "hidden": true
     },
-	"title": {
-      "translate": "advancements.alexscavesenriched.railgun_skeleton_kill.title"
-    },
-    "frame": "challenge",
-    "icon": {
-      "item": "alexscavesenriched:railgun"
-    },
-    "hidden": true
-  },
-  "criteria": {
-    "requirement": {
-      "trigger": "alexscavesenriched:kill_skeleton_with_railgun"
+    "criteria": {
+        "requirement": {
+            "trigger": "alexscavesenriched:kill_skeleton_with_railgun"
+        }
     }
-  }
 }

@@ -9,21 +9,21 @@
         "description": {
             "translate": "advancements.alexscavesenriched.black_hole_bomb.desc"
         },
-		"frame": "goal"
+        "frame": "goal"
     },
     "parent": "alexscavesenriched:enriched_uranium_rod",
-	  "criteria": {
-		"requirement": {
-		  "trigger": "minecraft:inventory_changed",
-		  "conditions": {
-			"items": [
-			  {
-				"items": [
-					"alexscavesenriched:black_hole_bomb"
-				]
-			  }
-			]
-		  }
-		}
-	  }
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscavesenriched:black_hole_bomb"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }

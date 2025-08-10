@@ -30,6 +30,7 @@ public class ACEItemRegistry {
     public static final RegistryObject<Item> ROCKET_NEUTRON = DEF_REG.register("rocket_neutron", RocketNeutronItem::new);
     public static final RegistryObject<Item> ROCKET_MINI_NUKE = DEF_REG.register("rocket_mini_nuke", RocketMiniNukeItem::new);
 
+    public static final RegistryObject<Item> ENRICHED_URANIUM_NUGGET = DEF_REG.register("enriched_uranium_nugget", EnrichedUraniumNuggetItem::new);
     public static final RegistryObject<Item> URANIUM_ARROW = DEF_REG.register("uranium_arrow", UraniumArrowItem::new);
     public static final RegistryObject<Item> URANIUM_CANDY = DEF_REG.register("uranium_candy", UraniumCandyItem::new);
     public static final RegistryObject<Item> NUKA_COLA = DEF_REG.register("nuka_cola", () -> new NukaColaItem(ACEBlockRegistry.NUKA_COLA.get()));

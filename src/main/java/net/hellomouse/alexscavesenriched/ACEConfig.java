@@ -51,6 +51,9 @@ public class ACEConfig implements ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     public GammaFlashlightConfig gammaFlashlightConfig = new GammaFlashlightConfig();
 
+    @ConfigEntry.Gui.CollapsibleObject
+    public CentrifugeConfig centrifuge = new CentrifugeConfig();
+
     public static class ClientConfig {
         public boolean overrideSkyColor = true;
         public boolean nukeParticleEffects = true;
@@ -181,5 +184,11 @@ public class ACEConfig implements ConfigData {
         public int maxSize = 128;
         @ConfigEntry.BoundedDiscrete(min = 0, max = 1)
         public double boundingBoxFillProportion = 0.7;
+    }
+
+    public static class CentrifugeConfig {
+        public boolean cantInteractWithActive = true;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 5000)
+        public int maxSpeed = 100;
     }
 }

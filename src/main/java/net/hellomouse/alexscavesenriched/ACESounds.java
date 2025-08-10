@@ -15,4 +15,6 @@ public class ACESounds {
     public static final SoundEvent RAILGUN_RELOAD = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "railgun_reload"), 16F);
     public static final SoundEvent RAILGUN_EMPTY = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "railgun_empty"), 16F);
     public static final SoundEvent RAILGUN_CHARGE = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "railgun_charge"), 16F);
+
+    public static final SoundEvent CENTRIFUGE = SoundEvent.of(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "centrifuge"), 32F);
 }

@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:dirt",
+    "input": "minecraft:dirt",
     "output": "minecraft:coarse_dirt"
 }

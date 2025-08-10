@@ -1,0 +1,10 @@
+{
+    "replace": false,
+    "values": [
+        "alexscavesenriched:centrifuge_top",
+        "alexscavesenriched:centrifuge",
+        "alexscavesenriched:centrifuge_proxy",
+        "alexscavesenriched:centrifuge_base",
+        "alexscavesenriched:salted_uranium_block"
+    ]
+}

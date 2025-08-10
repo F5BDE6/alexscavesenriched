@@ -1,0 +1,9 @@
+{
+    "type": "alexscavesenriched:nuclear_furnace_additional",
+    "ingredient": {
+        "tag": "forge:storage_blocks/uranium"
+    },
+    "result": "alexscavesenriched:salted_uranium_block",
+    "experience": 0.1,
+    "cookingtime": 100
+}

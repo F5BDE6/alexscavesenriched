@@ -1,6 +1,6 @@
 {
-  "replace": false,
-  "values": [
-    "alexscavesenriched:enriched_uranium_block"
-  ]
+    "replace": false,
+    "values": [
+        "alexscavesenriched:enriched_uranium_block"
+    ]
 }

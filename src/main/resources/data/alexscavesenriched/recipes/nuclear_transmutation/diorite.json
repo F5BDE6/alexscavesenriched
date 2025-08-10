@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:diorite",
+    "input": "minecraft:diorite",
     "output": "minecraft:basalt"
 }

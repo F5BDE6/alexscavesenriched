@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "top=true": {
+            "model": "alexscavesenriched:block/centrifuge_multiblock_top"
+        },
+        "top=false": {
+            "model": "alexscavesenriched:block/centrifuge_multiblock_middle"
+        }
+    }
+}

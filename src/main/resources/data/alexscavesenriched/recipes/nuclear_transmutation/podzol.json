@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:podzol",
+    "input": "minecraft:podzol",
     "output": "alexscaves:muck"
 }

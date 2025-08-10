@@ -1,0 +1,42 @@
+{
+    "name": "Centrifuge",
+    "icon": "alexscavesenriched:centrifuge_base",
+    "category": "alexscavesenriched:resources",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The centrifuge is the start of your nuclear journey! Craft a centrifuge base and two centrifuge tops, and place them on top of each other to assemble the centrifuge multiblock."
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "alexscavesenriched:centrifuge_base",
+            "recipe2": "alexscavesenriched:centrifuge_top"
+        },
+        {
+            "type": "patchouli:multiblock",
+            "text": "Centrifuge multiblock",
+            "multiblock": {
+                "pattern": [
+                    [ "T" ],
+                    [ "T" ],
+                    [ "T" ],
+                    [ "T" ],
+                    [ "0" ]
+                ],
+                "mapping": {
+                    "T": "alexscavesenriched:centrifuge_top",
+                    "0": "alexscavesenriched:centrifuge_base"
+                },
+                "symmetrical": true
+            }
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Items can be inserted in the top and extracted out the bottom. Power the base with a redstone signal to spin it up; the inventory will be locked when it is spinning (config setting)$(br2)Centrifuge recipes are probabilistic: each tick each slot in the left will have a chance of producing output in the right. If the right is full items will be ejected from the centrifuge. Check recipes with EMI."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Base outputs comparator signal for how full the 9 output slots are, and any other block outputs how full the 9 input slots are.$(br2)The main use of the centrifuge is enriching uranium; see $(l:alexscavesenriched:resources/resources_entry)Enriched Uranium$(/l) for more information."
+        }
+    ]
+}

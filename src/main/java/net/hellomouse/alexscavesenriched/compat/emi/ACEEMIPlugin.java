@@ -11,6 +11,7 @@ import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.ACEItemRegistry;
 import net.hellomouse.alexscavesenriched.ACERecipeRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
+import net.hellomouse.alexscavesenriched.recipe.CentrifugeRecipe;
 import net.hellomouse.alexscavesenriched.recipe.NeutronKillRecipe;
 import net.hellomouse.alexscavesenriched.recipe.NuclearFurnanceRecipeAdditional;
 import net.hellomouse.alexscavesenriched.recipe.NuclearTransmutationRecipe;
@@ -33,6 +34,8 @@ public class ACEEMIPlugin implements EmiPlugin {
     public static final EmiStack NUCLEAR_BOMB = EmiStack.of(ACBlockRegistry.NUCLEAR_BOMB.get().asItem());
     public static final EmiStack NEUTRON_BOMB = EmiStack.of(ACEBlockRegistry.NEUTRON_BOMB.get().asItem());
     public static final EmiStack GAMMA_FLASHLIGHT = EmiStack.of(ACEItemRegistry.GAMMA_FLASHLIGHT.get().asItem());
+    public static final EmiStack CENTRIFUGE = EmiStack.of(ACEBlockRegistry.CENTRIFUGE_BASE.get().asItem());
+    public static final EmiStack CENTRIFUGE2 = EmiStack.of(ACEBlockRegistry.CENTRIFUGE_TOP.get().asItem());
 
     public static final EmiRecipeCategory ACE_NUCLEAR_FURNACE_CATEGORY
             = new EmiRecipeCategory(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "nuclear_furnace"),
@@ -43,6 +46,9 @@ public class ACEEMIPlugin implements EmiPlugin {
     public static final EmiRecipeCategory ACE_NEUTRON_KILL_CATEGORY
             = new EmiRecipeCategory(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "neutron_kill"),
             NEUTRON_BOMB, new EmiTexture(MY_SPRITE_SHEET, 0, 0, 16, 16));
+    public static final EmiRecipeCategory ACE_CENTRIFUGE_CATEGORY
+            = new EmiRecipeCategory(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "centrifuge"),
+            CENTRIFUGE, new EmiTexture(MY_SPRITE_SHEET, 0, 0, 16, 16));
 
     @Override
     public void register(EmiRegistry registry) {
@@ -53,6 +59,9 @@ public class ACEEMIPlugin implements EmiPlugin {
         registry.addCategory(ACE_NEUTRON_KILL_CATEGORY);
         registry.addWorkstation(ACE_NEUTRON_KILL_CATEGORY, GAMMA_FLASHLIGHT);
         registry.addWorkstation(ACE_NEUTRON_KILL_CATEGORY, NEUTRON_BOMB);
+        registry.addCategory(ACE_CENTRIFUGE_CATEGORY);
+        registry.addWorkstation(ACE_CENTRIFUGE_CATEGORY, CENTRIFUGE);
+        registry.addWorkstation(ACE_CENTRIFUGE_CATEGORY, CENTRIFUGE2);
 
         {
             RecipeManager manager = registry.getRecipeManager();
@@ -103,6 +112,10 @@ public class ACEEMIPlugin implements EmiPlugin {
                         registry.addRecipe(new EMINeutronKillRecipe(recipe));
                     alreadyVisited.add(recipe.getInput().getItem().getName());
                 }
+            }
+            {
+                for (CentrifugeRecipe recipe : manager.listAllOfType(ACERecipeRegistry.CENTRIFUGE_TYPE.get()))
+                    registry.addRecipe(new EMICentrifugeRecipe(recipe));
             }
         }
     }

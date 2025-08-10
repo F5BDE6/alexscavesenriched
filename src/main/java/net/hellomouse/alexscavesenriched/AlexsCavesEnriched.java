@@ -41,6 +41,10 @@ public class AlexsCavesEnriched {
             .icon(() -> new ItemStack(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get()))
             .withTabsBefore(ItemGroups.SPAWN_EGGS)
             .entries((enabledFeatures, output) -> {
+                output.add(ACEBlockRegistry.CENTRIFUGE_BASE.get());
+                output.add(ACEBlockRegistry.CENTRIFUGE_TOP.get());
+                output.add(ACEBlockRegistry.SALTED_URANIUM.get());
+                output.add(ACEItemRegistry.ENRICHED_URANIUM_NUGGET.get());
                 output.add(ACEBlockRegistry.ENRICHED_URANIUM.get());
                 output.add(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get());
                 output.add(ACEItemRegistry.ENRICHED_URANIUM.get());
@@ -80,6 +84,7 @@ public class AlexsCavesEnriched {
         ACEBlockEntityRegistry.DEF_REG.register(modEventBus);
         ACEEffectRegistry.DEF_REG.register(modEventBus);
         ACEParticleRegistry.DEF_REG.register(modEventBus);
+        ACEMenuRegistry.DEF_REG.register(modEventBus);
 
         CREATIVE_TAB_REG.register(modEventBus);
         AutoConfig.register(ACEConfig.class, Toml4jConfigSerializer::new);

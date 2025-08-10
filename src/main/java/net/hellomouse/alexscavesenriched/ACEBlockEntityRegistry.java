@@ -1,7 +1,9 @@
 package net.hellomouse.alexscavesenriched;
 
+import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeBlockEntity;
 import net.hellomouse.alexscavesenriched.block.block_entity.EnrichedUraniumBlockEntity;
 import net.hellomouse.alexscavesenriched.block.block_entity.EnrichedUraniumRodBlockEntity;
+import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeInventoryProxyBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -15,5 +17,10 @@ public class ACEBlockEntityRegistry {
                     EnrichedUraniumRodBlockEntity::new,
                     ACEBlockRegistry.ENRICHED_URANIUM_ROD.get()
             ).build(null));
-    public static final RegistryObject<BlockEntityType<EnrichedUraniumBlockEntity>> ENRICHED_URANIUM = DEF_REG.register("enriched_uranium", () -> BlockEntityType.Builder.create(EnrichedUraniumBlockEntity::new, ACEBlockRegistry.ENRICHED_URANIUM.get()).build(null));
+    public static final RegistryObject<BlockEntityType<EnrichedUraniumBlockEntity>> ENRICHED_URANIUM =
+            DEF_REG.register("enriched_uranium", () -> BlockEntityType.Builder.create(EnrichedUraniumBlockEntity::new,  ACEBlockRegistry.ENRICHED_URANIUM.get()).build(null));
+    public static final RegistryObject<BlockEntityType<CentrifugeBlockEntity>> CENTRIFUGE =
+            DEF_REG.register("centrifuge", () -> BlockEntityType.Builder.create(CentrifugeBlockEntity::new, ACEBlockRegistry.CENTRIFUGE.get()).build(null));
+    public static final RegistryObject<BlockEntityType<CentrifugeInventoryProxyBlockEntity>> CENTRIFUGE_PROXY =
+            DEF_REG.register("centrifuge_proxy", () -> BlockEntityType.Builder.create(CentrifugeInventoryProxyBlockEntity::new, ACEBlockRegistry.CENTRIFUGE_PROXY.get()).build(null));
 }

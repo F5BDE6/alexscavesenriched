@@ -13,15 +13,23 @@
         "hidden": true
     },
     "parent": "alexscavesenriched:enriched_uranium_rod",
-	"criteria": {
-		"requirement": {
-			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
-					{"items": ["alexscavesenriched:xeno_fumo"]},
-					{"items": ["alexscavesenriched:xiaoyu_fumo"]}
-				]
-			}
-		}
-	}
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscavesenriched:xeno_fumo"
+                        ]
+                    },
+                    {
+                        "items": [
+                            "alexscavesenriched:xiaoyu_fumo"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }

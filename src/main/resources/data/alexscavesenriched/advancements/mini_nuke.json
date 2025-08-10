@@ -9,21 +9,21 @@
         "description": {
             "translate": "advancements.alexscavesenriched.mini_nuke.desc"
         },
-		"frame": "goal"
+        "frame": "goal"
     },
     "parent": "alexscavesenriched:enriched_uranium_block",
-	  "criteria": {
-		"requirement": {
-		  "trigger": "minecraft:inventory_changed",
-		  "conditions": {
-			"items": [
-			  {
-				"items": [
-					"alexscavesenriched:mini_nuke"
-				]
-			  }
-			]
-		  }
-		}
-	  }
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "alexscavesenriched:mini_nuke"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }

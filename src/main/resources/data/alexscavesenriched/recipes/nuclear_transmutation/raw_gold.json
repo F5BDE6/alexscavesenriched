@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:raw_gold_block",
+    "input": "minecraft:raw_gold_block",
     "output": "minecraft:gold_block"
 }
