@@ -2,9 +2,11 @@ package net.hellomouse.alexscavesenriched.client.particle;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
-import net.minecraft.client.particle.*;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleFactory;
+import net.minecraft.client.particle.ParticleTextureSheet;
+import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.render.*;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
@@ -55,7 +57,7 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
             RenderSystem.enableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.setShader(GameRenderer::getParticleProgram);
-            RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
+            RenderSystem.setShaderTexture(0, DemonCoreGlowTexture.ID);
             var colour = cpuShader();
             float r = Math.min(1f, Math.max(0f, colour.x));
             float g = Math.min(1f, Math.max(0f, colour.y));
@@ -76,12 +78,9 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
         public String toString() {
             return "PARTICLE_SHEET_DEMONCORE";
         }
+
     };
 
-    public static ParticleTextureSheet getParticleSheet() {
-        return PARTICLE_SHEET_DEMONCORE_CPU;
-
-    }
 
     @Override
     public boolean shouldCull() {
@@ -97,7 +96,7 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-        return getParticleSheet();
+        return PARTICLE_SHEET_DEMONCORE_CPU;
     }
 
     @Override
@@ -158,48 +157,35 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
 
     @OnlyIn(Dist.CLIENT)
     public static class Factory implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider spriteProvider;
-
-        public Factory(SpriteProvider spriteProvider) {
-            this.spriteProvider = spriteProvider;
-        }
 
         @Override
         public Particle createParticle(DefaultParticleType type, ClientWorld level,
                                        double x, double y, double z,
                                        double xd, double yd, double zd) {
             var particle = new DemonCoreGlowParticle(level, x, y, z, xd, yd, zd);
-            particle.setSprite(this.spriteProvider);
             return particle;
         }
     }
 
     @Override
     protected float getMinU() {
-        //return 0;
-        return super.getMinU();
-        //return super.getMinU() + (super.getMaxU() - super.getMinU()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * frame;
+        return 0;
     }
 
     @Override
     protected float getMinV() {
-        //return 0;
-        //return super.getMinV();
-        return super.getMinV() + (super.getMaxV() - super.getMinV()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames));
+        return 1.0f / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames));
 
     }
 
     @Override
     protected float getMaxU() {
-        //return 1;
-        return super.getMaxU();
-        //return super.getMinU() + (super.getMaxU() - super.getMinU()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (frame + 1);
+        return 1;
     }
 
     @Override
     protected float getMaxV() {
-        //return 1;
-        return super.getMinV() + (super.getMaxV() - super.getMinV()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames) + 1);
+        return 1.0f / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames) + 1);
     }
 
     @Override

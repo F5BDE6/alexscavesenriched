@@ -16,8 +16,6 @@ import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.texture.atlas.AtlasSourceManager;
-import net.minecraft.client.texture.atlas.AtlasSourceType;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,7 +33,6 @@ import java.io.IOException;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = AlexsCavesEnriched.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @OnlyIn(Dist.CLIENT)
 public class ACEClientHandler {
-    public static final AtlasSourceType thing = AtlasSourceManager.register("alexscavesenriched", GeneratedAtlasSource.CODEC);
     private static final ACEItemRenderProperties ITEM_RENDER_PROPERTIES = new ACEItemRenderProperties();
 
     public static ACEItemRenderProperties getItemRenderProperties() {
@@ -55,7 +52,7 @@ public class ACEClientHandler {
         AlexsCavesEnriched.LOGGER.debug("Registered particle factories");
         event.registerSpriteSet(ACEParticleRegistry.NUKE_BLAST.get(), NukeBlastParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.NEUTRON_BLAST.get(), NeutronBlastParticle.Factory::new);
-        event.registerSpriteSet(ACEParticleRegistry.DEMONCORE_GLOW.get(), DemonCoreGlowParticle.Factory::new);
+        event.registerSpecial(ACEParticleRegistry.DEMONCORE_GLOW.get(), new DemonCoreGlowParticle.Factory());
         event.registerSpriteSet(ACEParticleRegistry.FLAMETHROWER.get(), FlamethrowerParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.BLACK_HOLE_SMOKE.get(), BlackHoleSmokeParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.RAILGUN_SHOCKWAVE.get(), RailgunShockwaveParticle.Factory::new);
@@ -98,5 +95,6 @@ public class ACEClientHandler {
         ModelPredicateProviderRegistry.register(ACEItemRegistry.DEADMAN_SWITCH.get(), Identifier.withDefaultNamespace("active"), (stack, level, living, j) -> DeadmanSwitchItem.isActive(stack) ? 1.0F : 0.0F);
         ModelPredicateProviderRegistry.register(ACEItemRegistry.RAYGUN.get(), Identifier.withDefaultNamespace("gamma"), (stack, level, living, j) ->
                 stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0 ? 1.0F : 0.0F);
+        DemonCoreGlowTexture.reset();
     }
 }

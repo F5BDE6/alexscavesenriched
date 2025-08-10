@@ -13,10 +13,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import static java.lang.Math.floor;
+
 public class NeutronBlastParticle extends SpriteBillboardParticle {
     public static final int LIFETIME = 200;
     public static final float TARGET_SIZE = AlexsCavesEnriched.CONFIG.neutron.radius * 8F;
-
+    public static float frame = 0;
     protected NeutronBlastParticle(ClientWorld world, double x, double y, double z, double vx, double vy, double vz) {
         super(world, x, y, z, vx, vy, vz);
         this.collidesWithWorld = false;
@@ -41,7 +43,7 @@ public class NeutronBlastParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-        return DemonCoreGlowParticle.getParticleSheet();
+        return DemonCoreGlowParticle.PARTICLE_SHEET_DEMONCORE_CPU;
     }
 
     @Override
@@ -117,19 +119,23 @@ public class NeutronBlastParticle extends SpriteBillboardParticle {
 
     @Override
     protected float getMinU() {
-        return 0.0F;
+        return 0;
     }
-    @Override
-    protected float getMaxU() {
-        return 1.0F;
-    }
+
     @Override
     protected float getMinV() {
-        return 0.0F;
+        return 1.0f / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames));
+
     }
+
+    @Override
+    protected float getMaxU() {
+        return 1;
+    }
+
     @Override
     protected float getMaxV() {
-        return 1.0F;
+        return 1.0f / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames) + 1);
     }
 
     @Override
@@ -139,6 +145,7 @@ public class NeutronBlastParticle extends SpriteBillboardParticle {
         if (this.age > this.maxAge / 2)
             this.setAlpha(1.0F - f * 2F);
         this.setSize((float)(TARGET_SIZE * Math.pow(this.age / (float)this.maxAge, 0.2F)));
+        frame++;
     }
 
     @OnlyIn(Dist.CLIENT)

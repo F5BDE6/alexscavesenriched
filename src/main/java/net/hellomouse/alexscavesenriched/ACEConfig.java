@@ -186,14 +186,12 @@ public class ACEConfig implements ConfigData {
         public Sprite sprite = new Sprite();
 
         public static class Sprite {
-            @ConfigEntry.BoundedDiscrete(min = 32, max = 3840)
+            @ConfigEntry.BoundedDiscrete(min = 32, max = 1440)
             @ConfigEntry.Gui.Tooltip
             public int resolution = 1440;
-            @ConfigEntry.BoundedDiscrete(min = 5, max = 1280)
+            @ConfigEntry.BoundedDiscrete(min = 5, max = 22)
             @ConfigEntry.Gui.Tooltip
-            public int animationFrames = 30;
-            @ConfigEntry.BoundedDiscrete(min = 0, max = 255)
-            public int noiseStrength = 130;
+            public int animationFrames = 20;
 
             public int getSpriteWidth() {
                 return resolution;

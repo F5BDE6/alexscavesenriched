@@ -1,7 +1,9 @@
 package net.hellomouse.alexscavesenriched.client;
 
 import com.github.alexmodguy.alexscaves.client.ClientProxy;
+import com.mojang.brigadier.CommandDispatcher;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
+import net.hellomouse.alexscavesenriched.client.command.ReloadDemonCoreTextureCommand;
 import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -11,11 +13,13 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
@@ -47,6 +51,7 @@ public class ACEClientMod {
         }
         return NUKE_SKY_GRADIENT; // Never reached
     }
+
     private static long lastTickTime = 0;
 
     @SubscribeEvent
@@ -183,6 +188,12 @@ public class ACEClientMod {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
+        CommandDispatcher<ServerCommandSource> dispatcher = event.getDispatcher();
+        ReloadDemonCoreTextureCommand.register(dispatcher);
     }
 
     // Set fog color last to avoid Alex's Caves overriding our fog color
