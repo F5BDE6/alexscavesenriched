@@ -16,10 +16,12 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import static java.lang.Math.floor;
 import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
 
 public class DemonCoreGlowParticle extends SpriteBillboardParticle {
     public static final int LIFETIME = Integer.MAX_VALUE;
+    private float frame = 0;
 
     protected DemonCoreGlowParticle(ClientWorld world, double x, double y, double z, double vx, double vy, double vz) {
         super(world, x, y, z, vx, vy, vz);
@@ -170,5 +172,39 @@ public class DemonCoreGlowParticle extends SpriteBillboardParticle {
             particle.setSprite(this.spriteProvider);
             return particle;
         }
+    }
+
+    @Override
+    protected float getMinU() {
+        //return 0;
+        return super.getMinU();
+        //return super.getMinU() + (super.getMaxU() - super.getMinU()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * frame;
+    }
+
+    @Override
+    protected float getMinV() {
+        //return 0;
+        //return super.getMinV();
+        return super.getMinV() + (super.getMaxV() - super.getMinV()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames));
+
+    }
+
+    @Override
+    protected float getMaxU() {
+        //return 1;
+        return super.getMaxU();
+        //return super.getMinU() + (super.getMaxU() - super.getMinU()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (frame + 1);
+    }
+
+    @Override
+    protected float getMaxV() {
+        //return 1;
+        return super.getMinV() + (super.getMaxV() - super.getMinV()) / AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames * (float) ((int) ((float) floor(frame) % AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames) + 1);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        frame++;
     }
 }

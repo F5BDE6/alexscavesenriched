@@ -70,6 +70,7 @@ public class AlexsCavesEnriched {
 
     public AlexsCavesEnriched(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
+        LOGGER.info("Loading AlexsCavesEnriched configuration...");
         AutoConfig.register(ACEConfig.class, Toml4jConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(ACEConfig.class).getConfig();
         modEventBus.addListener(this::commonSetup);

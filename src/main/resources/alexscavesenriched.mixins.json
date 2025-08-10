@@ -16,7 +16,6 @@
         "items.EnchantmentMixin"
     ],
     "client": [
-        "client.SpriteMixin"
     ],
     "injectors": {
         "defaultRequire": 1

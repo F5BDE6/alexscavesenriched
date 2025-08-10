@@ -30,7 +30,7 @@ public class GeneratedAtlasSource implements AtlasSource {
         if (resource.equals(DemonCoreGlowTexture.ID)) {
             DemonCoreGlowTexture.init();
             regions.add(DemonCoreGlowTexture.ID, () -> new SpriteContents(DemonCoreGlowTexture.ID,
-                    new SpriteDimensions(AlexsCavesEnriched.CONFIG.demonCore.sprite.resolution, AlexsCavesEnriched.CONFIG.demonCore.sprite.resolution),
+                    new SpriteDimensions(AlexsCavesEnriched.CONFIG.demonCore.sprite.getSpriteWidth(), AlexsCavesEnriched.CONFIG.demonCore.sprite.getSpriteHeight()),
                     DemonCoreGlowTexture.CURRENT,
                     AnimationResourceMetadata.EMPTY));
         } else {

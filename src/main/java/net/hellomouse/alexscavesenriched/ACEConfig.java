@@ -3,7 +3,6 @@ package net.hellomouse.alexscavesenriched;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import net.hellomouse.alexscavesenriched.client.particle.DemonCoreGlowTexture;
 
 @Config(name = AlexsCavesEnriched.MODID)
 public class ACEConfig implements ConfigData {
@@ -173,12 +172,6 @@ public class ACEConfig implements ConfigData {
         public double spread = 0.6;
     }
 
-    @Override
-    public void validatePostLoad() throws ValidationException {
-        ConfigData.super.validatePostLoad();
-        DemonCoreGlowTexture.reload();
-    }
-
     public static class DemonCoreConfig {
         @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_MAX_SMALL)
         public int diameter = 7;
@@ -193,13 +186,22 @@ public class ACEConfig implements ConfigData {
         public Sprite sprite = new Sprite();
 
         public static class Sprite {
-            public final float fluctuation = 0.05F;
             @ConfigEntry.BoundedDiscrete(min = 32, max = 3840)
             @ConfigEntry.Gui.Tooltip
-            public int resolution = 32;
+            public int resolution = 1440;
             @ConfigEntry.BoundedDiscrete(min = 5, max = 1280)
             @ConfigEntry.Gui.Tooltip
             public int animationFrames = 30;
+            @ConfigEntry.BoundedDiscrete(min = 0, max = 255)
+            public int noiseStrength = 130;
+
+            public int getSpriteWidth() {
+                return resolution;
+            }
+
+            public int getSpriteHeight() {
+                return resolution * animationFrames;
+            }
         }
     }
 }
