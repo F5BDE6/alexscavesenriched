@@ -5,11 +5,9 @@ import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 
-import java.io.IOException;
 import java.util.Random;
 
 import static java.lang.Math.*;
@@ -83,8 +81,6 @@ public class DemonCoreGlowTexture {
         if (CURRENT == null) {
             CURRENT = new NativeImageBackedTexture(image);
         } else {
-            if (CURRENT.getImage() != null)
-                CURRENT.getImage().close();
             CURRENT.setImage(image);
         }
         MinecraftClient.getInstance().textureManager.registerTexture(ID, CURRENT);

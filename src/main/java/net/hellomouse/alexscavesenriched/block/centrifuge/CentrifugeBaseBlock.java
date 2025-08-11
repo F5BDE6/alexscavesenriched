@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 // Base block only for building the multi-block
 public class CentrifugeBaseBlock extends Block {
     public CentrifugeBaseBlock() {
-        super(CentrifugeMultiBlockBaseBlock.SETTINGS);
+        super(CentrifugeUtil.getBlockSettings());
     }
 
     @Override

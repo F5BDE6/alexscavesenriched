@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 // A base block only for building the multi-block
 public class CentrifugeTopBlock extends Block {
     public CentrifugeTopBlock() {
-        super(CentrifugeMultiBlockBaseBlock.SETTINGS);
+        super(CentrifugeUtil.getBlockSettings());
     }
 
     @Override

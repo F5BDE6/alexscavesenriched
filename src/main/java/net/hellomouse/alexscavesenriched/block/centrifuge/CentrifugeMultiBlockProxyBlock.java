@@ -4,10 +4,7 @@ import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeBlockEntity;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeInventoryProxyBlockEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -27,7 +24,7 @@ public class CentrifugeMultiBlockProxyBlock extends BlockWithEntity {
     public static final BooleanProperty IS_TOP = BooleanProperty.of("top");
 
     public CentrifugeMultiBlockProxyBlock() {
-        super(CentrifugeMultiBlockBaseBlock.SETTINGS.hardness(20));
+        super(CentrifugeUtil.getBlockSettings().hardness(20));
         this.setDefaultState(this.stateManager.getDefaultState().with(IS_TOP, false));
     }
 

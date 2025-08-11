@@ -1,8 +1,11 @@
 package net.hellomouse.alexscavesenriched.block.centrifuge;
 
+import com.github.alexmodguy.alexscaves.server.block.ACSoundTypes;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeInventoryProxyBlockEntity;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +16,16 @@ import java.util.Optional;
 
 public class CentrifugeUtil {
     public static int CENTRIFUGE_HEIGHT = 5; // Height including base
+
+    public static AbstractBlock.Settings getBlockSettings() {
+        return AbstractBlock.Settings.create()
+                .mapColor(MapColor.IRON_GRAY)
+                .requiresTool()
+                .nonOpaque()
+                .solid()
+                .strength(5, 3)
+                .sounds(ACSoundTypes.METAL_SCAFFOLDING);
+    }
 
     // Try to assemble the multi block
     public static Optional<ArrayList<BlockPos>> getMultiBlockPositions(World world, BlockPos pos, boolean isTop) {

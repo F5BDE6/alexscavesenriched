@@ -1,6 +1,5 @@
 package net.hellomouse.alexscavesenriched.block.centrifuge;
 
-import com.github.alexmodguy.alexscaves.server.block.ACSoundTypes;
 import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
@@ -29,16 +28,9 @@ import net.minecraft.world.World;
 
 public class CentrifugeMultiBlockBaseBlock extends BlockWithEntity {
     public static final BooleanProperty POWERED = Properties.POWERED;
-    public static final AbstractBlock.Settings SETTINGS = AbstractBlock.Settings.create()
-            .mapColor(MapColor.IRON_GRAY)
-            .requiresTool()
-            .nonOpaque()
-            .solid()
-            .strength(4, 3)
-            .sounds(ACSoundTypes.METAL_SCAFFOLDING);
 
     public CentrifugeMultiBlockBaseBlock() {
-        super(SETTINGS
+        super(CentrifugeUtil.getBlockSettings()
                 .hardness(20)
                 .luminance(state -> {
                     if (!(state.getBlock() instanceof CentrifugeMultiBlockBaseBlock))
