@@ -152,7 +152,7 @@
     "text.autoconfig.alexscavesenriched.option.railgun.quickCharge": "Enable quick charge enchant",
     "text.autoconfig.alexscavesenriched.option.client": "Client",
     "text.autoconfig.alexscavesenriched.option.client.overrideSkyColor": "Sky color effects",
-    "text.autoconfig.alexscavesenriched.option.client.nukeParticleEffects": "Nuke anbient particles",
+    "text.autoconfig.alexscavesenriched.option.client.nukeParticleEffects": "Nuke ambient particles",
     "text.autoconfig.alexscavesenriched.option.client.demonCoreSprite": "Demon core sprite",
     "text.autoconfig.alexscavesenriched.option.client.demonCoreSprite.resolution": "Glow sprite resolution",
     "text.autoconfig.alexscavesenriched.option.client.demonCoreSprite.resolution.@Tooltip": "Larger value creates smoother circle and gradient",

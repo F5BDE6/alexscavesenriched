@@ -140,7 +140,7 @@ public class ACEConfig implements ConfigData {
         public boolean letNukeKillWither = true;
         public boolean useNewNuke = true;
         public boolean smeltBlock = true;
-        public boolean irradiateAir = true;
+        public boolean irradiateAir = false;
 
         @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_DURATION_MAX)
         public int irradiationTime = 36000;

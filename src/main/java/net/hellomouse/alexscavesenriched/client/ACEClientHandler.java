@@ -78,17 +78,16 @@ public class ACEClientHandler {
 
     @SubscribeEvent
     public static void registerShaders(final RegisterShadersEvent e) {
-        try {
-            e.registerShader(new ShaderProgram(e.getResourceProvider(),
-                    Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "radiation_particle"),
-                    VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), ACEInternalShaders::setRadiationParticleShader);
-            AlexsCavesEnriched.LOGGER.info("Registered AlexsCavesEnriched internal shaders");
-        } catch (IOException exception) {
-            AlexsCavesEnriched.LOGGER.error("could not register internal shaders");
-            exception.printStackTrace();
-        }
+//        try {
+//            e.registerShader(new ShaderProgram(e.getResourceProvider(),
+//                    Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "radiation_particle"),
+//                    VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), ACEInternalShaders::setRadiationParticleShader);
+//            AlexsCavesEnriched.LOGGER.info("Registered AlexsCavesEnriched internal shaders");
+//        } catch (IOException exception) {
+//            AlexsCavesEnriched.LOGGER.error("could not register internal shaders");
+//            exception.printStackTrace();
+//        }
     }
-
 
     @SubscribeEvent
     public static void onFMLClientSetupEvent(FMLClientSetupEvent event) {
@@ -101,7 +100,7 @@ public class ACEClientHandler {
         ModelPredicateProviderRegistry.register(ACEItemRegistry.RAYGUN.get(), Identifier.withDefaultNamespace("gamma"), (stack, level, living, j) ->
                 stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0? 1.0F : 0.0F);
 
-        DemonCoreGlowTexture.reset();
+        event.enqueueWork(DemonCoreGlowTexture::reset);
         event.enqueueWork(
             () -> HandledScreens.register(ACEMenuRegistry.CENTRIFUGE.get(), CentrifugeBlockScreen::new));
 
