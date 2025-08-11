@@ -1,0 +1,7 @@
+done:
+move config to client
+when walking outside should fade out
+dithering indepdendent of texture size
+additive blending
+neutron bomb scaling properly for noise - noise messy
+reload on cloth config change

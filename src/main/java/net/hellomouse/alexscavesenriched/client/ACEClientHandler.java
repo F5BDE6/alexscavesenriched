@@ -10,6 +10,7 @@ import net.hellomouse.alexscavesenriched.client.entity.RocketModel;
 import net.hellomouse.alexscavesenriched.client.entity.RocketNuclearModel;
 import net.hellomouse.alexscavesenriched.client.gui.CentrifugeBlockScreen;
 import net.hellomouse.alexscavesenriched.client.particle.*;
+import net.hellomouse.alexscavesenriched.client.particle.texture.DemonCoreGlowTexture;
 import net.hellomouse.alexscavesenriched.client.render.*;
 import net.hellomouse.alexscavesenriched.client.render.block.CentrifugeTopRenderer;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEItemRenderProperties;
@@ -39,7 +40,9 @@ import java.io.IOException;
 public class ACEClientHandler {
     private static final ACEItemRenderProperties ITEM_RENDER_PROPERTIES = new ACEItemRenderProperties();
 
-    public static ACEItemRenderProperties getItemRenderProperties() { return ITEM_RENDER_PROPERTIES; }
+    public static ACEItemRenderProperties getItemRenderProperties() {
+        return ITEM_RENDER_PROPERTIES;
+    }
 
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -54,7 +57,7 @@ public class ACEClientHandler {
         AlexsCavesEnriched.LOGGER.debug("Registered particle factories");
         event.registerSpriteSet(ACEParticleRegistry.NUKE_BLAST.get(), NukeBlastParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.NEUTRON_BLAST.get(), NeutronBlastParticle.Factory::new);
-        event.registerSpriteSet(ACEParticleRegistry.DEMONCORE_GLOW.get(), DemonCoreGlowParticle.Factory::new);
+        event.registerSpecial(ACEParticleRegistry.DEMONCORE_GLOW.get(), new DemonCoreGlowParticle.Factory());
         event.registerSpriteSet(ACEParticleRegistry.FLAMETHROWER.get(), FlamethrowerParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.BLACK_HOLE_SMOKE.get(), BlackHoleSmokeParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.RAILGUN_SHOCKWAVE.get(), RailgunShockwaveParticle.Factory::new);
@@ -86,6 +89,7 @@ public class ACEClientHandler {
         }
     }
 
+
     @SubscribeEvent
     public static void onFMLClientSetupEvent(FMLClientSetupEvent event) {
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
@@ -97,6 +101,7 @@ public class ACEClientHandler {
         ModelPredicateProviderRegistry.register(ACEItemRegistry.RAYGUN.get(), Identifier.withDefaultNamespace("gamma"), (stack, level, living, j) ->
                 stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0? 1.0F : 0.0F);
 
+        DemonCoreGlowTexture.reset();
         event.enqueueWork(
             () -> HandledScreens.register(ACEMenuRegistry.CENTRIFUGE.get(), CentrifugeBlockScreen::new));
 
