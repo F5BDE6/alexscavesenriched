@@ -1,18 +1,24 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "equipment",
-  "key": {
-    "#": { "item": "minecraft:stick" },
-    "X": { "tag": "forge:raw_materials/uranium" },
-    "Y": { "item": "minecraft:feather" }
-  },
-  "pattern": [
-    "X",
-    "#",
-    "Y"
-  ],
-  "result": {
-    "count": 4,
-    "item": "alexscavesenriched:uranium_arrow"
-  }
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+        "#": {
+            "item": "minecraft:stick"
+        },
+        "X": {
+            "tag": "forge:raw_materials/uranium"
+        },
+        "Y": {
+            "item": "minecraft:feather"
+        }
+    },
+    "pattern": [
+        "X",
+        "#",
+        "Y"
+    ],
+    "result": {
+        "count": 4,
+        "item": "alexscavesenriched:uranium_arrow"
+    }
 }

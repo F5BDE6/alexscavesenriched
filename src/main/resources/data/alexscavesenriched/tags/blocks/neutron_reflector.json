@@ -1,9 +1,9 @@
 {
-  "replace": false,
-  "values": [
-    "minecraft:gold_block",
-    "minecraft:iron_block",
-    "minecraft:netherite_block",
-    "alexscaves:cinder_block"
-  ]
+    "replace": false,
+    "values": [
+        "minecraft:gold_block",
+        "minecraft:iron_block",
+        "minecraft:netherite_block",
+        "alexscaves:cinder_block"
+    ]
 }

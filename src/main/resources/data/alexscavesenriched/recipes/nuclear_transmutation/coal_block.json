@@ -1,6 +1,6 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:coal_block",
+    "input": "minecraft:coal_block",
     "output": "minecraft:diamond_block",
-	"chance": 0.01
+    "chance": 0.01
 }

@@ -2,8 +2,13 @@
     "replace": false,
     "values": [
         "alexscavesenriched:enriched_uranium_block",
+        "alexscavesenriched:salted_uranium_block",
         "alexscavesenriched:neutron_bomb",
         "alexscavesenriched:black_hole_bomb",
-        "alexscavesenriched:mini_nuke"
+        "alexscavesenriched:mini_nuke",
+        "alexscavesenriched:centrifuge_top",
+        "alexscavesenriched:centrifuge",
+        "alexscavesenriched:centrifuge_proxy",
+        "alexscavesenriched:centrifuge_base"
     ]
 }

@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:stone",
+    "input": "minecraft:stone",
     "output": "minecraft:blackstone"
 }

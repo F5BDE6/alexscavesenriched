@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "powered=true": {
+            "model": "alexscavesenriched:block/centrifuge_base_powered"
+        },
+        "powered=false": {
+            "model": "alexscavesenriched:block/centrifuge_base"
+        }
+    }
+}

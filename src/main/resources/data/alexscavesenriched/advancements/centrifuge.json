@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "alexscavesenriched:centrifuge_base"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.centrifuge.title"
+        },
+        "description": {
+            "translate": "advancements.alexscavesenriched.centrifuge.desc"
+        }
+    },
+    "parent": "alexscavesenriched:root",
+		"criteria": {
+			"requirement": {
+				"trigger": "minecraft:inventory_changed",
+				"conditions": {
+					"items": [
+						{ "items": ["alexscavesenriched:centrifuge_base"] },
+						{ "items": ["alexscavesenriched:centrifuge_top"] }
+					]
+				}
+			}
+	  }
+}

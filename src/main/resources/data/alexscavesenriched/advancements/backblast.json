@@ -1,21 +1,21 @@
 {
-  "parent": "alexscavesenriched:rocket_launcher",
-  "display": {
-    "description": {
-      "translate": "advancements.alexscavesenriched.backblast.desc"
+    "parent": "alexscavesenriched:rocket_launcher",
+    "display": {
+        "description": {
+            "translate": "advancements.alexscavesenriched.backblast.desc"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.backblast.title"
+        },
+        "frame": "challenge",
+        "icon": {
+            "item": "alexscavesenriched:rocket_launcher"
+        },
+        "hidden": true
     },
-	"title": {
-      "translate": "advancements.alexscavesenriched.backblast.title"
-    },
-    "frame": "challenge",
-    "icon": {
-      "item": "alexscavesenriched:rocket_launcher"
-    },
-    "hidden": true
-  },
-  "criteria": {
-    "requirement": {
-      "trigger": "alexscavesenriched:kill_mob_with_backblast"
+    "criteria": {
+        "requirement": {
+            "trigger": "alexscavesenriched:kill_mob_with_backblast"
+        }
     }
-  }
 }

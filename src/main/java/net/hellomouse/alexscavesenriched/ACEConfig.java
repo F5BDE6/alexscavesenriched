@@ -51,9 +51,15 @@ public class ACEConfig implements ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     public GammaFlashlightConfig gammaFlashlightConfig = new GammaFlashlightConfig();
 
+    @ConfigEntry.Gui.CollapsibleObject
+    public CentrifugeConfig centrifuge = new CentrifugeConfig();
+
     public static class ClientConfig {
         public boolean overrideSkyColor = true;
         public boolean nukeParticleEffects = true;
+
+        @ConfigEntry.Gui.CollapsibleObject
+        public DemonCoreConfig.Sprite demonCoreSprite = new DemonCoreConfig.Sprite();
     }
 
     public static class RailgunConfig {
@@ -182,24 +188,37 @@ public class ACEConfig implements ConfigData {
         @ConfigEntry.BoundedDiscrete(min = 0, max = 1)
         public double boundingBoxFillProportion = 0.7;
 
-        @ConfigEntry.Gui.CollapsibleObject
-        public Sprite sprite = new Sprite();
-
         public static class Sprite {
             @ConfigEntry.BoundedDiscrete(min = 32, max = 1440)
             @ConfigEntry.Gui.Tooltip
-            public int resolution = 1440;
-            @ConfigEntry.BoundedDiscrete(min = 5, max = 22)
+            public int resolution = 720;
+            @ConfigEntry.BoundedDiscrete(min = 1, max = 22)
             @ConfigEntry.Gui.Tooltip
-            public int animationFrames = 20;
+            public int animationFrames = 5;
 
             public int getSpriteWidth() {
                 return resolution;
             }
-
             public int getSpriteHeight() {
                 return resolution * animationFrames;
             }
+
+            public boolean equals(Sprite other) {
+                return other.resolution == resolution && other.animationFrames == animationFrames;
+            }
+
+            public Sprite copy() {
+                Sprite out = new Sprite();
+                out.resolution = resolution;
+                out.animationFrames = animationFrames;
+                return out;
+            }
         }
+    }
+
+    public static class CentrifugeConfig {
+        public boolean cantInteractWithActive = true;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 5000)
+        public int maxSpeed = 100;
     }
 }

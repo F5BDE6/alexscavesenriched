@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "#minecraft:gold_ores",
+    "input": "#minecraft:gold_ores",
     "output": "minecraft:gilded_blackstone"
 }

@@ -3,7 +3,7 @@ package net.hellomouse.alexscavesenriched.client.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import net.hellomouse.alexscavesenriched.client.particle.DemonCoreGlowTexture;
+import net.hellomouse.alexscavesenriched.client.particle.texture.DemonCoreGlowTexture;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;

@@ -1,7 +1,9 @@
-{"variants": {
-    "": [
-        {
-            "model": "alexscavesenriched:block/black_hole_bomb"
-        }
-    ]
-}}
+{
+    "variants": {
+        "": [
+            {
+                "model": "alexscavesenriched:block/black_hole_bomb"
+            }
+        ]
+    }
+}

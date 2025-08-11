@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "": [
+            {
+                "model": "alexscavesenriched:block/centrifuge_base"
+            }
+        ]
+    }
+}

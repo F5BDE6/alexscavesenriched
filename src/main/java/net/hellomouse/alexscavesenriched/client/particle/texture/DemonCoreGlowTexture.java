@@ -1,5 +1,6 @@
-package net.hellomouse.alexscavesenriched.client.particle;
+package net.hellomouse.alexscavesenriched.client.particle.texture;
 
+import net.hellomouse.alexscavesenriched.ACEConfig;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
@@ -18,6 +19,7 @@ public class DemonCoreGlowTexture {
     static final java.util.Random random = new Random();
     public static Identifier ID = Identifier.of(AlexsCavesEnriched.MODID, "dynamic/demon_core_glow_sprite");
     public static NativeImageBackedTexture CURRENT;
+    public static ACEConfig.DemonCoreConfig.Sprite CONFIG_CACHE = new ACEConfig.DemonCoreConfig.Sprite();
 
     private static float clamp(float x, float minVal, float maxVal) {
         return min(max(x, minVal), maxVal);
@@ -33,9 +35,11 @@ public class DemonCoreGlowTexture {
         // Minecraft discard anything with alpha <0.1
         // The shader tint can apply *0.6 alpha
         // thus, some pixel can be invisible, creating a glowing effect
-        // I don't want to fix it, so it's a feature now
-        var resolution = AlexsCavesEnriched.CONFIG.demonCore.sprite.resolution;
-        var image = new NativeImage(AlexsCavesEnriched.CONFIG.demonCore.sprite.getSpriteWidth(), AlexsCavesEnriched.CONFIG.demonCore.sprite.getSpriteHeight(), false);
+        // Fixed with dithering
+        var resolution = AlexsCavesEnriched.CONFIG.client.demonCoreSprite.resolution;
+        var image = new NativeImage(
+                AlexsCavesEnriched.CONFIG.client.demonCoreSprite.getSpriteWidth(),
+                AlexsCavesEnriched.CONFIG.client.demonCoreSprite.getSpriteHeight(), false);
         image.fillRect(0, 0, image.getWidth(), image.getHeight(), 0x00000000);
 
         var centerX = 0.5f;
@@ -44,8 +48,8 @@ public class DemonCoreGlowTexture {
         var diameter = 1f;
         var radius = diameter / 2;
         float radiusSquared = radius * radius;
-
-        var animationCount = AlexsCavesEnriched.CONFIG.demonCore.sprite.animationFrames;
+        float ditherRadiusSquared = (radius * 0.7F) * (radius * 0.7F);
+        var animationCount = AlexsCavesEnriched.CONFIG.client.demonCoreSprite.animationFrames;
 
         for (int nthAnimation = animationCount - 1; nthAnimation >= 0; nthAnimation--) {
             try {
@@ -60,8 +64,15 @@ public class DemonCoreGlowTexture {
                             float decay = (float) lerp(1, 0, distanceFromCenterSqr / radiusSquared);
                             alpha += 0.5f * decay * (random.nextFloat() - 0.5f);
                             alpha *= decay;
-                            alpha = max(alpha, 0.1f);
-                            image.setColor(aX, aY + (nthAnimation * resolution), ColorHelper.Argb.getArgb((int) clamp((alpha) * 255, 0, 255), 255, 255, 255));
+
+                            if (distanceFromCenterSqr > ditherRadiusSquared + random.nextFloat() * 0.1F) {
+                                float ditherStrength = ((float)distanceFromCenterSqr - ditherRadiusSquared) / (radiusSquared - ditherRadiusSquared);
+                                ditherStrength = (float)pow(ditherStrength, 0.2F);
+                                alpha += random.nextFloat() * 0.15 * ditherStrength;
+                            }
+
+                            var pixelColor = ColorHelper.Argb.getArgb((int) clamp((alpha) * 255, 0, 255), 255, 255, 255);
+                            image.setColor(aX, aY + (nthAnimation * resolution), pixelColor);
                         }
                     }
                 }
@@ -72,12 +83,18 @@ public class DemonCoreGlowTexture {
         if (CURRENT == null) {
             CURRENT = new NativeImageBackedTexture(image);
         } else {
-            if (CURRENT.getImage() != null) {
+            if (CURRENT.getImage() != null)
                 CURRENT.getImage().close();
-            }
             CURRENT.setImage(image);
         }
         MinecraftClient.getInstance().textureManager.registerTexture(ID, CURRENT);
+    }
+
+    public static void resetIfChanged() {
+        if (!CONFIG_CACHE.equals(AlexsCavesEnriched.CONFIG.client.demonCoreSprite)) {
+            CONFIG_CACHE = AlexsCavesEnriched.CONFIG.client.demonCoreSprite.copy();
+            reset();
+        }
     }
 
     public static void reset() {
@@ -87,9 +104,4 @@ public class DemonCoreGlowTexture {
         }
         init();
     }
-
-    public void load(ResourceManager manager) throws IOException {
-
-    }
-
 }

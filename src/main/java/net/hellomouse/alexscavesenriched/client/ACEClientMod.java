@@ -33,21 +33,16 @@ public class ACEClientMod {
     // Reuse the submarine light for flashlight :)
     private static final Identifier FLASHLIGHT_SHADER = Identifier.of(AlexsCavesEnriched.MODID, "shaders/post/flashlight.json");
 
-    private static final float[] nukeSkyDecayRates = {1, 0.002F, 0.0003F, 0.001F};
-
+    // In increasing priority:
+    public enum NukeSkyType {NONE, NEUTRON, NUKE, BLACK_HOLE}
+    private static final float[] nukeSkyDecayRates = {1, 0.004F, 0.0003F, 0.001F};
     private static final float[] nukeSkyProgressPerType = new float[NukeSkyType.values().length];
 
     public static Pair<Vec3d, Vec3d> getNukeSkyGradient(NukeSkyType type) {
         switch (type) {
-            case NUKE, NONE -> {
-                return NUKE_SKY_GRADIENT;
-            }
-            case NEUTRON -> {
-                return NEUTRON_SKY_GRADIENT;
-            }
-            case BLACK_HOLE -> {
-                return BLACK_HOLE_SKY_GRADIENT;
-            }
+            case NUKE, NONE -> {return NUKE_SKY_GRADIENT;}
+            case NEUTRON -> { return NEUTRON_SKY_GRADIENT;}
+            case BLACK_HOLE -> { return BLACK_HOLE_SKY_GRADIENT; }
         }
         return NUKE_SKY_GRADIENT; // Never reached
     }
@@ -112,7 +107,7 @@ public class ACEClientMod {
             if (nukeSkyColor.getRight() > 0) {
                 Vec3d nukeColor = nukeSkyColor.getLeft();
                 float skyAlpha = nukeSkyColor.getRight();
-                skyAlpha = (float) Math.pow(skyAlpha, 0.8) * 0.9F;
+                skyAlpha = (float) Math.pow(skyAlpha, 1.2) * 0.9F;
 
                 Vec3d curColor = startColor.add(nukeColor.subtract(startColor).multiply(skyAlpha));
                 if (first) {
@@ -207,7 +202,4 @@ public class ACEClientMod {
     public static void fogColor(ViewportEvent.ComputeFogColor event) {
         computeFogColor(event, true);
     }
-
-    // In increasing priority:
-    public enum NukeSkyType {NONE, NEUTRON, NUKE, BLACK_HOLE}
 }

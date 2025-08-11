@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:granite",
+    "input": "minecraft:granite",
     "output": "minecraft:basalt"
 }

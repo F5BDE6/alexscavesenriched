@@ -1,29 +1,33 @@
 {
-  "parent": "alexscavesenriched:uranium_candy",
-  "display": {
-    "description": {
-      "translate": "advancements.alexscavesenriched.eat_uranium_candy.desc"
+    "parent": "alexscavesenriched:uranium_candy",
+    "display": {
+        "description": {
+            "translate": "advancements.alexscavesenriched.eat_uranium_candy.desc"
+        },
+        "title": {
+            "translate": "advancements.alexscavesenriched.eat_uranium_candy.title"
+        },
+        "frame": "challenge",
+        "icon": {
+            "item": "alexscavesenriched:uranium_candy"
+        },
+        "hidden": true
     },
-	"title": {
-      "translate": "advancements.alexscavesenriched.eat_uranium_candy.title"
-    },
-    "frame": "challenge",
-    "icon": {
-      "item": "alexscavesenriched:uranium_candy"
-    },
-    "hidden": true
-  },
-  "criteria": {
-    "eat_candy" : {
-      "trigger" : "minecraft:consume_item",
-      "conditions" : {
-        "item" : {
-          "items" : ["alexscavesenriched:uranium_candy"]
+    "criteria": {
+        "eat_candy": {
+            "trigger": "minecraft:consume_item",
+            "conditions": {
+                "item": {
+                    "items": [
+                        "alexscavesenriched:uranium_candy"
+                    ]
+                }
+            }
         }
-      }
-    }
-  },
-  "requirements": [
-    ["eat_candy"]
-  ]
+    },
+    "requirements": [
+        [
+            "eat_candy"
+        ]
+    ]
 }

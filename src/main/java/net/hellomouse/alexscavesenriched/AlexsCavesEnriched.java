@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
+import net.hellomouse.alexscavesenriched.client.particle.texture.DemonCoreGlowTexture;
 import net.hellomouse.alexscavesenriched.item.ACEDispenserItemBehavior;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -15,6 +16,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -41,6 +43,10 @@ public class AlexsCavesEnriched {
             .icon(() -> new ItemStack(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get()))
             .withTabsBefore(ItemGroups.SPAWN_EGGS)
             .entries((enabledFeatures, output) -> {
+                output.add(ACEBlockRegistry.CENTRIFUGE_BASE.get());
+                output.add(ACEBlockRegistry.CENTRIFUGE_TOP.get());
+                output.add(ACEBlockRegistry.SALTED_URANIUM.get());
+                output.add(ACEItemRegistry.ENRICHED_URANIUM_NUGGET.get());
                 output.add(ACEBlockRegistry.ENRICHED_URANIUM.get());
                 output.add(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get());
                 output.add(ACEItemRegistry.ENRICHED_URANIUM.get());
@@ -71,8 +77,15 @@ public class AlexsCavesEnriched {
     public AlexsCavesEnriched(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
         LOGGER.info("Loading AlexsCavesEnriched configuration...");
-        AutoConfig.register(ACEConfig.class, Toml4jConfigSerializer::new);
+
+        var configHandler = AutoConfig.register(ACEConfig.class, Toml4jConfigSerializer::new);
+        configHandler.registerSaveListener((configHolder, config) -> {
+            DemonCoreGlowTexture.resetIfChanged();
+            return ActionResult.SUCCESS;
+        });
+
         CONFIG = AutoConfig.getConfigHolder(ACEConfig.class).getConfig();
+
         modEventBus.addListener(this::commonSetup);
         ACERecipeRegistry.DEF_REG.register(modEventBus);
         ACERecipeRegistry.TYPE_DEF_REG.register(modEventBus);
@@ -82,6 +95,7 @@ public class AlexsCavesEnriched {
         ACEBlockEntityRegistry.DEF_REG.register(modEventBus);
         ACEEffectRegistry.DEF_REG.register(modEventBus);
         ACEParticleRegistry.DEF_REG.register(modEventBus);
+        ACEMenuRegistry.DEF_REG.register(modEventBus);
 
         CREATIVE_TAB_REG.register(modEventBus);
 

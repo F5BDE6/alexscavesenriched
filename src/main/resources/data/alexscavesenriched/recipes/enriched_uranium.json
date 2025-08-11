@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "iii",
+        "iii",
+        "iii"
+    ],
+    "key": {
+        "i": {
+            "item": "alexscavesenriched:enriched_uranium_nugget"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:enriched_uranium",
+        "count": 1
+    }
+}

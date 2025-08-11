@@ -1,0 +1,35 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "iSi",
+        "IOI",
+        "VMD"
+    ],
+    "key": {
+        "i": {
+            "item": "minecraft:iron_ingot"
+        },
+        "S": {
+            "item": "alexscaves:nuclear_furnace_component"
+        },
+        "I": {
+            "item": "minecraft:iron_block"
+        },
+        "O": {
+            "item": "minecraft:observer"
+        },
+        "V": {
+            "item": "alexscaves:scarlet_neodymium_ingot"
+        },
+        "M": {
+            "item": "alexscaves:ferrouslime_ball"
+        },
+        "D": {
+            "item": "alexscaves:azure_neodymium_ingot"
+        }
+    },
+    "result": {
+        "item": "alexscavesenriched:centrifuge_base",
+        "count": 1
+    }
+}

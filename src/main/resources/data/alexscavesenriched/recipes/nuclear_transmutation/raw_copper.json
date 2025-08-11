@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:raw_copper_block",
+    "input": "minecraft:raw_copper_block",
     "output": "minecraft:copper_block"
 }

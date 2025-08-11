@@ -1,0 +1,10 @@
+{
+    "type": "alexscavesenriched:centrifuge",
+    "input": "alexscavesenriched:salted_uranium_block",
+    "chance": 0.00001388888,
+    "outputs": [
+        "alexscavesenriched:enriched_uranium_nugget",
+        "alexscavesenriched:enriched_uranium_nugget",
+        "alexscaves:uranium"
+    ]
+}

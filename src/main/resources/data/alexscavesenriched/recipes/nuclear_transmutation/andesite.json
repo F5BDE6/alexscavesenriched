@@ -1,5 +1,5 @@
 {
     "type": "alexscavesenriched:nuclear_transmutation",
-	"input": "minecraft:andesite",
+    "input": "minecraft:andesite",
     "output": "minecraft:basalt"
 }
