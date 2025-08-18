@@ -26,4 +26,5 @@ The code is under the MIT license.
 **Credits:**
 - Bowserinator (main author)
 - Sunny (code contributions)
+- Auri (code contrbutions)
 - Xenonomous (models and textures)
