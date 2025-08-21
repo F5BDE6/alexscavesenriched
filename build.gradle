@@ -64,6 +64,8 @@ repositories {
 }
 
 dependencies {
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}"))
     minecraft "net.minecraft:minecraft:$project.minecraft_version"
     //mappings loom.officialMojangMappings()
     mappings "net.fabricmc:yarn:$project.yarn_mappings:v2"

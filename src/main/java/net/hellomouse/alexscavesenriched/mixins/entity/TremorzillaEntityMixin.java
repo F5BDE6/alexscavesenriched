@@ -1,6 +1,5 @@
 package net.hellomouse.alexscavesenriched.mixins.entity;
 
-import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.living.DinosaurEntity;
 import com.github.alexmodguy.alexscaves.server.entity.living.TremorzillaEntity;
 import com.github.alexmodguy.alexscaves.server.entity.util.ActivatesSirens;
@@ -9,6 +8,7 @@ import com.github.alexmodguy.alexscaves.server.entity.util.KeybindUsingMount;
 import com.github.alexmodguy.alexscaves.server.entity.util.ShakesScreen;
 import com.github.alexthe666.citadel.animation.IAnimatedEntity;
 import com.github.alexthe666.citadel.server.entity.pathfinding.raycoms.ITallWalker;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static com.github.alexmodguy.alexscaves.server.entity.living.GrottoceratopsEntity.ANIMATION_CHEW;
 
@@ -57,8 +56,8 @@ public abstract class TremorzillaEntityMixin extends DinosaurEntity implements K
         }
     }
 
-    @Inject(at = @At(value = "HEAD"), method = {"isBreedingItem"}, cancellable = true)
-    public void isFood(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(stack.isOf(ACBlockRegistry.NUCLEAR_BOMB.get().asItem()) || stack.isOf(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get().asItem()));
+    @ModifyReturnValue(method = "isBreedingItem", at = @At("RETURN"))
+    public boolean isFood(boolean original, ItemStack stack) {
+        return original || stack.isOf(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get().asItem());
     }
 }
