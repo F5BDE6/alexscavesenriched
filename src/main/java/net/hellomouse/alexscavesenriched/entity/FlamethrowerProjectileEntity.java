@@ -4,7 +4,6 @@ import net.hellomouse.alexscavesenriched.ACEEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEParticleRegistry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.entity.*;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,7 +29,6 @@ import net.minecraftforge.network.PlayMessages;
 
 public class FlamethrowerProjectileEntity extends Projectile {
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(FlamethrowerProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
-    ;
 
     public FlamethrowerProjectileEntity(EntityType entityType, Level world) {
         super(entityType, world);

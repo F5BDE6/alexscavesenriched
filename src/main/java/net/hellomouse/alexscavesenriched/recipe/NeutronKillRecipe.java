@@ -86,7 +86,7 @@ public class NeutronKillRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public ItemStack craft(SimpleContainer inventory, RegistryAccess registryManager) {
+    public ItemStack assemble(SimpleContainer inventory, RegistryAccess registryManager) {
         return ItemStack.EMPTY;
     }
 
@@ -140,7 +140,7 @@ public class NeutronKillRecipe implements Recipe<SimpleContainer> {
         }
 
         @Override
-        public void write(FriendlyByteBuf buf, NeutronKillRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buf, NeutronKillRecipe recipe) {
             buf.writeResourceLocation(recipe.getInputLocation());
             buf.writeResourceLocation(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(recipe.getOutput())));
             buf.writeFloat(recipe.getChance());

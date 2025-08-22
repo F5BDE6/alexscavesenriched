@@ -5,7 +5,6 @@ import net.hellomouse.alexscavesenriched.entity.UraniumArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 public class UraniumArrowRenderer extends ArrowRenderer<UraniumArrowEntity> {
     public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/uranium_arrow_entity.png");
@@ -15,7 +14,7 @@ public class UraniumArrowRenderer extends ArrowRenderer<UraniumArrowEntity> {
     }
 
     @Override
-    public ResourceLocation getTexture(UraniumArrowEntity entity) {
+    public ResourceLocation getTextureLocation(UraniumArrowEntity entity) {
         return TEXTURE;
     }
 

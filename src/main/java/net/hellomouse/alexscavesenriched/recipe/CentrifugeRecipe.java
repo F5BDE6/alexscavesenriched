@@ -1,7 +1,5 @@
 package net.hellomouse.alexscavesenriched.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.hellomouse.alexscavesenriched.ACERecipeRegistry;
 import net.minecraft.core.RegistryAccess;
@@ -89,7 +87,7 @@ public class CentrifugeRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public ItemStack craft(SimpleContainer inventory, RegistryAccess registryManager) {
+    public ItemStack assemble(SimpleContainer inventory, RegistryAccess registryManager) {
         return ItemStack.EMPTY;
     }
 
@@ -153,7 +151,7 @@ public class CentrifugeRecipe implements Recipe<SimpleContainer> {
         }
 
         @Override
-        public void write(FriendlyByteBuf buf, CentrifugeRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buf, CentrifugeRecipe recipe) {
             buf.writeResourceLocation(recipe.getInputLocation());
             StringJoiner allOutputs = new StringJoiner("|");
             for (var item : recipe.outputItems)

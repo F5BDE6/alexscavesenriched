@@ -30,7 +30,7 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         float ageInTicks = entity.tickCount + partialTicks;
         float alpha = 1.0F;
         float s = entity.getCurrentSize();
-        RenderType renderType = RenderType.entityCutout(this.getTexture(entity));
+        RenderType renderType = RenderType.entityCutout(this.getTextureLocation(entity));
         VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
 
         if (entity.getDecayDurationLeft() < 60)
@@ -57,13 +57,18 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         MODEL_DISK.setupAnim(entity, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
         drawDisk(0, ageInTicks, vertexConsumer, poseStack);
 
-        RenderType renderTypeEmissive = RenderType.entityTranslucentEmissive(this.getTexture(entity));
+        RenderType renderTypeEmissive = RenderType.entityTranslucentEmissive(this.getTextureLocation(entity));
         VertexConsumer vertexConsumerEmissive = bufferSource.getBuffer(renderTypeEmissive);
         drawDisk(1, ageInTicks, vertexConsumerEmissive, poseStack);
         drawDisk(-1, ageInTicks, vertexConsumerEmissive, poseStack);
 
         poseStack.popPose();
         super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, lighting);
+    }
+
+    @Override
+    public ResourceLocation getTextureLocation(BlackHoleEntity entity) {
+        return ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/blackhole.png");
     }
 
     private void drawDisk(int offset, float ageInTicks, VertexConsumer vertexConsumer, PoseStack poseStack) {
@@ -74,8 +79,5 @@ public class BlackHoleRenderer extends EntityRenderer<BlackHoleEntity> {
         poseStack.popPose();
     }
 
-    @Override
-    public ResourceLocation getTexture(BlackHoleEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/blackhole.png");
-    }
+
 }

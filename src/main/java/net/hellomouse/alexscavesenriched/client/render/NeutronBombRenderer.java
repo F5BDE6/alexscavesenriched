@@ -1,5 +1,8 @@
 package net.hellomouse.alexscavesenriched.client.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.entity.NeutronBombEntity;
 import net.minecraft.client.Minecraft;
@@ -20,10 +23,6 @@ import net.minecraftforge.client.RenderTypeHelper;
 import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import java.util.List;
 
 public class NeutronBombRenderer extends EntityRenderer<NeutronBombEntity> {
@@ -77,7 +76,7 @@ public class NeutronBombRenderer extends EntityRenderer<NeutronBombEntity> {
     }
 
     @Override
-    public ResourceLocation getTexture(NeutronBombEntity entity) {
+    public ResourceLocation getTextureLocation(NeutronBombEntity entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 }

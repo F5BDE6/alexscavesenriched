@@ -39,14 +39,14 @@ public class RocketRenderer extends EntityRenderer<RocketEntity> {
         }
         float ageInTicks = entity.tickCount + partialTicks;
         float alpha = 1.0F;
-        RenderType renderType = RenderType.entityCutout(this.getTexture(entity));
+        RenderType renderType = RenderType.entityCutout(this.getTextureLocation(entity));
         VertexConsumer vertexconsumer = bufferSource.getBuffer(renderType);
 
         if (entity.getIsNuclear() || entity.getIsNeutron()) {
             NUCLEAR_ROCKET_MODEL.setupAnim(entity, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
             NUCLEAR_ROCKET_MODEL.renderToBuffer(poseStack, vertexconsumer, 240, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
         } else {
-            MODEL.setAngles(entity, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
+            MODEL.setupAnim(entity, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
             MODEL.renderToBuffer(poseStack, vertexconsumer, 240, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
         }
         poseStack.popPose();
@@ -54,7 +54,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity> {
     }
 
     @Override
-    public ResourceLocation getTexture(RocketEntity entity) {
+    public ResourceLocation getTextureLocation(RocketEntity entity) {
         if (entity.getIsRadioactive() || entity.getIsMiniNuke())
             return ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/entity/rocket_entity.png");
         else if (entity.getIsNuclear())
