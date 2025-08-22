@@ -25,10 +25,10 @@ public abstract class AbstractSkeletonMixin extends Monster implements RangedAtt
     }
 
     @Inject(
-            method = {"updateAttackType"},
+            method = {"reassessWeaponGoal"},
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/ai/goal/GoalSelector;add(ILnet/minecraft/entity/ai/goal/Goal;)V",
+                    target = "Lnet/minecraft/world/entity/ai/goal/GoalSelector;addGoal(ILnet/minecraft/world/entity/ai/goal/Goal;)V",
                     shift = At.Shift.AFTER
             ),
             locals = LocalCapture.CAPTURE_FAILHARD,

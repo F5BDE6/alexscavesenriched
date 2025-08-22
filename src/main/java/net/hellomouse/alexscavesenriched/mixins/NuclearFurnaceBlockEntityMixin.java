@@ -3,7 +3,6 @@ package net.hellomouse.alexscavesenriched.mixins;
 import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.block.blockentity.ACBlockEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.block.blockentity.NuclearFurnaceBlockEntity;
-import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.ACEItemRegistry;
@@ -22,7 +21,10 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -49,13 +51,15 @@ public abstract class NuclearFurnaceBlockEntityMixin extends BaseContainerBlockE
     }
 
     @Inject(
-        method = {"tick"},
-        at = @At(
-            value = "INVOKE_ASSIGN",
-            target = "Lcom/github/alexmodguy/alexscaves/server/block/blockentity/NuclearFurnaceBlockEntity;getMaxFissionTime()I",
-            shift = At.Shift.AFTER
-        ),
-        locals = LocalCapture.CAPTURE_FAILSOFT
+            method = {"tick"},
+            at = @At(
+                    value = "INVOKE_ASSIGN",
+                    target = "Lcom/github/alexmodguy/alexscaves/server/block/blockentity/NuclearFurnaceBlockEntity;getMaxFissionTime()I",
+                    shift = At.Shift.AFTER,
+                    remap = false
+            ),
+            locals = LocalCapture.CAPTURE_FAILSOFT,
+            remap = false
     )
     private static void makeEnrichedRodsBurnLonger(Level level, BlockPos blockPos, BlockState state, NuclearFurnaceBlockEntity entity, CallbackInfo ci, boolean flag, ItemStack cookStack, ItemStack rodStack, ItemStack barrelStack, ItemStack cookResult) {
         if (rodStack.is(Item.BY_BLOCK.get(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get())))
@@ -63,13 +67,14 @@ public abstract class NuclearFurnaceBlockEntityMixin extends BaseContainerBlockE
     }
 
     @Inject(
-        method = {"tick"},
-        at = @At(
-            value = "HEAD",
-            target = "Lnet/minecraft/recipe/AbstractCookingRecipe;getOutput(Lnet/minecraft/registry/DynamicRegistryManager;)Lnet/minecraft/item/ItemStack;",
-            shift = At.Shift.AFTER
-        ),
-        locals = LocalCapture.CAPTURE_FAILSOFT
+            method = {"tick"},
+            at = @At(
+                    value = "HEAD",
+                    target = "Lnet/minecraft/recipe/AbstractCookingRecipe;getOutput(Lnet/minecraft/registry/DynamicRegistryManager;)Lnet/minecraft/item/ItemStack;",
+                    shift = At.Shift.AFTER
+            ),
+            locals = LocalCapture.CAPTURE_FAILSOFT,
+            remap = false
     )
     private static void createRadiationExtra(Level level, BlockPos blockPos, BlockState state, NuclearFurnaceBlockEntity entity, CallbackInfo ci) {
         var entity2 = ((NuclearFurnaceBlockEntityMixin) (Object) entity);
@@ -77,7 +82,7 @@ public abstract class NuclearFurnaceBlockEntityMixin extends BaseContainerBlockE
         final int DURATION = 100;
 
         if (AlexsCavesEnriched.CONFIG.nuclearFurnaceLeakRadius > 0.1 &&
-            entity2.currentRecipe != null &&
+                entity2.currentRecipe != null &&
                 entity2.currentRecipe.getResultItem(level.registryAccess()).is(ACEItemRegistry.ENRICHED_URANIUM.get()) &&
                 level.getGameTime() % DURATION == 0
         ) {
@@ -93,7 +98,7 @@ public abstract class NuclearFurnaceBlockEntityMixin extends BaseContainerBlockE
         }
     }
 
-    @Inject(at = @At(value = "HEAD"), method = {"getRecipeFor"}, cancellable = true)
+    @Inject(at = @At(value = "HEAD"), method = {"getRecipeFor"}, cancellable = true, remap = false)
     private void getRecipeFor(ItemStack itemStack, CallbackInfoReturnable<Optional<? extends AbstractCookingRecipe>> cir) {
         var container = new SimpleContainer(itemStack);
         var out = this.quickCheck.getRecipeFor(container, this.level);

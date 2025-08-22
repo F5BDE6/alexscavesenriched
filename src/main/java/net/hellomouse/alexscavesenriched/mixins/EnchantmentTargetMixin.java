@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 public class EnchantmentTargetMixin {
     @Shadow private Predicate<Item> delegate;
 
-    @Inject(at = @At(value = "HEAD"), method = {"isAcceptableItem"}, cancellable = true)
+    @Inject(at = @At(value = "HEAD"), method = {"canEnchant"}, cancellable = true)
     public void isAcceptableItem(Item item, CallbackInfoReturnable<Boolean> cir) {
         // Allow raygun mk2 to get raygun enchants
         if (this.delegate.test(ACItemRegistry.RAYGUN.get()) && item.equals(ACEItemRegistry.RAYGUN.get())) {

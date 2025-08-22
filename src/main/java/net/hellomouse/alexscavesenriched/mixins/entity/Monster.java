@@ -5,7 +5,6 @@ import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
@@ -44,7 +43,7 @@ public abstract class Monster extends PathfinderMob implements net.minecraft.wor
     }
 
     @Inject(
-            method = {"tickMovement"},
+            method = {"aiStep"},
             at = @At(value = "HEAD")
     )
     private void check_radioactive(CallbackInfo ci) {

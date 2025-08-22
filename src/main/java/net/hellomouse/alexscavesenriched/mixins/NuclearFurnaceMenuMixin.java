@@ -26,7 +26,7 @@ public abstract class NuclearFurnaceMenuMixin extends AbstractContainerMenu {
         this.level = inventory.player.getCommandSenderWorld();
     }
 
-    @Inject(at = @At(value = "HEAD"), method = {"canSmelt"}, cancellable = true)
+    @Inject(at = @At(value = "HEAD"), method = {"canSmelt"}, cancellable = true, remap = false)
     private void canSmelt(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         var container = new SimpleContainer(stack);
         cir.setReturnValue(this.level.getRecipeManager().getRecipeFor(NuclearFurnaceBlockEntity.getRecipeType(), container, this.level).isPresent() ||

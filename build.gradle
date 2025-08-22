@@ -35,6 +35,8 @@ loom {
             programArgs "--output", generatedResources.absolutePath
         }
         client {
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             vmArgs "-XX:+AllowEnhancedClassRedefinition"
         }
     }

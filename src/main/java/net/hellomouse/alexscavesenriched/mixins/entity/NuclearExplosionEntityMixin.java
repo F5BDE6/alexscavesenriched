@@ -28,7 +28,7 @@ public abstract class NuclearExplosionEntityMixin extends Entity {
             method = {"tick"},
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    target = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
                     shift = At.Shift.AFTER
             ),
             locals = LocalCapture.CAPTURE_FAILSOFT

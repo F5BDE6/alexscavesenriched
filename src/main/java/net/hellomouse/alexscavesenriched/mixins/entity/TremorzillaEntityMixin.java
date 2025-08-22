@@ -34,10 +34,10 @@ public abstract class TremorzillaEntityMixin extends DinosaurEntity implements K
     }
 
     @Inject(
-            method = {"interactMob"},
+            method = {"mobInteract"},
             at = @At(
                     value = "INVOKE_ASSIGN",
-                    target = "Lnet/minecraft/entity/player/PlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;",
+                    target = "Lnet/minecraft/world/entity/player/Player;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;",
                     shift = At.Shift.AFTER
             ),
             cancellable = true
@@ -56,7 +56,7 @@ public abstract class TremorzillaEntityMixin extends DinosaurEntity implements K
         }
     }
 
-    @ModifyReturnValue(method = "isBreedingItem", at = @At("RETURN"))
+    @ModifyReturnValue(method = "isFood", at = @At("RETURN"))
     public boolean isFood(boolean original, ItemStack stack) {
         return original || stack.is(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get().asItem());
     }
