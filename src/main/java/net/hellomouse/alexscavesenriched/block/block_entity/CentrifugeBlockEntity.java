@@ -1,6 +1,5 @@
 package net.hellomouse.alexscavesenriched.block.block_entity;
 
-import I;
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACERecipeRegistry;
@@ -48,7 +47,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 
 public class CentrifugeBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {

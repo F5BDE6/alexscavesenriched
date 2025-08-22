@@ -9,7 +9,6 @@ import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
 import net.hellomouse.alexscavesenriched.block.block_entity.EnrichedUraniumRodBlockEntity;
 import net.hellomouse.alexscavesenriched.block.block_entity.RadiationEmitterBlockEntity;
-import net.minecraft.block.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
@@ -22,11 +21,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -35,14 +30,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.*;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -134,7 +126,7 @@ public class EnrichedUraniumRodBlock extends BaseRotatedPillarEntityBlock implem
 
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource randomSource) {
         if (randomSource.nextInt(80) == 0) {
-            level.playLocalSound((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5, (SoundEvent) ACSoundRegistry.URANIUM_HUM.get(), SoundSource.BLOCKS, 0.5F, randomSource.nextFloat() * 0.4F + 0.8F, false);
+            level.playLocalSound((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5, ACSoundRegistry.URANIUM_HUM.get(), SoundSource.BLOCKS, 0.5F, randomSource.nextFloat() * 0.4F + 0.8F, false);
         }
 
         if (randomSource.nextInt(10) == 0) {
@@ -145,11 +137,11 @@ public class EnrichedUraniumRodBlock extends BaseRotatedPillarEntityBlock implem
     }
 
     public BlockState updateShape(BlockState state, Direction direction, BlockState state1, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos1) {
-        int liquidType = (Integer) state.getValue(LIQUID_LOGGED);
+        int liquidType = state.getValue(LIQUID_LOGGED);
         if (liquidType == 1) {
             levelAccessor.scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(levelAccessor));
         } else if (liquidType == 2) {
-            levelAccessor.scheduleTick(blockPos, ACFluidRegistry.ACID_FLUID_SOURCE.get(), ((FlowingFluid) ACFluidRegistry.ACID_FLUID_SOURCE.get()).getTickDelay(levelAccessor));
+            levelAccessor.scheduleTick(blockPos, ACFluidRegistry.ACID_FLUID_SOURCE.get(), ACFluidRegistry.ACID_FLUID_SOURCE.get().getTickDelay(levelAccessor));
         }
 
         if (!levelAccessor.isClientSide()) {
@@ -192,12 +184,12 @@ public class EnrichedUraniumRodBlock extends BaseRotatedPillarEntityBlock implem
     public ItemStack pickupBlock(LevelAccessor levelAccessor, BlockPos blockPos, BlockState state) {
         int liquidType = state.getValue(LIQUID_LOGGED);
         if (liquidType > 0) {
-            levelAccessor.setBlock(blockPos, (BlockState) state.setValue(LIQUID_LOGGED, 0), 3);
+            levelAccessor.setBlock(blockPos, state.setValue(LIQUID_LOGGED, 0), 3);
             if (!state.canSurvive(levelAccessor, blockPos)) {
                 levelAccessor.destroyBlock(blockPos, true);
             }
 
-            return new ItemStack((ItemLike) (liquidType == 1 ? Items.WATER_BUCKET : (ItemLike) ACItemRegistry.ACID_BUCKET.get()));
+            return new ItemStack(liquidType == 1 ? Items.WATER_BUCKET : (ItemLike) ACItemRegistry.ACID_BUCKET.get());
         } else {
             return ItemStack.EMPTY;
         }

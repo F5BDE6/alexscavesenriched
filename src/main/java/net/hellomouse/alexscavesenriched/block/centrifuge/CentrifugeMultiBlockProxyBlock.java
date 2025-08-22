@@ -4,7 +4,6 @@ import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeBlockEntity;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeInventoryProxyBlockEntity;
-import net.minecraft.block.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

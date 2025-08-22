@@ -1,6 +1,5 @@
 package net.hellomouse.alexscavesenriched.entity;
 
-import F;
 import com.github.alexmodguy.alexscaves.client.ClientProxy;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;

@@ -5,7 +5,6 @@ import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeBlockEntity;
 import net.minecraft.ChatFormatting;
-import net.minecraft.block.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;

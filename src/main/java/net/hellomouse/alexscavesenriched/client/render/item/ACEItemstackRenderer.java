@@ -11,7 +11,6 @@ import net.hellomouse.alexscavesenriched.client.model.RailgunModel;
 import net.hellomouse.alexscavesenriched.client.model.RaygunMk2Model;
 import net.hellomouse.alexscavesenriched.item.RailgunItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.*;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

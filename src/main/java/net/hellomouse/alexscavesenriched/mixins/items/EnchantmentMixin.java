@@ -4,19 +4,14 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.item.RocketLauncherItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.ArrowDamageEnchantment;
-import net.minecraft.world.item.enchantment.ArrowFireEnchantment;
-import net.minecraft.world.item.enchantment.ArrowInfiniteEnchantment;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.MultiShotEnchantment;
-import net.minecraft.world.item.enchantment.QuickChargeEnchantment;
+import net.minecraft.world.item.enchantment.*;
 import net.minecraftforge.common.extensions.IForgeEnchantment;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Enchantment.class)
 public abstract class EnchantmentMixin implements IForgeEnchantment {
-    @ModifyReturnValue(at = @At("RETURN"), method = "isAcceptableItem")
+    @ModifyReturnValue(at = @At("RETURN"), method = "canEnchant")
     public boolean isAcceptableItem(boolean original, ItemStack itemStack) {
         Enchantment enchant = (Enchantment) ((Object) this);
         if (itemStack.getItem() instanceof RocketLauncherItem) {

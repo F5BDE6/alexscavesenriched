@@ -1,20 +1,17 @@
 package net.hellomouse.alexscavesenriched.client.particle.texture;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.hellomouse.alexscavesenriched.ACEConfig;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
+
 import java.util.Random;
 
 import static java.lang.Math.*;
 import static org.joml.Math.lerp;
-
-import D;
-import F;
-import I;
-import com.mojang.blaze3d.platform.NativeImage;
 
 public class DemonCoreGlowTexture {
     static final java.util.Random random = new Random();

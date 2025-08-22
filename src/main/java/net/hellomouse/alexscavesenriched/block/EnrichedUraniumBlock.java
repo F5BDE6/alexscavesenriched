@@ -1,7 +1,6 @@
 package net.hellomouse.alexscavesenriched.block;
 
 
-import I;
 import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.block.ACSoundTypes;
 import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
+
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Objects;

@@ -1,9 +1,7 @@
 package net.hellomouse.alexscavesenriched.client.sound;
 
-import D;
 import net.hellomouse.alexscavesenriched.entity.BlackHoleEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
