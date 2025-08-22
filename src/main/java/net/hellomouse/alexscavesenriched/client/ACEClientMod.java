@@ -5,18 +5,19 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.client.command.ReloadDemonCoreTextureCommand;
 import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.CameraSubmersionType;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.FogType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
@@ -31,59 +32,19 @@ import net.minecraftforge.fml.common.Mod;
 @OnlyIn(Dist.CLIENT)
 public class ACEClientMod {
     // Reuse the submarine light for flashlight :)
-    private static final Identifier FLASHLIGHT_SHADER = Identifier.of(AlexsCavesEnriched.MODID, "shaders/post/flashlight.json");
+    private static final ResourceLocation FLASHLIGHT_SHADER = ResourceLocation.tryBuild(AlexsCavesEnriched.MODID, "shaders/post/flashlight.json");
 
     // In increasing priority:
     public enum NukeSkyType {NONE, NEUTRON, NUKE, BLACK_HOLE}
     private static final float[] nukeSkyDecayRates = {1, 0.004F, 0.0003F, 0.001F};
     private static final float[] nukeSkyProgressPerType = new float[NukeSkyType.values().length];
-
-    public static Pair<Vec3d, Vec3d> getNukeSkyGradient(NukeSkyType type) {
-        switch (type) {
-            case NUKE, NONE -> {return NUKE_SKY_GRADIENT;}
-            case NEUTRON -> { return NEUTRON_SKY_GRADIENT;}
-            case BLACK_HOLE -> { return BLACK_HOLE_SKY_GRADIENT; }
-        }
-        return NUKE_SKY_GRADIENT; // Never reached
-    }
+    // Get gradient <start color + alpha, end color + alpha>
+    // Alpha color of sky will be progress
+    public static Tuple<Vec3, Vec3> NUKE_SKY_GRADIENT = new Tuple<>(new Vec3(0.9, 0.2, 0), new Vec3(0.9, 0.1, 0));
 
     private static long lastTickTime = 0;
-
-    @SubscribeEvent
-    public static void onRenderStage(RenderLevelStageEvent event) {
-        Entity player = MinecraftClient.getInstance().getCameraEntity();
-        boolean firstPerson = MinecraftClient.getInstance().options.getPerspective().isFirstPerson();
-
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-            GameRenderer renderer = MinecraftClient.getInstance().gameRenderer;
-
-            boolean shouldFlash = false;
-            if (firstPerson && player instanceof PlayerEntity playerE) {
-                var stack1 = playerE.getInventory().getMainHandStack();
-                var stack2 = playerE.getInventory().offHand.get(0);
-                shouldFlash = (stack1.getItem() instanceof GammaFlashlightItem || stack2.getItem() instanceof GammaFlashlightItem) &&
-                        (GammaFlashlightItem.isOn(stack1) || GammaFlashlightItem.isOn(stack2));
-            }
-            if (firstPerson && shouldFlash) {
-                if (renderer.getPostProcessor() == null || !FLASHLIGHT_SHADER.toString().equals(renderer.getPostProcessor().getName())) {
-                    attemptLoadShader(FLASHLIGHT_SHADER);
-                }
-            } else if (renderer.getPostProcessor() != null && FLASHLIGHT_SHADER.toString().equals(renderer.getPostProcessor().getName())) {
-                renderer.onCameraEntitySet(null);
-            }
-        }
-    }
-
-    private static void attemptLoadShader(Identifier resourceLocation) {
-        GameRenderer renderer = MinecraftClient.getInstance().gameRenderer;
-        if (ClientProxy.shaderLoadAttemptCooldown <= 0) {
-            renderer.loadPostProcessor(resourceLocation);
-            if (!renderer.postProcessorEnabled) {
-                ClientProxy.shaderLoadAttemptCooldown = 12000;
-                AlexsCavesEnriched.LOGGER.warn("Alex's Caves Enriched could not load the shader {}, will attempt to load shader in 30 seconds", resourceLocation);
-            }
-        }
-    }
+    public static Tuple<Vec3, Vec3> NEUTRON_SKY_GRADIENT = new Tuple<>(new Vec3(0.1, 0.92, 1), new Vec3(0, 0.85, 0.85));
+    public static Tuple<Vec3, Vec3> BLACK_HOLE_SKY_GRADIENT = new Tuple<>(new Vec3(0.2, 0.01, 0), new Vec3(1, 0.1, 0));
 
     // Nuke sky colors
     // ----------------------------------------------------
@@ -92,24 +53,63 @@ public class ACEClientMod {
         nukeSkyProgressPerType[type.ordinal()] = Math.max(progress, nukeSkyProgressPerType[type.ordinal()]);
     }
 
-    // Get gradient <start color + alpha, end color + alpha>
-    // Alpha color of sky will be progress
-    public static Pair<Vec3d, Vec3d> NUKE_SKY_GRADIENT = new Pair<>(new Vec3d(0.9, 0.2, 0), new Vec3d(0.9, 0.1, 0));
-    public static Pair<Vec3d, Vec3d> NEUTRON_SKY_GRADIENT = new Pair<>(new Vec3d(0.1, 0.92, 1), new Vec3d(0, 0.85, 0.85));
-    public static Pair<Vec3d, Vec3d> BLACK_HOLE_SKY_GRADIENT = new Pair<>(new Vec3d(0.2, 0.01, 0), new Vec3d(1, 0.1, 0));
+    public static Tuple<Vec3, Vec3> getNukeSkyGradient(NukeSkyType type) {
+        switch (type) {
+            case NUKE, NONE -> {return NUKE_SKY_GRADIENT;}
+            case NEUTRON -> { return NEUTRON_SKY_GRADIENT;}
+            case BLACK_HOLE -> { return BLACK_HOLE_SKY_GRADIENT; }
+        }
+        return NUKE_SKY_GRADIENT; // Never reached
+    }
+
+    @SubscribeEvent
+    public static void onRenderStage(RenderLevelStageEvent event) {
+        Entity player = Minecraft.getInstance().getCameraEntity();
+        boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
+
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            GameRenderer renderer = Minecraft.getInstance().gameRenderer;
+
+            boolean shouldFlash = false;
+            if (firstPerson && player instanceof Player playerE) {
+                var stack1 = playerE.getInventory().getSelected();
+                var stack2 = playerE.getInventory().offhand.get(0);
+                shouldFlash = (stack1.getItem() instanceof GammaFlashlightItem || stack2.getItem() instanceof GammaFlashlightItem) &&
+                        (GammaFlashlightItem.isOn(stack1) || GammaFlashlightItem.isOn(stack2));
+            }
+            if (firstPerson && shouldFlash) {
+                if (renderer.currentEffect() == null || !FLASHLIGHT_SHADER.toString().equals(renderer.currentEffect().getName())) {
+                    attemptLoadShader(FLASHLIGHT_SHADER);
+                }
+            } else if (renderer.currentEffect() != null && FLASHLIGHT_SHADER.toString().equals(renderer.currentEffect().getName())) {
+                renderer.checkEntityPostEffect(null);
+            }
+        }
+    }
+
+    private static void attemptLoadShader(ResourceLocation resourceLocation) {
+        GameRenderer renderer = Minecraft.getInstance().gameRenderer;
+        if (ClientProxy.shaderLoadAttemptCooldown <= 0) {
+            renderer.loadEffect(resourceLocation);
+            if (!renderer.effectActive) {
+                ClientProxy.shaderLoadAttemptCooldown = 12000;
+                AlexsCavesEnriched.LOGGER.warn("Alex's Caves Enriched could not load the shader {}, will attempt to load shader in 30 seconds", resourceLocation);
+            }
+        }
+    }
 
     public static void computeFogColor(ViewportEvent.ComputeFogColor event, boolean first) {
         // Entity player = MinecraftClient.getInstance().player;
-        Vec3d startColor = new Vec3d(event.getRed(), event.getBlue(), event.getGreen());
+        Vec3 startColor = new Vec3(event.getRed(), event.getBlue(), event.getGreen());
 
-        if (event.getCamera().getSubmersionType() == CameraSubmersionType.NONE && AlexsCavesEnriched.CONFIG.client.overrideSkyColor) {
+        if (event.getCamera().getFluidInCamera() == FogType.NONE && AlexsCavesEnriched.CONFIG.client.overrideSkyColor) {
             var nukeSkyColor = getCurrentNukeSkyColor();
-            if (nukeSkyColor.getRight() > 0) {
-                Vec3d nukeColor = nukeSkyColor.getLeft();
-                float skyAlpha = nukeSkyColor.getRight();
+            if (nukeSkyColor.getB() > 0) {
+                Vec3 nukeColor = nukeSkyColor.getA();
+                float skyAlpha = nukeSkyColor.getB();
                 skyAlpha = (float) Math.pow(skyAlpha, 1.2) * 0.9F;
 
-                Vec3d curColor = startColor.add(nukeColor.subtract(startColor).multiply(skyAlpha));
+                Vec3 curColor = startColor.add(nukeColor.subtract(startColor).scale(skyAlpha));
                 if (first) {
                     ClientProxy.acSkyOverrideAmount = skyAlpha;
                     ClientProxy.acSkyOverrideColor = curColor;
@@ -123,37 +123,37 @@ public class ACEClientMod {
     }
 
     // Nuke sky color, progress
-    public static Pair<Vec3d, Float> getCurrentNukeSkyColor() {
+    public static Tuple<Vec3, Float> getCurrentNukeSkyColor() {
         float totalAmt = 0;
         for (int i = 1; i < NukeSkyType.values().length; i++)
             totalAmt += nukeSkyProgressPerType[i];
         if (totalAmt <= 0)
-            return new Pair<>(new Vec3d(0, 0, 0), 0F);
+            return new Tuple<>(new Vec3(0, 0, 0), 0F);
 
-        Vec3d outColor = new Vec3d(0, 0, 0);
+        Vec3 outColor = new Vec3(0, 0, 0);
         float weightedProgress = 0;
 
         for (int i = 1; i < NukeSkyType.values().length; i++) {
             if (nukeSkyProgressPerType[i] > 0) {
                 float progress = Math.min(1F, nukeSkyProgressPerType[i]);
                 var grad = getNukeSkyGradient(NukeSkyType.values()[i]);
-                Vec3d thisColor = grad.getRight().add((grad.getLeft().subtract(grad.getRight())).multiply(progress));
-                outColor = outColor.add(thisColor.multiply(nukeSkyProgressPerType[i] / totalAmt));
+                Vec3 thisColor = grad.getB().add((grad.getA().subtract(grad.getB())).scale(progress));
+                outColor = outColor.add(thisColor.scale(nukeSkyProgressPerType[i] / totalAmt));
                 weightedProgress += nukeSkyProgressPerType[i] * (nukeSkyProgressPerType[i] / totalAmt);
             }
         }
-        return new Pair<>(outColor, weightedProgress);
+        return new Tuple<>(outColor, weightedProgress);
     }
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        ClientWorld level = mc.world;
+        Minecraft mc = Minecraft.getInstance();
+        ClientLevel level = mc.level;
 
         if (event.phase == TickEvent.Phase.START && level != null) {
-            if (lastTickTime == level.getTime())
+            if (lastTickTime == level.getGameTime())
                 return;
-            lastTickTime = level.getTime();
+            lastTickTime = level.getGameTime();
 
             // Decay nuke sky glow even when nuke is not loaded
             for (int i = NukeSkyType.values().length - 1; i > 0; i--)
@@ -161,7 +161,7 @@ public class ACEClientMod {
 
             // Spawn nuke ash particles
 
-            ClientPlayerEntity player = mc.player;
+            LocalPlayer player = mc.player;
             if (player != null && AlexsCavesEnriched.CONFIG.client.nukeParticleEffects) {
                 if (nukeSkyProgressPerType[NukeSkyType.BLACK_HOLE.ordinal()] > 0.1) {
                     for (int i = 0; i < 8; i++) {
@@ -187,7 +187,7 @@ public class ACEClientMod {
 
     @SubscribeEvent
     public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
-        CommandDispatcher<ServerCommandSource> dispatcher = event.getDispatcher();
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         ReloadDemonCoreTextureCommand.register(dispatcher);
     }
 

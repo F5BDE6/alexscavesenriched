@@ -1,38 +1,38 @@
 package net.hellomouse.alexscavesenriched.block;
 
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
-import net.minecraft.block.AirBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.PushReaction;
 
 public class NukeGlowingAir extends AirBlock {
     public NukeGlowingAir() {
-        super(Settings.create()
-                .noCollision()
+        super(Properties.of()
+                .noCollission()
                 .air()
-                .luminance(state -> 15)
+                .lightLevel(state -> 15)
                 .replaceable()
-                .ticksRandomly()
-                .pistonBehavior(PistonBehavior.DESTROY));
+                .randomTicks()
+                .pushReaction(PushReaction.DESTROY));
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+        world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!world.isClient() && entity instanceof LivingEntity mob) {
-            mob.addStatusEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(),
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+        if (!world.isClientSide() && entity instanceof LivingEntity mob) {
+            mob.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(),
                     4800, 1, false, false, true));
         }
     }

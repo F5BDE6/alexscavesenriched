@@ -1,28 +1,28 @@
 package net.hellomouse.alexscavesenriched.client.particle;
 
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class RailgunShockwaveParticle extends ExplosionLargeParticle {
-    protected RailgunShockwaveParticle(ClientWorld arg, double d, double e, double f, double g, SpriteProvider arg2) {
+public class RailgunShockwaveParticle extends HugeExplosionParticle {
+    protected RailgunShockwaveParticle(ClientLevel arg, double d, double e, double f, double g, SpriteSet arg2) {
         super(arg, d, e, f, g, arg2);
-        this.maxAge = 8;
-        this.scale = 0.6F; // 1.5
-        this.setSpriteForAge(arg2);
+        this.lifetime = 8;
+        this.quadSize = 0.6F; // 1.5
+        this.setSpriteFromAge(arg2);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class Factory implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider spriteProvider;
+    public static class Factory implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet spriteProvider;
 
-        public Factory(SpriteProvider spriteProvider) {
+        public Factory(SpriteSet spriteProvider) {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(DefaultParticleType arg, ClientWorld arg2, double d, double e, double f, double g, double h, double i) {
+        public Particle createParticle(SimpleParticleType arg, ClientLevel arg2, double d, double e, double f, double g, double h, double i) {
             return new RailgunShockwaveParticle(arg2, d, e, f, g, this.spriteProvider);
         }
     }

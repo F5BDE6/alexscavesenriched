@@ -3,36 +3,36 @@ package net.hellomouse.alexscavesenriched.block;
 import com.github.alexmodguy.alexscaves.server.block.ACSoundTypes;
 import net.hellomouse.alexscavesenriched.block.abs.AbstractTntBlock;
 import net.hellomouse.alexscavesenriched.entity.BlackHoleBombEntity;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.MapColor;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.MapColor;
 
 public class BlackHoleBombBlock extends AbstractTntBlock {
     public BlackHoleBombBlock() {
-        super(AbstractBlock.Settings.create()
-                .mapColor(MapColor.IRON_GRAY)
-                .requiresTool()
+        super(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .requiresCorrectToolForDrops()
                 .strength(8, 1001)
-                .sounds(ACSoundTypes.NUCLEAR_BOMB));
-        this.setDefaultState(this.getDefaultState().with(UNSTABLE, false));
+                .sound(ACSoundTypes.NUCLEAR_BOMB));
+        this.registerDefaultState(this.defaultBlockState().setValue(UNSTABLE, false));
     }
 
-    public static void detonateStatic(World world, BlockPos pos, @org.jetbrains.annotations.Nullable LivingEntity igniter) {
-        if (!world.isClient) {
+    public static void detonateStatic(Level world, BlockPos pos, @org.jetbrains.annotations.Nullable LivingEntity igniter) {
+        if (!world.isClientSide) {
             BlackHoleBombEntity primedtnt = new BlackHoleBombEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, igniter);
-            world.spawnEntity(primedtnt);
-            world.playSound(null, primedtnt.getX(), primedtnt.getY(), primedtnt.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos);
+            world.addFreshEntity(primedtnt);
+            world.playSound(null, primedtnt.getX(), primedtnt.getY(), primedtnt.getZ(), SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0F, 1.0F);
+            world.gameEvent(igniter, GameEvent.PRIME_FUSE, pos);
         }
     }
 
     @Override
-    public void detonate(World world, BlockPos pos, @org.jetbrains.annotations.Nullable LivingEntity igniter) {
+    public void detonate(Level world, BlockPos pos, @org.jetbrains.annotations.Nullable LivingEntity igniter) {
         detonateStatic(world, pos, igniter);
     }
 }

@@ -1,15 +1,23 @@
 package net.hellomouse.alexscavesenriched.client.particle.abs;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.client.particle.texture.DemonCoreGlowTexture;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
+import net.minecraft.client.Camera;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.render.*;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
@@ -19,55 +27,110 @@ import org.joml.Vector4f;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
-public abstract class AbstractBlueGlowParticle extends SpriteBillboardParticle {
+import D;
+import F;
+
+public abstract class AbstractBlueGlowParticle extends TextureSheetParticle {
     public int frame = 0;
     private float realSize = 0;
 
-    protected AbstractBlueGlowParticle(ClientWorld world, double x, double y, double z, double vx, double vy, double vz) {
+    @OnlyIn(Dist.CLIENT)
+    public static ParticleRenderType PARTICLE_SHEET_DEMONCORE_CPU = new ParticleRenderType() {
+        @Override
+        public void begin(BufferBuilder builder, TextureManager textureManager) { beginImpl(builder, textureManager, 0); }
+        @Override
+        public void end(Tesselator tessellator) {
+            drawImpl(tessellator);
+        }
+        public String toString() {
+            return "PARTICLE_SHEET_DEMONCORE";
+        }
+    };
+    @OnlyIn(Dist.CLIENT)
+    public static ParticleRenderType PARTICLE_SHEET_NEUTRON_BOMB_CPU = new ParticleRenderType() {
+        @Override
+        public void begin(BufferBuilder builder, TextureManager textureManager) { beginImpl(builder, textureManager, 1); }
+        @Override
+        public void end(Tesselator tessellator) {
+            drawImpl(tessellator);
+        }
+        public String toString() {
+            return "PARTICLE_SHEET_NEUTRON_BOMB";
+        }
+    };
+
+    protected AbstractBlueGlowParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz) {
         super(world, x, y, z, vx, vy, vz);
-        this.collidesWithWorld = false;
+        this.hasPhysics = false;
         this.setColor(1F, 1F, 1F);
-        this.gravityStrength = 0.0F;
-        this.velocityMultiplier = 1.0F;
+        this.gravity = 0.0F;
+        this.friction = 1.0F;
         this.setAlpha(1.0F);
         this.setSize(0);
 
         // Mojang randomizes these but we don't want to
-        this.velocityX = vx;
-        this.velocityY = vy;
-        this.velocityZ = vz;
+        this.xd = vx;
+        this.yd = vy;
+        this.zd = vz;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void beginImpl(BufferBuilder builder, TextureManager textureManager, int variant) {
+        RenderSystem.enableBlend();
+        RenderSystem.disableCull();
+        RenderSystem.blendFunc(GL_SRC_ALPHA, GL_ONE);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.setShader(GameRenderer::getParticleShader);
+        RenderSystem.setShaderTexture(0, DemonCoreGlowTexture.ID);
+
+        var color = variant == 0 ? getDemonCoreColorForTick() : getNeutronBombColorForTick();
+        float r = Math.min(1f, Math.max(0f, color.x));
+        float g = Math.min(1f, Math.max(0f, color.y));
+        float b = Math.min(1f, Math.max(0f, color.z));
+        float a = Math.min(1f, Math.max(0f, color.w));
+        RenderSystem.setShaderColor(r, g, b, a);
+        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void drawImpl(Tesselator tessellator) {
+        tessellator.end();
+        RenderSystem.depthMask(true);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.enableCull();
     }
 
     protected void setSize(float s) {
-        this.scale = 1F;
+        this.quadSize = 1F;
         this.scale(s);
         this.realSize = s;
     }
 
     // Set size without setting real size
     protected void setSizeTemporary(float s) {
-        this.scale = 1F;
+        this.quadSize = 1F;
         this.scale(s);
     }
 
     @Override
-    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-        Vec3d vec3d = camera.getPos();
-        float tx = (float)(MathHelper.lerp(tickDelta, this.prevPosX, this.x) - vec3d.getX());
-        float ty = (float)(MathHelper.lerp(tickDelta, this.prevPosY, this.y) - vec3d.getY());
-        float tz = (float)(MathHelper.lerp(tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
+    public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+        Vec3 vec3d = camera.getPosition();
+        float tx = (float) (Mth.lerp(tickDelta, this.xo, this.x) - vec3d.x());
+        float ty = (float) (Mth.lerp(tickDelta, this.yo, this.y) - vec3d.y());
+        float tz = (float) (Mth.lerp(tickDelta, this.zo, this.z) - vec3d.z());
 
         Vector3f forward = new Vector3f(0, 0, -1);
-        Vector3f lookDir = forward.rotate(camera.getRotation());
+        Vector3f lookDir = forward.rotate(camera.rotation());
         float fade = 1F;
 
-        Vec3d dir = new Vec3d(tx, ty, tz);
+        Vec3 dir = new Vec3(tx, ty, tz);
         double len = dir.length();
         final boolean inside = len < this.realSize;
         if (inside) {
             // Fade out if looking out
             final float FADE_DISTANCE = this.realSize * 0.1F;
-            final var dotProduct = (new Vec3d(lookDir)).dotProduct(dir);
+            final var dotProduct = (new Vec3(lookDir)).dot(dir);
             final float fadeScale = 1F - (float)((len - (this.realSize - FADE_DISTANCE)) / FADE_DISTANCE);
             final float clampedFadeScale = Math.min(fadeScale, 1F);
 
@@ -92,11 +155,11 @@ public abstract class AbstractBlueGlowParticle extends SpriteBillboardParticle {
         }
 
         Quaternionf quaternionf;
-        if (this.angle == 0.0F) {
-            quaternionf = camera.getRotation();
+        if (this.roll == 0.0F) {
+            quaternionf = camera.rotation();
         } else {
-            quaternionf = new Quaternionf(camera.getRotation());
-            quaternionf.rotateZ(MathHelper.lerp(tickDelta, this.prevAngle, this.angle));
+            quaternionf = new Quaternionf(camera.rotation());
+            quaternionf.rotateZ(Mth.lerp(tickDelta, this.oRoll, this.roll));
         }
 
         Vector3f[] vector3fs = new Vector3f[]{
@@ -105,7 +168,7 @@ public abstract class AbstractBlueGlowParticle extends SpriteBillboardParticle {
                 new Vector3f(1.0F, 1.0F, 0.0F),
                 new Vector3f(1.0F, -1.0F, 0.0F)
         };
-        float i = this.getSize(tickDelta);
+        float i = this.getQuadSize(tickDelta);
 
         for (int j = 0; j < 4; j++) {
             Vector3f vector3f = vector3fs[j];
@@ -114,70 +177,21 @@ public abstract class AbstractBlueGlowParticle extends SpriteBillboardParticle {
             vector3f.add(tx, ty, tz);
         }
 
-        float k = this.getMinU();
-        float l = this.getMaxU();
-        float m = this.getMinV();
-        float n = this.getMaxV();
-        int o = this.getBrightness(tickDelta);
-        vertexConsumer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z()).texture(l, n).color(this.red, this.green, this.blue, this.alpha * fade).light(o).next();
-        vertexConsumer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z()).texture(l, m).color(this.red, this.green, this.blue, this.alpha * fade).light(o).next();
-        vertexConsumer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z()).texture(k, m).color(this.red, this.green, this.blue, this.alpha * fade).light(o).next();
-        vertexConsumer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z()).texture(k, n).color(this.red, this.green, this.blue, this.alpha * fade).light(o).next();
+        float k = this.getU0();
+        float l = this.getU1();
+        float m = this.getV0();
+        float n = this.getV1();
+        int o = this.getLightColor(tickDelta);
+        vertexConsumer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z()).uv(l, n).color(this.rCol, this.gCol, this.bCol, this.alpha * fade).uv2(o).endVertex();
+        vertexConsumer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z()).uv(l, m).color(this.rCol, this.gCol, this.bCol, this.alpha * fade).uv2(o).endVertex();
+        vertexConsumer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z()).uv(k, m).color(this.rCol, this.gCol, this.bCol, this.alpha * fade).uv2(o).endVertex();
+        vertexConsumer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z()).uv(k, n).color(this.rCol, this.gCol, this.bCol, this.alpha * fade).uv2(o).endVertex();
     }
 
     @Override
-    protected int getBrightness(float tickDelta) {
-        return LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE;
+    protected int getLightColor(float tickDelta) {
+        return LightTexture.FULL_BLOCK;
     }
-
-    @OnlyIn(Dist.CLIENT)
-    private static void beginImpl(BufferBuilder builder, TextureManager textureManager, int variant) {
-        RenderSystem.enableBlend();
-        RenderSystem.disableCull();
-        RenderSystem.blendFunc(GL_SRC_ALPHA, GL_ONE);
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.setShader(GameRenderer::getParticleProgram);
-        RenderSystem.setShaderTexture(0, DemonCoreGlowTexture.ID);
-
-        var color = variant == 0 ? getDemonCoreColorForTick() : getNeutronBombColorForTick();
-        float r = Math.min(1f, Math.max(0f, color.x));
-        float g = Math.min(1f, Math.max(0f, color.y));
-        float b = Math.min(1f, Math.max(0f, color.z));
-        float a = Math.min(1f, Math.max(0f, color.w));
-        RenderSystem.setShaderColor(r, g, b, a);
-        builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private static void drawImpl(Tessellator tessellator) {
-        tessellator.draw();
-        RenderSystem.depthMask(true);
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.enableCull();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static ParticleTextureSheet PARTICLE_SHEET_DEMONCORE_CPU = new ParticleTextureSheet() {
-        @Override
-        public void begin(BufferBuilder builder, TextureManager textureManager) { beginImpl(builder, textureManager, 0); }
-        @Override
-        public void draw(Tessellator tessellator) { drawImpl(tessellator); }
-        public String toString() {
-            return "PARTICLE_SHEET_DEMONCORE";
-        }
-    };
-
-    @OnlyIn(Dist.CLIENT)
-    public static ParticleTextureSheet PARTICLE_SHEET_NEUTRON_BOMB_CPU = new ParticleTextureSheet() {
-        @Override
-        public void begin(BufferBuilder builder, TextureManager textureManager) { beginImpl(builder, textureManager, 1); }
-        @Override
-        public void draw(Tessellator tessellator) { drawImpl(tessellator); }
-        public String toString() {
-            return "PARTICLE_SHEET_NEUTRON_BOMB";
-        }
-    };
 
     @Override
     public boolean shouldCull() {
@@ -197,7 +211,7 @@ public abstract class AbstractBlueGlowParticle extends SpriteBillboardParticle {
     }
 
     @Override
-    protected float getMinU() {
+    protected float getU0() {
         return 0;
     }
 
@@ -206,17 +220,17 @@ public abstract class AbstractBlueGlowParticle extends SpriteBillboardParticle {
     }
 
     @Override
-    protected float getMinV() {
+    protected float getV0() {
         return 1.0f / getNumFrames() * (frame % getNumFrames());
     }
 
     @Override
-    protected float getMaxV() {
-        return getMinV() + 1.0f / getNumFrames();
+    protected float getV1() {
+        return getV0() + 1.0f / getNumFrames();
     }
 
     @Override
-    protected float getMaxU() {
+    protected float getU1() {
         return 1;
     }
 

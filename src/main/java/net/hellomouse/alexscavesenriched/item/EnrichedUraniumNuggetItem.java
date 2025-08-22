@@ -1,15 +1,15 @@
 package net.hellomouse.alexscavesenriched.item;
 
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.util.Rarity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 
 public class EnrichedUraniumNuggetItem extends Item {
     public EnrichedUraniumNuggetItem() {
-        super(new Settings()
-                .maxCount(64)
+        super(new Properties()
+                .stacksTo(64)
                 .rarity(Rarity.UNCOMMON)
-                .fireproof()
+                .fireResistant()
                 .rarity(ACItemRegistry.RARITY_NUCLEAR));
     }
 }

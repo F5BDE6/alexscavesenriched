@@ -4,31 +4,31 @@ package net.hellomouse.alexscavesenriched.block;
 import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.block.ACSoundTypes;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.Vec3;
 
 public class SaltedUraniumBlock extends Block {
     public SaltedUraniumBlock() {
-        super(Settings.create()
-                .mapColor(MapColor.LIME)
+        super(Properties.of()
+                .mapColor(MapColor.COLOR_LIGHT_GREEN)
                 .strength(3.5F)
-                .luminance((state) -> 4)
-                .emissiveLighting((state, level, pos) -> true).sounds(ACSoundTypes.URANIUM));
+                .lightLevel((state) -> 4)
+                .emissiveRendering((state, level, pos) -> true).sound(ACSoundTypes.URANIUM));
     }
 
-    public void randomDisplayTick(BlockState state, World level, BlockPos pos, Random randomSource) {
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource randomSource) {
         if (randomSource.nextInt(80) == 0) {
-            level.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5,
-                    ACSoundRegistry.URANIUM_HUM.get(), SoundCategory.BLOCKS, 0.5F, randomSource.nextFloat() * 0.4F + 0.8F, false);
+            level.playLocalSound((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5,
+                    ACSoundRegistry.URANIUM_HUM.get(), SoundSource.BLOCKS, 0.5F, randomSource.nextFloat() * 0.4F + 0.8F, false);
         }
         if (randomSource.nextInt(13) == 0) {
-            Vec3d center = Vec3d.ofCenter(pos, 0.5);
+            Vec3 center = Vec3.upFromBottomCenterOf(pos, 0.5);
             level.addParticle(ACParticleRegistry.PROTON.get(), center.x, center.y, center.z, center.x, center.y, center.z);
         }
     }

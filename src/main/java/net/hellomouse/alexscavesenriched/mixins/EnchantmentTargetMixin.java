@@ -2,7 +2,7 @@ package net.hellomouse.alexscavesenriched.mixins;
 
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import net.hellomouse.alexscavesenriched.ACEItemRegistry;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Predicate;
 
-@Mixin(net.minecraft.enchantment.EnchantmentTarget.class)
+@Mixin(net.minecraft.world.item.enchantment.EnchantmentCategory.class)
 public class EnchantmentTargetMixin {
     @Shadow private Predicate<Item> delegate;
 

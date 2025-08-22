@@ -7,12 +7,12 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.hellomouse.alexscavesenriched.recipe.CentrifugeRecipe;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 public class EMICentrifugeRecipe extends BasicEmiRecipe {
@@ -26,7 +26,7 @@ public class EMICentrifugeRecipe extends BasicEmiRecipe {
         super(ACEEMIPlugin.ACE_CENTRIFUGE_CATEGORY, recipe.getId(), 70, 18);
         this.recipe = recipe;
         if (recipe.getIsTag()) {
-            var tag = TagKey.of(RegistryKeys.ITEM, recipe.getInputLocation());
+            var tag = TagKey.create(Registries.ITEM, recipe.getInputLocation());
             this.inputs.add(EmiIngredient.of(tag));
         } else {
             this.inputs.add(EmiStack.of(Objects.requireNonNull(recipe.getInput())));
@@ -41,7 +41,7 @@ public class EMICentrifugeRecipe extends BasicEmiRecipe {
     }
 
     public EMICentrifugeRecipe(CentrifugeRecipe recipe, ItemStack inputsOverride) {
-        super(ACEEMIPlugin.ACE_CENTRIFUGE_CATEGORY, recipe.getId().withPrefixedPath("/" + inputsOverride.getTranslationKey()), 70, 18);
+        super(ACEEMIPlugin.ACE_CENTRIFUGE_CATEGORY, recipe.getId().withPrefix("/" + inputsOverride.getDescriptionId()), 70, 18);
         this.recipe = recipe;
         this.inputs.add(EmiStack.of(inputsOverride));
         for (var output : recipe.getOutputs())

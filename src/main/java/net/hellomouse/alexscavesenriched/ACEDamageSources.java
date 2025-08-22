@@ -1,54 +1,54 @@
 package net.hellomouse.alexscavesenriched;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ACEDamageSources {
-    public static final RegistryKey<DamageType> BLACKHOLE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "black_hole"));
-    public static final RegistryKey<DamageType> RAILGUN = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "railgun"));
+    public static final ResourceKey<DamageType> BLACKHOLE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "black_hole"));
+    public static final ResourceKey<DamageType> RAILGUN = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "railgun"));
 
     public ACEDamageSources() {}
 
-    public static DamageSource causeBlackHoleDamage(DynamicRegistryManager registryAccess) {
+    public static DamageSource causeBlackHoleDamage(RegistryAccess registryAccess) {
         return new DamageSourceRandomMessages(
-                ((Registry)registryAccess.getOptional(RegistryKeys.DAMAGE_TYPE).get()).entryOf(BLACKHOLE), 4);
+                ((Registry) registryAccess.registry(Registries.DAMAGE_TYPE).get()).getHolderOrThrow(BLACKHOLE), 4);
     }
 
-    public static DamageSource causeRailgunDamage(DynamicRegistryManager registryAccess, Entity source) {
+    public static DamageSource causeRailgunDamage(RegistryAccess registryAccess, Entity source) {
         return new DamageSourceRandomMessages(
-                ((Registry)registryAccess.getOptional(RegistryKeys.DAMAGE_TYPE).get()).entryOf(RAILGUN), source, 3);
+                ((Registry) registryAccess.registry(Registries.DAMAGE_TYPE).get()).getHolderOrThrow(RAILGUN), source, 3);
     }
 
     private static class DamageSourceRandomMessages extends DamageSource {
         private final int messageCount;
 
-        public DamageSourceRandomMessages(RegistryEntry.Reference<DamageType> message, int messageCount) {
+        public DamageSourceRandomMessages(Holder.Reference<DamageType> message, int messageCount) {
             super(message);
             this.messageCount = messageCount;
         }
 
-        public DamageSourceRandomMessages(RegistryEntry.Reference<DamageType> message, Entity source, int messageCount) {
+        public DamageSourceRandomMessages(Holder.Reference<DamageType> message, Entity source, int messageCount) {
             super(message, source);
             this.messageCount = messageCount;
         }
 
-        public Text getDeathMessage(LivingEntity attacked) {
+        public Component getLocalizedDeathMessage(LivingEntity attacked) {
             int type = attacked.getRandom().nextInt(this.messageCount);
-            String var10000 = this.getName();
+            String var10000 = this.getMsgId();
             String s = "death.attack." + var10000 + "_" + type;
-            Entity entity = this.getSource() == null ? this.getAttacker() : this.getSource();
+            Entity entity = this.getDirectEntity() == null ? this.getEntity() : this.getDirectEntity();
             return entity != null ?
-                    Text.translatable(s + ".entity", attacked.getDisplayName(), entity.getDisplayName()) :
-                    Text.translatable(s, attacked.getDisplayName());
+                    Component.translatable(s + ".entity", attacked.getDisplayName(), entity.getDisplayName()) :
+                    Component.translatable(s, attacked.getDisplayName());
         }
     }
 }

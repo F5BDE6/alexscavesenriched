@@ -7,7 +7,7 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.hellomouse.alexscavesenriched.recipe.NuclearFurnanceRecipeAdditional;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import java.util.List;
 
 public class EMINuclearFurnaceRecipe extends BasicEmiRecipe {
@@ -17,7 +17,7 @@ public class EMINuclearFurnaceRecipe extends BasicEmiRecipe {
         super(ACEEMIPlugin.ACE_NUCLEAR_FURNACE_CATEGORY, recipe.getId(), 70, 18);
         this.recipe = recipe;
         this.inputs.add(EmiIngredient.of(recipe.getIngredients().get(0)));
-        this.outputs.add(EmiStack.of(recipe.getOutput(null)));
+        this.outputs.add(EmiStack.of(recipe.getResultItem(null)));
     }
 
     @Override
@@ -32,9 +32,9 @@ public class EMINuclearFurnaceRecipe extends BasicEmiRecipe {
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
-        widgets.addFillingArrow(24, 5, 50 * recipe.getCookTime()).tooltip((mx, my)
-                -> List.of(TooltipComponent.of(
-                    EmiPort.ordered(EmiPort.translatable("emi.cooking.time", recipe.getCookTime() / 20f))
+        widgets.addFillingArrow(24, 5, 50 * recipe.getCookingTime()).tooltip((mx, my)
+                -> List.of(ClientTooltipComponent.create(
+                EmiPort.ordered(EmiPort.translatable("emi.cooking.time", recipe.getCookingTime() / 20f))
                 )
         ));
         widgets.addTexture(EmiTexture.FULL_FLAME, 1, 24);

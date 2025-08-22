@@ -2,21 +2,24 @@ package net.hellomouse.alexscavesenriched.client.particle.texture;
 
 import net.hellomouse.alexscavesenriched.ACEConfig;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import java.util.Random;
 
 import static java.lang.Math.*;
 import static org.joml.Math.lerp;
 
+import D;
+import F;
+import I;
+import com.mojang.blaze3d.platform.NativeImage;
+
 public class DemonCoreGlowTexture {
     static final java.util.Random random = new Random();
-    public static Identifier ID = Identifier.of(AlexsCavesEnriched.MODID, "dynamic/demon_core_glow_sprite");
-    public static NativeImageBackedTexture CURRENT;
+    public static ResourceLocation ID = ResourceLocation.tryBuild(AlexsCavesEnriched.MODID, "dynamic/demon_core_glow_sprite");
+    public static DynamicTexture CURRENT;
     public static ACEConfig.DemonCoreConfig.Sprite CONFIG_CACHE = new ACEConfig.DemonCoreConfig.Sprite();
 
     private static float clamp(float x, float minVal, float maxVal) {
@@ -69,8 +72,8 @@ public class DemonCoreGlowTexture {
                                 alpha += random.nextFloat() * 0.15 * ditherStrength;
                             }
 
-                            var pixelColor = ColorHelper.Argb.getArgb((int) clamp((alpha) * 255, 0, 255), 255, 255, 255);
-                            image.setColor(aX, aY + (nthAnimation * resolution), pixelColor);
+                            var pixelColor = FastColor.ARGB32.color((int) clamp((alpha) * 255, 0, 255), 255, 255, 255);
+                            image.setPixelRGBA(aX, aY + (nthAnimation * resolution), pixelColor);
                         }
                     }
                 }
@@ -79,11 +82,11 @@ public class DemonCoreGlowTexture {
             }
         }
         if (CURRENT == null) {
-            CURRENT = new NativeImageBackedTexture(image);
+            CURRENT = new DynamicTexture(image);
         } else {
-            CURRENT.setImage(image);
+            CURRENT.setPixels(image);
         }
-        MinecraftClient.getInstance().textureManager.registerTexture(ID, CURRENT);
+        Minecraft.getInstance().textureManager.register(ID, CURRENT);
     }
 
     public static void resetIfChanged() {

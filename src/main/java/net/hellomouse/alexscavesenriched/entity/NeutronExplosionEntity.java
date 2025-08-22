@@ -16,23 +16,22 @@ import net.hellomouse.alexscavesenriched.ACERecipeRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.client.ACEClientMod;
 import net.hellomouse.alexscavesenriched.recipe.NeutronKillRecipe;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.world.ForgeChunkManager;
@@ -40,6 +39,7 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Stack;
 
 public class NeutronExplosionEntity extends Entity {
@@ -52,15 +52,20 @@ public class NeutronExplosionEntity extends Entity {
     private final Stack<BlockPos> toDestroyPartialChunks;
     private boolean loadingChunks;
 
-    private static final TrackedData<Float> SIZE;
-    private static final TrackedData<Boolean> NO_GRIEFING;
+    private static final EntityDataAccessor<Float> SIZE;
+    private static final EntityDataAccessor<Boolean> NO_GRIEFING;
 
     public enum ExplosionState {
         CALCULATE_WHAT_TO_DESTROY, DESTORYING, DONE
     }
     private ExplosionState explosionState = ExplosionState.CALCULATE_WHAT_TO_DESTROY;
 
-    public NeutronExplosionEntity(EntityType<?> entityType, World level) {
+    static {
+        SIZE = SynchedEntityData.defineId(NeutronExplosionEntity.class, EntityDataSerializers.FLOAT);
+        NO_GRIEFING = SynchedEntityData.defineId(NeutronExplosionEntity.class, EntityDataSerializers.BOOLEAN);
+    }
+
+    public NeutronExplosionEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
         this.spawnedParticle = false;
         this.toDestroyPartialChunks = new Stack<>();
@@ -68,18 +73,35 @@ public class NeutronExplosionEntity extends Entity {
         this.loadingChunks = false;
     }
 
-    public NeutronExplosionEntity(PlayMessages.SpawnEntity spawnEntity, World level) {
+    public NeutronExplosionEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ACEEntityRegistry.NEUTRON_EXPLOSION.get(), level);
-        this.setBoundingBox(this.calculateBoundingBox());
+        this.setBoundingBox(this.makeBoundingBox());
     }
 
-    public @NotNull Packet<ClientPlayPacketListener> createSpawnPacket() {
+    public static void tryTransmuteBlock(Level world, BlockPos blockpos) {
+        var currentState = world.getBlockState(blockpos);
+        var recipes = world.getRecipeManager().getAllRecipesFor(ACERecipeRegistry.NEUTRON_KILL_TYPE.get());
+        for (NeutronKillRecipe recipe : recipes) {
+            if (recipe.matches(currentState) && (recipe.getChance() == 1.0F || world.getRandom().nextFloat() <= recipe.getChance())) {
+                // Don't replace fluids though
+                if (recipe.getIsTag() && recipe.getInputLocation().equals(
+                        ResourceLocation.parse("minecraft:replaceable")) && !currentState.getFluidState().isEmpty())
+                    continue;
+
+                currentState = recipe.getOutput().defaultBlockState();
+                world.setBlockAndUpdate(blockpos, currentState);
+                break;
+            }
+        }
+    }
+
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @OnlyIn(Dist.CLIENT)
     public void clientTick() {
-        ACEClientMod.setNukeSky(ACEClientMod.NukeSkyType.NEUTRON, 1F - age / 100F);
+        ACEClientMod.setNukeSky(ACEClientMod.NukeSkyType.NEUTRON, 1F - tickCount / 100F);
     }
 
     @Override
@@ -93,16 +115,16 @@ public class NeutronExplosionEntity extends Entity {
             ClientProxy.renderNukeFlashFor = 8;
             playSound(ACSoundRegistry.NUCLEAR_EXPLOSION_RINGING.get(), 100, 50);
 
-            getEntityWorld().addImportantParticle(ACEParticleRegistry.NEUTRON_BLAST.get(), true,
+            getCommandSenderWorld().addAlwaysVisibleParticle(ACEParticleRegistry.NEUTRON_BLAST.get(), true,
                     this.getX(), this.getY(), this.getZ(),
                 0F, 0F, 0F);
         }
-        if (age > 40 && explosionState == ExplosionState.DONE) {
+        if (tickCount > 40 && explosionState == ExplosionState.DONE) {
             this.remove(RemovalReason.DISCARDED);
             return;
         }
 
-        if (!getEntityWorld().isClient && !isNoGriefing()) {
+        if (!getCommandSenderWorld().isClientSide && !isNoGriefing()) {
             if (!loadingChunks && !this.isRemoved()) {
                 loadingChunks = true;
                 loadChunksAround(true);
@@ -111,12 +133,12 @@ public class NeutronExplosionEntity extends Entity {
             final int CHUNKS_TO_PROCESS_PER_TICK = 12;
             if (explosionState == ExplosionState.CALCULATE_WHAT_TO_DESTROY) {
                 explosionState = ExplosionState.DESTORYING;
-                BlockPos center = this.getBlockPos();
+                BlockPos center = this.blockPosition();
                 for (int i = -chunksAffected; i <= chunksAffected; i++)
                     for (int j = -chunksAffected; j <= chunksAffected; j++)
                         for (int k = -chunksAffected; k <= chunksAffected; k++) {
-                            var chunkPos = center.add(i * 16, j * 16, k * 16);
-                            if (chunkPos.getSquaredDistance(center) < Math.pow(Math.max(0, 16 * (chunksAffected - 4)), 2) ||
+                            var chunkPos = center.offset(i * 16, j * 16, k * 16);
+                            if (chunkPos.distSqr(center) < Math.pow(Math.max(0, 16 * (chunksAffected - 4)), 2) ||
                                     !NuclearExplosion2Entity.anyChunkVertexOutsideSphere(chunkPos, radius, center))
                                 toDestroyFullChunks.push(chunkPos);
                             else
@@ -124,11 +146,11 @@ public class NeutronExplosionEntity extends Entity {
                         }
 
                 toDestroyFullChunks.sort((blockPos1, blockPos2) -> Double.compare(
-                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos2, this.getBlockPos()),
-                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos1, this.getBlockPos())));
+                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos2, this.blockPosition()),
+                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos1, this.blockPosition())));
                 toDestroyPartialChunks.sort((blockPos1, blockPos2) -> Double.compare(
-                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos2, this.getBlockPos()),
-                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos1, this.getBlockPos())));
+                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos2, this.blockPosition()),
+                        NuclearExplosion2Entity.chunkBlockPosToDis(blockPos1, this.blockPosition())));
             } else if (explosionState == ExplosionState.DESTORYING) {
                 int chunkToDestroyBudget = CHUNKS_TO_PROCESS_PER_TICK; // Chunks can destroy per tick
                 while (chunkToDestroyBudget > 0 && !toDestroyFullChunks.isEmpty()) {
@@ -145,63 +167,46 @@ public class NeutronExplosionEntity extends Entity {
         }
 
         // Damage entities
-        Box killBox = this.getBoundingBox().expand(radius * 1.1F, radius * 1.1F, radius * 1.1F);
-        for (LivingEntity entity : this.getEntityWorld().getNonSpectatingEntities(LivingEntity.class, killBox)) {
-            entity.addStatusEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(),
+        AABB killBox = this.getBoundingBox().inflate(radius * 1.1F, radius * 1.1F, radius * 1.1F);
+        for (LivingEntity entity : this.getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, killBox)) {
+            entity.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(),
                     AlexsCavesEnriched.CONFIG.neutron.irradiationPotionTime,
                     AlexsCavesEnriched.CONFIG.neutron.irradiationPotionPower,
                     false, false, true));
 
-            if (age <= 2) {
+            if (tickCount <= 2) {
                 float damage = AlexsCavesEnriched.CONFIG.neutron.burstDamage;
                 if (entity instanceof RaycatEntity || entity instanceof TremorzillaEntity)
                     damage = 0;
-                else if (entity.getType().isIn(ACTagRegistry.RESISTS_RADIATION))
+                else if (entity.getType().is(ACTagRegistry.RESISTS_RADIATION))
                     damage *= 0.25F;
                 if (damage > 0)
-                    entity.damage(ACDamageTypes.causeNukeDamage(getEntityWorld().getRegistryManager()), damage);
+                    entity.hurt(ACDamageTypes.causeNukeDamage(getCommandSenderWorld().registryAccess()), damage);
             }
         }
     }
 
     private void loadChunksAround(boolean load) {
-        NuclearExplosion2Entity.loadChunksInRadius(getEntityWorld(), this, new ChunkPos(this.getBlockPos()), load, this.getChunksAffected());
-    }
-
-    public static void tryTransmuteBlock(World world, BlockPos blockpos) {
-        var currentState = world.getBlockState(blockpos);
-        var recipes = world.getRecipeManager().listAllOfType(ACERecipeRegistry.NEUTRON_KILL_TYPE.get());
-        for (NeutronKillRecipe recipe : recipes) {
-            if (recipe.matches(currentState) && (recipe.getChance() == 1.0F || world.getRandom().nextFloat() <= recipe.getChance())) {
-                // Don't replace fluids though
-                if (recipe.getIsTag() && recipe.getInputLocation().equals(
-                        Identifier.parse("minecraft:replaceable")) && !currentState.getFluidState().isEmpty())
-                    continue;
-
-                currentState = recipe.getOutput().getDefaultState();
-                world.setBlockState(blockpos, currentState);
-                break;
-            }
-        }
+        NuclearExplosion2Entity.loadChunksInRadius(getCommandSenderWorld(), this, new ChunkPos(this.blockPosition()), load, this.getChunksAffected());
     }
 
     private void destroyChunk(int radius, Stack<BlockPos> stack, boolean checkSphere) {
         BlockPos chunkCorner = stack.pop();
-        BlockPos.Mutable carve = new BlockPos.Mutable();
-        BlockPos.Mutable carveBelow = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos carve = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos carveBelow = new BlockPos.MutableBlockPos();
         carve.set(chunkCorner);
         carveBelow.set(chunkCorner);
 
-        int maxDeltaY = Math.min(getEntityWorld().getTopY() - chunkCorner.getY(), 16);
+        int maxDeltaY = Math.min(getCommandSenderWorld().getMaxBuildHeight() - chunkCorner.getY(), 16);
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++)
                 for (int y = maxDeltaY; y >= 0; y--) {
-                    if (chunkCorner.getY() + y < getEntityWorld().getBottomY()) break;
+                    if (chunkCorner.getY() + y < getCommandSenderWorld().getMinBuildHeight()) break;
                     carve.set(chunkCorner.getX() + x, chunkCorner.getY() + y, chunkCorner.getZ() + z);
 
                     if (checkSphere) {
-                        double yDist = ACMath.smin(0.6F - Math.abs(this.getBlockPos().getY() - carve.getY()) / (float) radius, 0.6F, 0.2F);
-                        double distToCenter = carve.getSquaredDistance(this.getBlockPos().getX(), carve.getY() - 1, this.getBlockPos().getZ());
+                        double yDist = ACMath.smin(0.6F - Math.abs(this.blockPosition().getY() - carve.getY()) / (float) radius, 0.6F, 0.2F);
+                        double distToCenter = carve.distToLowCornerSqr(this.blockPosition().getX(), carve.getY() - 1, this.blockPosition().getZ());
                         double targetRadius = yDist * radius * radius;
 
                         if (distToCenter <= targetRadius) {
@@ -213,55 +218,50 @@ public class NeutronExplosionEntity extends Entity {
                             continue;
                         }
                     }
-                    BlockState state = getEntityWorld().getBlockState(carve);
+                    BlockState state = getCommandSenderWorld().getBlockState(carve);
                     if (!state.isAir() || !state.getFluidState().isEmpty())
-                        tryTransmuteBlock(getEntityWorld(), carve);
+                        tryTransmuteBlock(getCommandSenderWorld(), carve);
                 }
-    }
-
-    public void remove(@NotNull RemovalReason removalReason) {
-        if (!this.getEntityWorld().isClient && this.loadingChunks) {
-            this.loadingChunks = false;
-            this.loadChunksAround(false);
-        }
-        super.remove(removalReason);
     }
 
     private int getChunksAffected() {
         return (int)Math.ceil(this.getSize());
     }
 
-    protected void initDataTracker() {
-        this.dataTracker.startTracking(SIZE, 1.0F);
-        this.dataTracker.startTracking(NO_GRIEFING, false);
+    public void remove(@NotNull RemovalReason removalReason) {
+        if (!this.getCommandSenderWorld().isClientSide && this.loadingChunks) {
+            this.loadingChunks = false;
+            this.loadChunksAround(false);
+        }
+        super.remove(removalReason);
+    }
+
+    protected void defineSynchedData() {
+        this.entityData.define(SIZE, 1.0F);
+        this.entityData.define(NO_GRIEFING, false);
     }
 
     public float getSize() {
-        return this.dataTracker.get(SIZE);
+        return this.entityData.get(SIZE);
     }
 
     public void setSize(float f) {
-        this.dataTracker.set(SIZE, f);
+        this.entityData.set(SIZE, f);
     }
 
     public boolean isNoGriefing() {
-        return this.dataTracker.get(NO_GRIEFING);
+        return this.entityData.get(NO_GRIEFING);
     }
 
     public void setNoGriefing(boolean noGriefing) {
-        this.dataTracker.set(NO_GRIEFING, noGriefing);
+        this.entityData.set(NO_GRIEFING, noGriefing);
     }
 
-    protected void readCustomDataFromNbt(NbtCompound compoundTag) {
+    protected void readAdditionalSaveData(CompoundTag compoundTag) {
         this.loadingChunks = compoundTag.getBoolean("WasLoadingChunks");
     }
 
-    protected void writeCustomDataToNbt(NbtCompound compoundTag) {
+    protected void addAdditionalSaveData(CompoundTag compoundTag) {
         compoundTag.putBoolean("WasLoadingChunks", this.loadingChunks);
-    }
-
-    static {
-        SIZE = DataTracker.registerData(NeutronExplosionEntity.class, TrackedDataHandlerRegistry.FLOAT);
-        NO_GRIEFING = DataTracker.registerData(NeutronExplosionEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     }
 }

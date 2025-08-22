@@ -4,7 +4,7 @@ import com.github.alexthe666.citadel.client.model.AdvancedEntityModel;
 import com.github.alexthe666.citadel.client.model.AdvancedModelBox;
 import com.github.alexthe666.citadel.client.model.basic.BasicModelPart;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -87,7 +87,7 @@ public class RaygunMk2Model extends AdvancedEntityModel<Entity> {
     }
 
     @Override
-    public void setAngles(Entity entity, float useAmount, float ageInTicks, float unused, float netHeadYaw, float headPitch) {
+    public void setupAnim(Entity entity, float useAmount, float ageInTicks, float unused, float netHeadYaw, float headPitch) {
         this.resetToDefaultPose();
     }
 }

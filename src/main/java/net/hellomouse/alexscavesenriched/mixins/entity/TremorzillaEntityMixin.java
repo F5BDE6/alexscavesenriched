@@ -10,12 +10,12 @@ import com.github.alexthe666.citadel.animation.IAnimatedEntity;
 import com.github.alexthe666.citadel.server.entity.pathfinding.raycoms.ITallWalker;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,9 +27,9 @@ import static com.github.alexmodguy.alexscaves.server.entity.living.Grottocerato
 @Mixin(TremorzillaEntity.class)
 public abstract class TremorzillaEntityMixin extends DinosaurEntity implements KeybindUsingMount, IAnimatedEntity, ShakesScreen, KaijuMob, ActivatesSirens, ITallWalker {
     @Shadow
-    private PlayerEntity lastFedPlayer = null;
+    private Player lastFedPlayer = null;
 
-    public TremorzillaEntityMixin(EntityType entityType, World level) {
+    public TremorzillaEntityMixin(EntityType entityType, Level level) {
         super(entityType, level);
     }
 
@@ -42,22 +42,22 @@ public abstract class TremorzillaEntityMixin extends DinosaurEntity implements K
             ),
             cancellable = true
     )
-    private void allowInstantTamingWithEnrichedUraniumRods(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        var itemStack = player.getStackInHand(hand);
-        if (!this.isTamed() && (itemStack.isOf(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get().asItem())) && this.getAnimation() == NO_ANIMATION) {
-            this.eat(player, hand, itemStack);
+    private void allowInstantTamingWithEnrichedUraniumRods(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+        var itemStack = player.getItemInHand(hand);
+        if (!this.isTame() && (itemStack.is(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get().asItem())) && this.getAnimation() == NO_ANIMATION) {
+            this.usePlayerItem(player, hand, itemStack);
             this.setAnimation(ANIMATION_CHEW);
             this.lastFedPlayer = player;
 
-            this.setOwner(lastFedPlayer);
-            this.clearPositionTarget();
-            this.getEntityWorld().sendEntityStatus(this, (byte) 7);
-            cir.setReturnValue(ActionResult.SUCCESS);
+            this.tame(lastFedPlayer);
+            this.clearRestriction();
+            this.getCommandSenderWorld().broadcastEntityEvent(this, (byte) 7);
+            cir.setReturnValue(InteractionResult.SUCCESS);
         }
     }
 
     @ModifyReturnValue(method = "isBreedingItem", at = @At("RETURN"))
     public boolean isFood(boolean original, ItemStack stack) {
-        return original || stack.isOf(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get().asItem());
+        return original || stack.is(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get().asItem());
     }
 }

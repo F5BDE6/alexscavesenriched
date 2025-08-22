@@ -2,6 +2,7 @@ package net.hellomouse.alexscavesenriched.client;
 
 import com.github.alexmodguy.alexscaves.client.render.entity.EmptyRenderer;
 import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.hellomouse.alexscavesenriched.*;
 import net.hellomouse.alexscavesenriched.client.entity.BlackHoleDiskModel;
@@ -16,12 +17,11 @@ import net.hellomouse.alexscavesenriched.client.render.block.CentrifugeTopRender
 import net.hellomouse.alexscavesenriched.client.render.item.ACEItemRenderProperties;
 import net.hellomouse.alexscavesenriched.item.DeadmanSwitchItem;
 import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ConfigScreenHandler;
@@ -78,15 +78,15 @@ public class ACEClientHandler {
 
     @SubscribeEvent
     public static void registerShaders(final RegisterShadersEvent e) {
-//        try {
-//            e.registerShader(new ShaderProgram(e.getResourceProvider(),
-//                    Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "radiation_particle"),
-//                    VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), ACEInternalShaders::setRadiationParticleShader);
-//            AlexsCavesEnriched.LOGGER.info("Registered AlexsCavesEnriched internal shaders");
-//        } catch (IOException exception) {
-//            AlexsCavesEnriched.LOGGER.error("could not register internal shaders");
-//            exception.printStackTrace();
-//        }
+        /*try {
+            e.registerShader(new ShaderInstance(e.getResourceProvider(),
+                    ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "radiation_particle"),
+                    DefaultVertexFormat.PARTICLE), ACEInternalShaders::setRadiationParticleShader);
+            AlexsCavesEnriched.LOGGER.info("Registered AlexsCavesEnriched internal shaders");
+        } catch (IOException exception) {
+            AlexsCavesEnriched.LOGGER.error("could not register internal shaders");
+            exception.printStackTrace();
+        }*/
     }
 
     @SubscribeEvent
@@ -95,15 +95,15 @@ public class ACEClientHandler {
                 () -> new ConfigScreenHandler.ConfigScreenFactory((mc, prevScreen) -> AutoConfig.getConfigScreen(ACEConfig.class, prevScreen).get())
         );
 
-        ModelPredicateProviderRegistry.register(ACEItemRegistry.GAMMA_FLASHLIGHT.get(), Identifier.withDefaultNamespace("active"), (stack, level, living, j) -> GammaFlashlightItem.isOn(stack) ? 1.0F : 0.0F);
-        ModelPredicateProviderRegistry.register(ACEItemRegistry.DEADMAN_SWITCH.get(), Identifier.withDefaultNamespace("active"), (stack, level, living, j) -> DeadmanSwitchItem.isActive(stack) ? 1.0F : 0.0F);
-        ModelPredicateProviderRegistry.register(ACEItemRegistry.RAYGUN.get(), Identifier.withDefaultNamespace("gamma"), (stack, level, living, j) ->
+        ItemProperties.register(ACEItemRegistry.GAMMA_FLASHLIGHT.get(), ResourceLocation.withDefaultNamespace("active"), (stack, level, living, j) -> GammaFlashlightItem.isOn(stack) ? 1.0F : 0.0F);
+        ItemProperties.register(ACEItemRegistry.DEADMAN_SWITCH.get(), ResourceLocation.withDefaultNamespace("active"), (stack, level, living, j) -> DeadmanSwitchItem.isActive(stack) ? 1.0F : 0.0F);
+        ItemProperties.register(ACEItemRegistry.RAYGUN.get(), ResourceLocation.withDefaultNamespace("gamma"), (stack, level, living, j) ->
                 stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0? 1.0F : 0.0F);
 
         event.enqueueWork(DemonCoreGlowTexture::reset);
         event.enqueueWork(
-            () -> HandledScreens.register(ACEMenuRegistry.CENTRIFUGE.get(), CentrifugeBlockScreen::new));
+                () -> MenuScreens.register(ACEMenuRegistry.CENTRIFUGE.get(), CentrifugeBlockScreen::new));
 
-        BlockEntityRendererFactories.register(ACEBlockEntityRegistry.CENTRIFUGE_PROXY.get(), CentrifugeTopRenderer::new);
+        BlockEntityRenderers.register(ACEBlockEntityRegistry.CENTRIFUGE_PROXY.get(), CentrifugeTopRenderer::new);
     }
 }

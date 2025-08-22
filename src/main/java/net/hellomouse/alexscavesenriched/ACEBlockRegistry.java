@@ -10,9 +10,9 @@ import net.hellomouse.alexscavesenriched.block.centrifuge.CentrifugeMultiBlockPr
 import net.hellomouse.alexscavesenriched.block.centrifuge.CentrifugeTopBlock;
 import net.hellomouse.alexscavesenriched.block.fumo.XenoFumoBlock;
 import net.hellomouse.alexscavesenriched.block.fumo.XiaoyuFumoBlock;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.util.Rarity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -55,16 +55,20 @@ public class ACEBlockRegistry {
 
     private static Supplier<? extends BlockItemWithSupplier> getBlockSupplier(int itemType, RegistryObject<Block> blockObj) {
         return switch (itemType) {
-            case 1 -> () -> new BlockItemWithSupplierLore(blockObj, new Item.Settings());
-            case 2 -> () -> new BlockItemWithScaffolding(blockObj, new Item.Settings());
-            case 4 -> () -> new RadioactiveBlockItem(blockObj, new Item.Settings(), 0.001F);
-            case 5 -> () -> new RadioactiveOnDestroyedBlockItem(blockObj, new Item.Settings(), 0.01F);
-            case 6 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Settings()).rarity(Rarity.UNCOMMON));
-            case 7 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Settings()).rarity(Rarity.UNCOMMON).fireproof());
-            case 8 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Settings()).rarity(Rarity.UNCOMMON).fireproof().rarity(ACItemRegistry.RARITY_NUCLEAR));
-            case 9 -> () -> new RadioactiveBlockItem(blockObj, (new Item.Settings()).rarity(Rarity.UNCOMMON).fireproof().rarity(ACItemRegistry.RARITY_NUCLEAR), 0.001F);
-            case 10 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Settings()).rarity(Rarity.EPIC).fireproof());
-            default -> () -> new BlockItemWithSupplier(blockObj, new Item.Settings());
+            case 1 -> () -> new BlockItemWithSupplierLore(blockObj, new Item.Properties());
+            case 2 -> () -> new BlockItemWithScaffolding(blockObj, new Item.Properties());
+            case 4 -> () -> new RadioactiveBlockItem(blockObj, new Item.Properties(), 0.001F);
+            case 5 -> () -> new RadioactiveOnDestroyedBlockItem(blockObj, new Item.Properties(), 0.01F);
+            case 6 -> () -> new BlockItemWithSupplier(blockObj, (new Item.Properties()).rarity(Rarity.UNCOMMON));
+            case 7 ->
+                    () -> new BlockItemWithSupplier(blockObj, (new Item.Properties()).rarity(Rarity.UNCOMMON).fireResistant());
+            case 8 ->
+                    () -> new BlockItemWithSupplier(blockObj, (new Item.Properties()).rarity(Rarity.UNCOMMON).fireResistant().rarity(ACItemRegistry.RARITY_NUCLEAR));
+            case 9 ->
+                    () -> new RadioactiveBlockItem(blockObj, (new Item.Properties()).rarity(Rarity.UNCOMMON).fireResistant().rarity(ACItemRegistry.RARITY_NUCLEAR), 0.001F);
+            case 10 ->
+                    () -> new BlockItemWithSupplier(blockObj, (new Item.Properties()).rarity(Rarity.EPIC).fireResistant());
+            default -> () -> new BlockItemWithSupplier(blockObj, new Item.Properties());
         };
     }
 }

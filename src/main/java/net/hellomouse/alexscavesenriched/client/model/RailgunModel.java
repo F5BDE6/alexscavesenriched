@@ -5,10 +5,7 @@ import com.github.alexthe666.citadel.client.model.AdvancedModelBox;
 import com.github.alexthe666.citadel.client.model.basic.BasicModelPart;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 public class RailgunModel extends AdvancedEntityModel<Entity> {
     private final AdvancedModelBox root;
@@ -95,7 +92,7 @@ public class RailgunModel extends AdvancedEntityModel<Entity> {
     }
 
     @Override
-    public void setAngles(Entity entity, float useAmount, float ageInTicks, float unused, float netHeadYaw, float headPitch) {
+    public void setupAnim(Entity entity, float useAmount, float ageInTicks, float unused, float netHeadYaw, float headPitch) {
         this.resetToDefaultPose();
     }
 }
