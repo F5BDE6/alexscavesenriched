@@ -8,10 +8,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.hellomouse.alexscavesenriched.recipe.NuclearFurnanceRecipeAdditional;
 import net.hellomouse.alexscavesenriched.recipe.NuclearTransmutationRecipe;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
@@ -29,14 +26,14 @@ public class EMINuclearTransmutationRecipe extends BasicEmiRecipe {
             this.inputs.add(EmiStack.of(recipe.getInput()));
         else
             throw new RuntimeException("EMINuclearTransmutationRecipe does not expect tag");
-        this.outputs.add(EmiStack.of(recipe.getOutput(null)));
+        this.outputs.add(EmiStack.of(recipe.getResultItem(null)));
     }
 
     public EMINuclearTransmutationRecipe(NuclearTransmutationRecipe recipe, ItemStack inputsOverride) {
-        super(ACEEMIPlugin.ACE_NUCLEAR_TRANSMUTATION_CATEGORY, recipe.getId().withPrefixedPath("/" + inputsOverride.getTranslationKey()), 70, 18);
+        super(ACEEMIPlugin.ACE_NUCLEAR_TRANSMUTATION_CATEGORY, recipe.getId().withPrefix("/" + inputsOverride.getDescriptionId()), 70, 18);
         this.recipe = recipe;
         this.inputs.add(EmiStack.of(inputsOverride));
-        this.outputs.add(EmiStack.of(recipe.getOutput(null)));
+        this.outputs.add(EmiStack.of(recipe.getResultItem(null)));
     }
 
     @Override

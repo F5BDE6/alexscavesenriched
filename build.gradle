@@ -35,6 +35,8 @@ loom {
             programArgs "--output", generatedResources.absolutePath
         }
         client {
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             vmArgs "-XX:+AllowEnhancedClassRedefinition"
         }
     }
@@ -61,14 +63,20 @@ repositories {
         url = "https://maven.terraformersmc.com/"
     }
     maven { url "https://maven.shedaniel.me/" }
+    maven { url = 'https://maven.parchmentmc.org' }
+
 }
 
 dependencies {
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"))
     implementation(include("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}"))
     minecraft "net.minecraft:minecraft:$project.minecraft_version"
-    //mappings loom.officialMojangMappings()
-    mappings "net.fabricmc:yarn:$project.yarn_mappings:v2"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:2023.09.03@zip")
+
+    }
+    // mappings "net.fabricmc:yarn:$project.yarn_mappings:v2"
     forge "net.minecraftforge:forge:$project.forge_version"
     modImplementation "maven.modrinth:alexs-caves:2.0.2"
     modImplementation "maven.modrinth:patchouli:1.20.1-84.1-forge"

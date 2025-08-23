@@ -2,22 +2,23 @@ package net.hellomouse.alexscavesenriched;
 
 import com.mojang.logging.LogUtils;
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
 import net.hellomouse.alexscavesenriched.client.particle.texture.DemonCoreGlowTexture;
 import net.hellomouse.alexscavesenriched.item.ACEDispenserItemBehavior;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -32,45 +33,45 @@ public class AlexsCavesEnriched {
     public static final String MODID = "alexscavesenriched";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final TagKey<Block> NEUTRONREFLECTOR_TAG = BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "neutron_reflector"));
-    public static final TagKey<Block> WEAK_PLANTS_TAG = BlockTags.create(Identifier.fromNamespaceAndPath(MODID, "weak_plants"));
-    public static final TagKey<Item> FLAMETHROWER_FUEL_TAG = ItemTags.create(Identifier.fromNamespaceAndPath(MODID, "flamethrower_fuel"));
+    public static final TagKey<Block> NEUTRONREFLECTOR_TAG = BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "neutron_reflector"));
+    public static final TagKey<Block> WEAK_PLANTS_TAG = BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "weak_plants"));
+    public static final TagKey<Item> FLAMETHROWER_FUEL_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "flamethrower_fuel"));
 
     public static ACEConfig CONFIG;
-    public static final DeferredRegister<ItemGroup> CREATIVE_TAB_REG = DeferredRegister.create(RegistryKeys.ITEM_GROUP, MODID);
-    public static final RegistryObject<ItemGroup> CREATIVE_TAB_ACE = CREATIVE_TAB_REG.register(MODID, () -> ItemGroup.builder()
-            .displayName(Text.translatable("itemGroup." + MODID + ".creative_tab"))
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REG = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB_ACE = CREATIVE_TAB_REG.register(MODID, () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup." + MODID + ".creative_tab"))
             .icon(() -> new ItemStack(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get()))
-            .withTabsBefore(ItemGroups.SPAWN_EGGS)
-            .entries((enabledFeatures, output) -> {
-                output.add(ACEBlockRegistry.CENTRIFUGE_BASE.get());
-                output.add(ACEBlockRegistry.CENTRIFUGE_TOP.get());
-                output.add(ACEBlockRegistry.SALTED_URANIUM.get());
-                output.add(ACEItemRegistry.ENRICHED_URANIUM_NUGGET.get());
-                output.add(ACEBlockRegistry.ENRICHED_URANIUM.get());
-                output.add(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get());
-                output.add(ACEItemRegistry.ENRICHED_URANIUM.get());
-                output.add(ACEItemRegistry.ROCKET_LAUNCHER.get());
-                output.add(ACEItemRegistry.ROCKET_NORMAL.get());
-                output.add(ACEItemRegistry.ROCKET.get());
-                output.add(ACEItemRegistry.ROCKET_NUCLEAR.get());
-                output.add(ACEItemRegistry.ROCKET_NEUTRON.get());
-                output.add(ACEItemRegistry.ROCKET_MINI_NUKE.get());
-                output.add(ACEItemRegistry.URANIUM_ARROW.get());
-                output.add(ACEItemRegistry.URANIUM_CANDY.get());
-                output.add(ACEItemRegistry.RAYGUN.get());
-                output.add(ACEItemRegistry.RAYGUN_UPGRADE_TEMPLATE.get());
-                output.add(ACEItemRegistry.FLAMETHROWER.get());
-                output.add(ACEBlockRegistry.MINI_NUKE.get());
-                output.add(ACEBlockRegistry.NEUTRON_BOMB.get());
-                output.add(ACEBlockRegistry.BLACK_HOLE_BOMB.get());
-                output.add(ACEItemRegistry.DEADMAN_SWITCH.get());
-                output.add(ACEItemRegistry.GAMMA_FLASHLIGHT.get());
-                output.add(ACEItemRegistry.NUKA_COLA.get());
-                output.add(ACEItemRegistry.NUKA_COLA_QUANTUM.get());
-                output.add(ACEItemRegistry.NUKA_COLA_EMPTY.get());
-                output.add(ACEItemRegistry.RAILGUN.get());
-                output.add(ACEItemRegistry.RAILGUN_AMMO.get());
+            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+            .displayItems((enabledFeatures, output) -> {
+                output.accept(ACEBlockRegistry.CENTRIFUGE_BASE.get());
+                output.accept(ACEBlockRegistry.CENTRIFUGE_TOP.get());
+                output.accept(ACEBlockRegistry.SALTED_URANIUM.get());
+                output.accept(ACEItemRegistry.ENRICHED_URANIUM_NUGGET.get());
+                output.accept(ACEBlockRegistry.ENRICHED_URANIUM.get());
+                output.accept(ACEBlockRegistry.ENRICHED_URANIUM_ROD.get());
+                output.accept(ACEItemRegistry.ENRICHED_URANIUM.get());
+                output.accept(ACEItemRegistry.ROCKET_LAUNCHER.get());
+                output.accept(ACEItemRegistry.ROCKET_NORMAL.get());
+                output.accept(ACEItemRegistry.ROCKET.get());
+                output.accept(ACEItemRegistry.ROCKET_NUCLEAR.get());
+                output.accept(ACEItemRegistry.ROCKET_NEUTRON.get());
+                output.accept(ACEItemRegistry.ROCKET_MINI_NUKE.get());
+                output.accept(ACEItemRegistry.URANIUM_ARROW.get());
+                output.accept(ACEItemRegistry.URANIUM_CANDY.get());
+                output.accept(ACEItemRegistry.RAYGUN.get());
+                output.accept(ACEItemRegistry.RAYGUN_UPGRADE_TEMPLATE.get());
+                output.accept(ACEItemRegistry.FLAMETHROWER.get());
+                output.accept(ACEBlockRegistry.MINI_NUKE.get());
+                output.accept(ACEBlockRegistry.NEUTRON_BOMB.get());
+                output.accept(ACEBlockRegistry.BLACK_HOLE_BOMB.get());
+                output.accept(ACEItemRegistry.DEADMAN_SWITCH.get());
+                output.accept(ACEItemRegistry.GAMMA_FLASHLIGHT.get());
+                output.accept(ACEItemRegistry.NUKA_COLA.get());
+                output.accept(ACEItemRegistry.NUKA_COLA_QUANTUM.get());
+                output.accept(ACEItemRegistry.NUKA_COLA_EMPTY.get());
+                output.accept(ACEItemRegistry.RAILGUN.get());
+                output.accept(ACEItemRegistry.RAILGUN_AMMO.get());
             })
             .build());
 
@@ -81,7 +82,7 @@ public class AlexsCavesEnriched {
         var configHandler = AutoConfig.register(ACEConfig.class, Toml4jConfigSerializer::new);
         configHandler.registerSaveListener((configHolder, config) -> {
             DemonCoreGlowTexture.resetIfChanged();
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         });
 
         CONFIG = AutoConfig.getConfigHolder(ACEConfig.class).getConfig();

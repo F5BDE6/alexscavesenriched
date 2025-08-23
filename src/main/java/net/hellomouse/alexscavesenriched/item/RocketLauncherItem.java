@@ -7,23 +7,23 @@ import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEClientItemExtension;
 import net.hellomouse.alexscavesenriched.entity.IRocketEntity;
 import net.hellomouse.alexscavesenriched.entity.RocketEntity;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,10 +35,10 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
     private static final float MAX_LOAD_TIME = 40.0f;
 
     public RocketLauncherItem() {
-        super(new Item.Settings()
+        super(new Item.Properties()
                 .rarity(Rarity.UNCOMMON)
-                .fireproof()
-                .maxCount(1)
+                .fireResistant()
+                .stacksTo(1)
         );
     }
 
@@ -47,139 +47,143 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
         consumer.accept(ACEClientItemExtension.INSTANCE);
     }
 
-    public @NotNull TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand interactionHand) {
-        ItemStack itemstack = player.getStackInHand(interactionHand);
-        ItemStack ammo = player.getProjectileType(itemstack);
-        boolean flag = player.isCreative();
-        if(flag || !ammo.isEmpty()) {
-            player.setCurrentHand(interactionHand);
-            return TypedActionResult.consume(itemstack);
-        } else {
-            return TypedActionResult.fail(itemstack);
-        }
-    }
-
-    public int getMaxUseTime(@NotNull ItemStack stack) {
-        return 72000;
-    }
-
-    @Override
-    public @NotNull UseAction getUseAction(@NotNull ItemStack stack) { return UseAction.BOW; }
-
-    @Override
-    public int getEnchantability() { return 1; }
-
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return stack.getCount() == 1;
-    }
-
-    public static float getPullProgress(int i) {
+    public static float getPowerForTime(int i) {
         float f = (float) i / MAX_LOAD_TIME;
         f = (f * f + f * 2.0F) / 3.0F;
         if (f > 1.0F) { f = 1.0F; }
         return f;
     }
 
-    private PersistentProjectileEntity createRocket(PlayerEntity player, ItemStack ammoIn) {
-        IRocketItem rocket = (IRocketItem)(ammoIn.getItem() instanceof IRocketItem ? ammoIn.getItem() : ACEItemRegistry.ROCKET_NORMAL.get());
-        return rocket.createRocket(player.getEntityWorld(), ammoIn, player);
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand) {
+        ItemStack itemstack = player.getItemInHand(interactionHand);
+        ItemStack ammo = player.getProjectile(itemstack);
+        boolean flag = player.isCreative();
+        if(flag || !ammo.isEmpty()) {
+            player.startUsingItem(interactionHand);
+            return InteractionResultHolder.consume(itemstack);
+        } else {
+            return InteractionResultHolder.fail(itemstack);
+        }
     }
 
-    public void onStoppedUsing(ItemStack itemStack, World level, LivingEntity livingEntity, int i1) {
-        if (!(livingEntity instanceof PlayerEntity player))
+    public int getUseDuration(@NotNull ItemStack stack) {
+        return 72000;
+    }
+
+    @Override
+    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+        return UseAnim.BOW;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return stack.getCount() == 1;
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        return 1;
+    }
+
+    private AbstractArrow createRocket(Player player, ItemStack ammoIn) {
+        IRocketItem rocket = (IRocketItem)(ammoIn.getItem() instanceof IRocketItem ? ammoIn.getItem() : ACEItemRegistry.ROCKET_NORMAL.get());
+        return rocket.createRocket(player.getCommandSenderWorld(), ammoIn, player);
+    }
+
+    public void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int i1) {
+        if (!(livingEntity instanceof Player player))
             return;
 
-        int i = this.getMaxUseTime(itemStack) - i1;
-        float f = getPullProgress(i);
+        int i = this.getUseDuration(itemStack) - i1;
+        float f = getPowerForTime(i);
 
         if (f > 0.01D) {
-            player.playSoundIfNotSilent(SoundEvents.ENTITY_GENERIC_EXPLODE);
-            ItemStack ammoStack = player.getProjectileType(itemStack);
-            PersistentProjectileEntity rocket = createRocket(player, ammoStack);
+            player.playSound(SoundEvents.GENERIC_EXPLODE);
+            ItemStack ammoStack = player.getProjectile(itemStack);
+            AbstractArrow rocket = createRocket(player, ammoStack);
 
             if (rocket != null) {
                 // Fire rocket
-                int power = itemStack.getEnchantmentLevel(Enchantments.POWER);
-                rocket.pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
-                Vec3d launchPos = player.getEyePos();
-                Vec3d launchDir = player.getRotationVec(1.0F);
-                rocket.setPosition(launchPos);
-                rocket.setVelocity(launchDir.x, launchDir.y, launchDir.z,
+                int power = itemStack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
+                rocket.pickup = AbstractArrow.Pickup.DISALLOWED;
+                Vec3 launchPos = player.getEyePosition();
+                Vec3 launchDir = player.getViewVector(1.0F);
+                rocket.setPos(launchPos);
+                rocket.shoot(launchDir.x, launchDir.y, launchDir.z,
                         (float) (AlexsCavesEnriched.CONFIG.rocketLauncher.baseSpeed + AlexsCavesEnriched.CONFIG.rocketLauncher.powerSpeed * power),
                         0.0F); // 0.0F randomness
-                if (rocket instanceof IRocketEntity && itemStack.getEnchantmentLevel(Enchantments.FLAME) > 0)
+                if (rocket instanceof IRocketEntity && itemStack.getEnchantmentLevel(Enchantments.FLAMING_ARROWS) > 0)
                     ((IRocketEntity) rocket).setIsFlame(true);
-                level.spawnEntity(rocket);
+                level.addFreshEntity(rocket);
 
                 // Back blast (near)
                 boolean backblastAreaNotClear = false;
-                Box bashBoxNear = new Box(new BlockPos((int) launchPos.getX(), (int) launchPos.getY(), (int) launchPos.getZ()))
-                        .stretch(launchDir.multiply(-1.0)).expand(0.5);
-                for (LivingEntity entity : level.getNonSpectatingEntities(LivingEntity.class, bashBoxNear)) {
+                AABB bashBoxNear = new AABB(new BlockPos((int) launchPos.x(), (int) launchPos.y(), (int) launchPos.z()))
+                        .expandTowards(launchDir.scale(-1.0)).inflate(0.5);
+                for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, bashBoxNear)) {
                     if (entity == player)
                         continue;
-                    Vec3d delta = entity.getLerpedPos(1.0F).subtract(launchPos);
-                    entity.setOnFireFor(10);
-                    entity.addVelocity(delta.normalize().multiply(5.0F));
+                    Vec3 delta = entity.getPosition(1.0F).subtract(launchPos);
+                    entity.setSecondsOnFire(10);
+                    entity.addDeltaMovement(delta.normalize().scale(5.0F));
                     backblastAreaNotClear = true;
-                    entity.damage(level.getDamageSources().explosion(player, entity), (float) AlexsCavesEnriched.CONFIG.rocketLauncher.backblastDirectDamage);
+                    entity.hurt(level.damageSources().explosion(player, entity), (float) AlexsCavesEnriched.CONFIG.rocketLauncher.backblastDirectDamage);
                 }
 
                 // Far away back blast
-                Vec3d rpgBackPos = launchPos.add(launchDir.multiply(-0.5F));
+                Vec3 rpgBackPos = launchPos.add(launchDir.scale(-0.5F));
                 final double backBlastCosAngle = Math.cos(AlexsCavesEnriched.CONFIG.rocketLauncher.backblastAngle * Math.PI / 180);
 
-                Box bashBox = new Box(new BlockPos((int) launchPos.getX(), (int) launchPos.getY(), (int) launchPos.getZ()))
-                        .stretch(launchDir.multiply(-(AlexsCavesEnriched.CONFIG.rocketLauncher.backblastRange + 1.0)));
-                for (LivingEntity entity : level.getNonSpectatingEntities(LivingEntity.class, bashBox)) {
+                AABB bashBox = new AABB(new BlockPos((int) launchPos.x(), (int) launchPos.y(), (int) launchPos.z()))
+                        .expandTowards(launchDir.scale(-(AlexsCavesEnriched.CONFIG.rocketLauncher.backblastRange + 1.0)));
+                for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, bashBox)) {
                     if (entity == player)
                         continue;
-                    Vec3d delta = entity.getLerpedPos(1.0F).subtract(rpgBackPos);
+                    Vec3 delta = entity.getPosition(1.0F).subtract(rpgBackPos);
 
                     // Compare bottom, center and top of bounding box because I'm too lazy
                     // to figure out cone AABB intersection
-                    if (-delta.normalize().dotProduct(launchDir) < backBlastCosAngle - 0.01) {
-                        Vec3d delta2 = entity.getLerpedPos(0.0F)
-                                .add(0.0, entity.getHeight() * 0.5, 0.0)
+                    if (-delta.normalize().dot(launchDir) < backBlastCosAngle - 0.01) {
+                        Vec3 delta2 = entity.getPosition(0.0F)
+                                .add(0.0, entity.getBbHeight() * 0.5, 0.0)
                                 .subtract(rpgBackPos);
-                        if (-delta2.normalize().dotProduct(launchDir) < backBlastCosAngle - 0.01) {
-                            Vec3d delta3 = entity.getLerpedPos(0.0F)
-                                    .add(0.0, entity.getHeight(), 0.0)
+                        if (-delta2.normalize().dot(launchDir) < backBlastCosAngle - 0.01) {
+                            Vec3 delta3 = entity.getPosition(0.0F)
+                                    .add(0.0, entity.getBbHeight(), 0.0)
                                     .subtract(rpgBackPos);
-                            if (-delta3.normalize().dotProduct(launchDir) < backBlastCosAngle - 0.01)
+                            if (-delta3.normalize().dot(launchDir) < backBlastCosAngle - 0.01)
                                 continue;
                         }
                     }
-                    if (!entity.canSee(player))
+                    if (!entity.hasLineOfSight(player))
                         continue;
-                    entity.setOnFireFor(5);
-                    entity.addVelocity(delta.normalize().multiply(1.0F));
+                    entity.setSecondsOnFire(5);
+                    entity.addDeltaMovement(delta.normalize().scale(1.0F));
                     backblastAreaNotClear = true;
                 }
 
                 // Backblast smoke
                 final double TRAIL_SPEED = 1.0;
                 final double BIG_MAGNITUDE = 1000.0F;
-                Vec3d axis1 = new Vec3d(
+                Vec3 axis1 = new Vec3(
                         Math.abs(launchDir.x) > 1 / BIG_MAGNITUDE ? -1 / launchDir.x : -BIG_MAGNITUDE * Math.signum(launchDir.x),
                         Math.abs(launchDir.y) > 1 / BIG_MAGNITUDE ? -1 / launchDir.y : -BIG_MAGNITUDE * Math.signum(launchDir.y),
                         Math.abs(launchDir.z) > 1 / BIG_MAGNITUDE ? 2 / launchDir.z : 2 * BIG_MAGNITUDE * Math.signum(launchDir.z));
                 axis1 = axis1.normalize();
-                Vec3d axis2 = launchDir.normalize().crossProduct(axis1).normalize();
+                Vec3 axis2 = launchDir.normalize().cross(axis1).normalize();
 
                 final double TOTAL_TRAILS = 30.0;
                 for (int trails = 0; trails < TOTAL_TRAILS; trails++) {
                     double angle = trails / TOTAL_TRAILS * Math.PI * 2;
-                    Vec3d circleOffset = axis1.multiply(Math.cos(angle))
-                            .add(axis2.multiply(Math.sin(angle)))
+                    Vec3 circleOffset = axis1.scale(Math.cos(angle))
+                            .add(axis2.scale(Math.sin(angle)))
                             .normalize()
-                            .multiply(TRAIL_SPEED * Math.sqrt(1 / Math.pow(Math.max(backBlastCosAngle, 0.01), 2.0) - 1.0));
-                    Vec3d rand1 = new Vec3d(level.random.nextDouble(), level.random.nextDouble(), level.random.nextDouble()).normalize().multiply(0.2F);
-                    Vec3d rand2 = new Vec3d(level.random.nextDouble(), level.random.nextDouble(), level.random.nextDouble()).normalize().multiply(0.2F);
+                            .scale(TRAIL_SPEED * Math.sqrt(1 / Math.pow(Math.max(backBlastCosAngle, 0.01), 2.0) - 1.0));
+                    Vec3 rand1 = new Vec3(level.random.nextDouble(), level.random.nextDouble(), level.random.nextDouble()).normalize().scale(0.2F);
+                    Vec3 rand2 = new Vec3(level.random.nextDouble(), level.random.nextDouble(), level.random.nextDouble()).normalize().scale(0.2F);
 
-                    Vec3d trailVelocity = launchDir.multiply(-TRAIL_SPEED).add(circleOffset).add(rand1);
-                    Vec3d trailVelocity2 = launchDir.multiply(-TRAIL_SPEED).add(circleOffset.multiply(0.6F)).add(rand2);
+                    Vec3 trailVelocity = launchDir.scale(-TRAIL_SPEED).add(circleOffset).add(rand1);
+                    Vec3 trailVelocity2 = launchDir.scale(-TRAIL_SPEED).add(circleOffset.scale(0.6F)).add(rand2);
 
                     level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, rpgBackPos.x, rpgBackPos.y, rpgBackPos.z,
                             trailVelocity.x, trailVelocity.y, trailVelocity.z);
@@ -192,27 +196,29 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
 
                 // Cooldown + misc
                 if (AlexsCavesEnriched.CONFIG.rocketLauncher.cooldown > 0)
-                    player.getItemCooldownManager().set(itemStack.getItem(),  AlexsCavesEnriched.CONFIG.rocketLauncher.cooldown);
+                    player.getCooldowns().addCooldown(itemStack.getItem(), AlexsCavesEnriched.CONFIG.rocketLauncher.cooldown);
                 if (!player.isCreative())
-                    ammoStack.decrement(1);
+                    ammoStack.shrink(1);
             }
         }
     }
 
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return !oldStack.isOf(ACEItemRegistry.ROCKET_LAUNCHER.get()) || !newStack.isOf(ACEItemRegistry.ROCKET_LAUNCHER.get());
+        return !oldStack.is(ACEItemRegistry.ROCKET_LAUNCHER.get()) || !newStack.is(ACEItemRegistry.ROCKET_LAUNCHER.get());
     }
 
     @Override
-    public @NotNull Predicate<ItemStack> getProjectiles() {
+    public @NotNull Predicate<ItemStack> getAllSupportedProjectiles() {
         return e -> e.getItem() instanceof IRocketItem;
     }
 
     @Override
-    public int getRange() { return 128; }
+    public int getDefaultProjectileRange() {
+        return 128;
+    }
 
     @Override
-    public @NotNull PersistentProjectileEntity customArrow(@NotNull PersistentProjectileEntity arrow) {
-        return new RocketEntity(arrow.getEntityWorld(), (LivingEntity) arrow.getOwner());
+    public @NotNull AbstractArrow customArrow(@NotNull AbstractArrow arrow) {
+        return new RocketEntity(arrow.getCommandSenderWorld(), (LivingEntity) arrow.getOwner());
     }
 }

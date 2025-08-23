@@ -3,15 +3,14 @@ package net.hellomouse.alexscavesenriched.block.block_entity;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 public abstract class RadiationEmitterBlockEntity extends BlockEntity {
 
@@ -19,12 +18,12 @@ public abstract class RadiationEmitterBlockEntity extends BlockEntity {
         super(p_155228_, p_155229_, p_155230_);
     }
 
-    public static void tick(World level, BlockPos pos, BlockState state, RadiationEmitterBlockEntity blockEntity) {
-        Box bashBox = new Box(pos).expand(3.0D);
-        for (LivingEntity entity : level.getNonSpectatingEntities(LivingEntity.class, bashBox)) {
-            if (!entity.getType().isIn(ACTagRegistry.RESISTS_RADIATION)) {
-                entity.setVelocity(entity.getVelocity().multiply(0.9D, 1.0D, 0.9D));
-                entity.addStatusEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(), 20 * 15 * 60,1));
+    public static void tick(Level level, BlockPos pos, BlockState state, RadiationEmitterBlockEntity blockEntity) {
+        AABB bashBox = new AABB(pos).inflate(3.0D);
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, bashBox)) {
+            if (!entity.getType().is(ACTagRegistry.RESISTS_RADIATION)) {
+                entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.9D, 1.0D, 0.9D));
+                entity.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(), 20 * 15 * 60, 1));
             }
         }
     }

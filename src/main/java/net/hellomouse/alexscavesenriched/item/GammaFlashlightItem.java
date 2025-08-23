@@ -4,63 +4,64 @@ import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.entity.NeutronExplosionEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class GammaFlashlightItem extends Item {
     public GammaFlashlightItem() {
-        super(new Settings()
-                .maxCount(1)
+        super(new Properties()
+                .stacksTo(1)
                 .rarity(ACItemRegistry.RARITY_NUCLEAR));
     }
     public static boolean isOn(ItemStack itemStack) {
-        return itemStack.getNbt() != null && itemStack.getNbt().contains("on");
+        return itemStack.getTag() != null && itemStack.getTag().contains("on");
     }
     @Override
-    public void inventoryTick(ItemStack itemStack, World level, Entity entity, int i, boolean b) {
-        if (!level.isClient && isOn(itemStack)) {
+    public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int i, boolean b) {
+        if (!level.isClientSide && isOn(itemStack)) {
             boolean irradiate = true;
-            if (entity instanceof PlayerEntity player)
-                irradiate = player.getInventory().getMainHandStack() == itemStack || player.getInventory().offHand.get(0) == itemStack;
+            if (entity instanceof Player player)
+                irradiate = player.getInventory().getSelected() == itemStack || player.getInventory().offhand.get(0) == itemStack;
             if (irradiate) {
-                Vec3d launchPos = entity.getEyePos();
-                Vec3d launchDir = entity.getRotationVec(1.0F);
+                Vec3 launchPos = entity.getEyePosition();
+                Vec3 launchDir = entity.getViewVector(1.0F);
 
                 // Mutate blocks
-                var hit = level.raycast(new RaycastContext(
+                var hit = level.clip(new ClipContext(
                         launchPos,
-                        launchPos.add(launchDir.add(new Vec3d(
+                        launchPos.add(launchDir.add(new Vec3(
                                 level.random.nextFloat() - 0.5,
                                 level.random.nextFloat() - 0.5,
                                 level.random.nextFloat() - 0.5
-                            ).multiply(AlexsCavesEnriched.CONFIG.gammaFlashlightConfig.spread))
-                                .multiply(AlexsCavesEnriched.CONFIG.gammaFlashlightConfig.range)),
-                        RaycastContext.ShapeType.OUTLINE,
-                        RaycastContext.FluidHandling.NONE,
+                                ).scale(AlexsCavesEnriched.CONFIG.gammaFlashlightConfig.spread))
+                                .scale(AlexsCavesEnriched.CONFIG.gammaFlashlightConfig.range)),
+                        ClipContext.Block.OUTLINE,
+                        ClipContext.Fluid.NONE,
                         entity));
-                NeutronExplosionEntity.tryTransmuteBlock(entity.getEntityWorld(), hit.getBlockPos());
+                NeutronExplosionEntity.tryTransmuteBlock(entity.getCommandSenderWorld(), hit.getBlockPos());
 
                 // Irradiate mobs
-                Box bashBox = new Box(new BlockPos((int) launchPos.getX(), (int) launchPos.getY(), (int) launchPos.getZ()))
-                        .stretch(launchDir.multiply(AlexsCavesEnriched.CONFIG.gammaFlashlightConfig.range));
-                for (LivingEntity otherEntity : level.getNonSpectatingEntities(LivingEntity.class, bashBox)) {
-                    if (otherEntity == entity || !otherEntity.canSee(entity))
+                AABB bashBox = new AABB(new BlockPos((int) launchPos.x(), (int) launchPos.y(), (int) launchPos.z()))
+                        .expandTowards(launchDir.scale(AlexsCavesEnriched.CONFIG.gammaFlashlightConfig.range));
+                for (LivingEntity otherEntity : level.getEntitiesOfClass(LivingEntity.class, bashBox)) {
+                    if (otherEntity == entity || !otherEntity.hasLineOfSight(entity))
                         continue;
-                    otherEntity.addStatusEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(),
+                    otherEntity.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(),
                     200, 0,
                     false, false, true));
                 }
@@ -69,19 +70,19 @@ public class GammaFlashlightItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        NbtCompound tag = itemStack.getOrCreateNbt();
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack itemStack = player.getItemInHand(hand);
+        CompoundTag tag = itemStack.getOrCreateTag();
 
         if (isOn(itemStack)) {
-            level.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            level.playSound(null, player.blockPosition(), SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.PLAYERS, 1.0F, 1.0F);
             tag.remove("on");
-            itemStack.setNbt(tag);
+            itemStack.setTag(tag);
         } else {
-            level.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            level.playSound(null, player.blockPosition(), SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundSource.PLAYERS, 1.0F, 1.0F);
             tag.putBoolean("on", true);
-            itemStack.setNbt(tag);
+            itemStack.setTag(tag);
         }
-        return TypedActionResult.success(itemStack);
+        return InteractionResultHolder.success(itemStack);
     }
 }

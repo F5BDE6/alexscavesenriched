@@ -3,33 +3,33 @@ package net.hellomouse.alexscavesenriched.block.centrifuge;
 import com.github.alexmodguy.alexscaves.server.block.ACSoundTypes;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeInventoryProxyBlockEntity;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 import java.util.ArrayList;
 import java.util.Optional;
 
 public class CentrifugeUtil {
     public static int CENTRIFUGE_HEIGHT = 5; // Height including base
 
-    public static AbstractBlock.Settings getBlockSettings() {
-        return AbstractBlock.Settings.create()
-                .mapColor(MapColor.IRON_GRAY)
-                .requiresTool()
-                .nonOpaque()
-                .solid()
+    public static BlockBehaviour.Properties getBlockSettings() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .forceSolidOn()
                 .strength(5, 3)
-                .sounds(ACSoundTypes.METAL_SCAFFOLDING);
+                .sound(ACSoundTypes.METAL_SCAFFOLDING);
     }
 
     // Try to assemble the multi block
-    public static Optional<ArrayList<BlockPos>> getMultiBlockPositions(World world, BlockPos pos, boolean isTop) {
-        BlockPos.Mutable carve = new BlockPos.Mutable();
+    public static Optional<ArrayList<BlockPos>> getMultiBlockPositions(Level world, BlockPos pos, boolean isTop) {
+        BlockPos.MutableBlockPos carve = new BlockPos.MutableBlockPos();
         BlockPos baseBlockPos = isTop ? null : pos;
 
         for (int dy = 0; dy < CENTRIFUGE_HEIGHT; dy++) {
@@ -59,31 +59,31 @@ public class CentrifugeUtil {
         return Optional.of(out);
     }
 
-    public static void assembleMultiBlock(World world, BlockPos pos, boolean isTop) {
+    public static void assembleMultiBlock(Level world, BlockPos pos, boolean isTop) {
         var blocks = getMultiBlockPositions(world, pos, isTop);
         if (blocks.isEmpty()) return;
 
-        world.setBlockState(blocks.get().get(0), ACEBlockRegistry.CENTRIFUGE.get().getDefaultState());
+        world.setBlockAndUpdate(blocks.get().get(0), ACEBlockRegistry.CENTRIFUGE.get().defaultBlockState());
         for (int i = 1; i < blocks.get().size(); i++) {
             var carve = blocks.get().get(i);
-            world.setBlockState(carve, i < blocks.get().size() - 1 ?
-                    ACEBlockRegistry.CENTRIFUGE_PROXY.get().getDefaultState() :
-                    ACEBlockRegistry.CENTRIFUGE_PROXY.get().getDefaultState().with(CentrifugeMultiBlockProxyBlock.IS_TOP, true));
+            world.setBlockAndUpdate(carve, i < blocks.get().size() - 1 ?
+                    ACEBlockRegistry.CENTRIFUGE_PROXY.get().defaultBlockState() :
+                    ACEBlockRegistry.CENTRIFUGE_PROXY.get().defaultBlockState().setValue(CentrifugeMultiBlockProxyBlock.IS_TOP, true));
             var be = world.getBlockEntity(carve);
             if (be instanceof CentrifugeInventoryProxyBlockEntity proxy)
                 proxy.setTargetPos(blocks.get().get(0));
         }
     }
 
-    public static void breakMultiBlockFromBase(World world, BlockPos pos, boolean forceDrop) {
+    public static void breakMultiBlockFromBase(Level world, BlockPos pos, boolean forceDrop) {
         // Spawn multiblock components
         if (forceDrop || world.getBlockState(pos).getBlock() instanceof CentrifugeMultiBlockBaseBlock) {
-            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ACEBlockRegistry.CENTRIFUGE_BASE.get()));
+            Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ACEBlockRegistry.CENTRIFUGE_BASE.get()));
             for (int i = 0; i < CENTRIFUGE_HEIGHT - 1; i++)
-                ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ACEBlockRegistry.CENTRIFUGE_TOP.get()));
+                Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(ACEBlockRegistry.CENTRIFUGE_TOP.get()));
         }
 
-        BlockPos.Mutable carve = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos carve = new BlockPos.MutableBlockPos();
         for (int dy = 0; dy < CENTRIFUGE_HEIGHT; dy++) {
             carve.set(pos.getX(), pos.getY() + dy, pos.getZ());
             BlockState state = world.getBlockState(carve);

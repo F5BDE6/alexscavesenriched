@@ -2,19 +2,19 @@ package net.hellomouse.alexscavesenriched.item;
 
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.entity.RocketEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Rarity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.Level;
 
 public class RocketNormalItem extends Item implements IRocketItem {
     public RocketNormalItem() {
-        super(new Settings().rarity(Rarity.UNCOMMON));
+        super(new Properties().rarity(Rarity.UNCOMMON));
     }
 
-    public PersistentProjectileEntity createRocket(World level, ItemStack ammoIn, PlayerEntity player) {
+    public AbstractArrow createRocket(Level level, ItemStack ammoIn, Player player) {
         var e = new RocketEntity(level, player);
         e.setExplosionStrength((float) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.normal.explosionPower);
         return e;

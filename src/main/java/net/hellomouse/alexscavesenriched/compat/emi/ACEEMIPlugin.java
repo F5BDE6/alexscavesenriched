@@ -15,12 +15,12 @@ import net.hellomouse.alexscavesenriched.recipe.CentrifugeRecipe;
 import net.hellomouse.alexscavesenriched.recipe.NeutronKillRecipe;
 import net.hellomouse.alexscavesenriched.recipe.NuclearFurnanceRecipeAdditional;
 import net.hellomouse.alexscavesenriched.recipe.NuclearTransmutationRecipe;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @EmiEntrypoint
 public class ACEEMIPlugin implements EmiPlugin {
-    public static final Identifier MY_SPRITE_SHEET = Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/gui/emi_simplified_textures.png");
+    public static final ResourceLocation MY_SPRITE_SHEET = ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "textures/gui/emi_simplified_textures.png");
     public static final EmiStack NUCLEAR_FURNACE = EmiStack.of(ACBlockRegistry.NUCLEAR_FURNACE_COMPONENT.get().asItem());
     public static final EmiStack NUCLEAR_BOMB = EmiStack.of(ACBlockRegistry.NUCLEAR_BOMB.get().asItem());
     public static final EmiStack NEUTRON_BOMB = EmiStack.of(ACEBlockRegistry.NEUTRON_BOMB.get().asItem());
@@ -38,16 +38,16 @@ public class ACEEMIPlugin implements EmiPlugin {
     public static final EmiStack CENTRIFUGE2 = EmiStack.of(ACEBlockRegistry.CENTRIFUGE_TOP.get().asItem());
 
     public static final EmiRecipeCategory ACE_NUCLEAR_FURNACE_CATEGORY
-            = new EmiRecipeCategory(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "nuclear_furnace"),
+            = new EmiRecipeCategory(ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "nuclear_furnace"),
             NUCLEAR_FURNACE, new EmiTexture(MY_SPRITE_SHEET, 0, 0, 16, 16));
     public static final EmiRecipeCategory ACE_NUCLEAR_TRANSMUTATION_CATEGORY
-            = new EmiRecipeCategory(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "nuclear_transmutation"),
+            = new EmiRecipeCategory(ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "nuclear_transmutation"),
             NUCLEAR_BOMB, new EmiTexture(MY_SPRITE_SHEET, 0, 0, 16, 16));
     public static final EmiRecipeCategory ACE_NEUTRON_KILL_CATEGORY
-            = new EmiRecipeCategory(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "neutron_kill"),
+            = new EmiRecipeCategory(ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "neutron_kill"),
             NEUTRON_BOMB, new EmiTexture(MY_SPRITE_SHEET, 0, 0, 16, 16));
     public static final EmiRecipeCategory ACE_CENTRIFUGE_CATEGORY
-            = new EmiRecipeCategory(Identifier.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "centrifuge"),
+            = new EmiRecipeCategory(ResourceLocation.fromNamespaceAndPath(AlexsCavesEnriched.MODID, "centrifuge"),
             CENTRIFUGE, new EmiTexture(MY_SPRITE_SHEET, 0, 0, 16, 16));
 
     @Override
@@ -65,56 +65,56 @@ public class ACEEMIPlugin implements EmiPlugin {
 
         {
             RecipeManager manager = registry.getRecipeManager();
-            for (NuclearFurnanceRecipeAdditional recipe : manager.listAllOfType(ACERecipeRegistry.NUCLEAR_FURNACE_TYPE.get()))
+            for (NuclearFurnanceRecipeAdditional recipe : manager.getAllRecipesFor(ACERecipeRegistry.NUCLEAR_FURNACE_TYPE.get()))
                 registry.addRecipe(new EMINuclearFurnaceRecipe(recipe));
         }
         {
-            HashSet<Text> alreadyVisited = new HashSet<>();
+            HashSet<Component> alreadyVisited = new HashSet<>();
             RecipeManager manager = registry.getRecipeManager();
-            for (NuclearTransmutationRecipe recipe : manager.listAllOfType(ACERecipeRegistry.NUCLEAR_TRANSMUTATION_TYPE.get())) {
+            for (NuclearTransmutationRecipe recipe : manager.getAllRecipesFor(ACERecipeRegistry.NUCLEAR_TRANSMUTATION_TYPE.get())) {
                 if (recipe.getIsTag()) {
-                    var tag = TagKey.of(RegistryKeys.BLOCK, recipe.getInputLocation());
+                    var tag = TagKey.create(Registries.BLOCK, recipe.getInputLocation());
                     Set<ItemStack> blocksInTag = ForgeRegistries.BLOCKS.getEntries().stream()
-                            .filter((entry) -> entry.getValue().getDefaultState().isIn(tag))
-                            .map((entry) -> entry.getValue().asItem().getDefaultStack())
+                            .filter((entry) -> entry.getValue().defaultBlockState().is(tag))
+                            .map((entry) -> entry.getValue().asItem().getDefaultInstance())
                             .collect(Collectors.toSet());
                     for (var blockItem : blocksInTag) {
-                        if (alreadyVisited.contains(blockItem.getItem().getName()))
+                        if (alreadyVisited.contains(blockItem.getItem().getDescription()))
                             continue;
                         registry.addRecipe(new EMINuclearTransmutationRecipe(recipe, blockItem));
-                        alreadyVisited.add(blockItem.getItem().getName());
+                        alreadyVisited.add(blockItem.getItem().getDescription());
                     }
                 } else {
-                    if (!alreadyVisited.contains(recipe.getInput().getItem().getName()))
+                    if (!alreadyVisited.contains(recipe.getInput().getItem().getDescription()))
                         registry.addRecipe(new EMINuclearTransmutationRecipe(recipe));
-                    alreadyVisited.add(recipe.getInput().getItem().getName());
+                    alreadyVisited.add(recipe.getInput().getItem().getDescription());
                 }
             }
         }
         {
-            HashSet<Text> alreadyVisited = new HashSet<>();
+            HashSet<Component> alreadyVisited = new HashSet<>();
             RecipeManager manager = registry.getRecipeManager();
-            for (NeutronKillRecipe recipe : manager.listAllOfType(ACERecipeRegistry.NEUTRON_KILL_TYPE.get())) {
+            for (NeutronKillRecipe recipe : manager.getAllRecipesFor(ACERecipeRegistry.NEUTRON_KILL_TYPE.get())) {
                 if (recipe.getIsTag()) {
-                    var tag = TagKey.of(RegistryKeys.BLOCK, recipe.getInputLocation());
+                    var tag = TagKey.create(Registries.BLOCK, recipe.getInputLocation());
                     Set<ItemStack> blocksInTag = ForgeRegistries.BLOCKS.getEntries().stream()
-                            .filter((entry) -> entry.getValue().getDefaultState().isIn(tag))
-                            .map((entry) -> entry.getValue().asItem().getDefaultStack())
+                            .filter((entry) -> entry.getValue().defaultBlockState().is(tag))
+                            .map((entry) -> entry.getValue().asItem().getDefaultInstance())
                             .collect(Collectors.toSet());
                     for (var blockItem : blocksInTag) {
-                        if (alreadyVisited.contains(blockItem.getItem().getName()))
+                        if (alreadyVisited.contains(blockItem.getItem().getDescription()))
                             continue;
                         registry.addRecipe(new EMINeutronKillRecipe(recipe, blockItem));
-                        alreadyVisited.add(blockItem.getItem().getName());
+                        alreadyVisited.add(blockItem.getItem().getDescription());
                     }
                 } else {
-                    if (!alreadyVisited.contains(recipe.getInput().getItem().getName()))
+                    if (!alreadyVisited.contains(recipe.getInput().getItem().getDescription()))
                         registry.addRecipe(new EMINeutronKillRecipe(recipe));
-                    alreadyVisited.add(recipe.getInput().getItem().getName());
+                    alreadyVisited.add(recipe.getInput().getItem().getDescription());
                 }
             }
             {
-                for (CentrifugeRecipe recipe : manager.listAllOfType(ACERecipeRegistry.CENTRIFUGE_TYPE.get()))
+                for (CentrifugeRecipe recipe : manager.getAllRecipesFor(ACERecipeRegistry.CENTRIFUGE_TYPE.get()))
                     registry.addRecipe(new EMICentrifugeRecipe(recipe));
             }
         }

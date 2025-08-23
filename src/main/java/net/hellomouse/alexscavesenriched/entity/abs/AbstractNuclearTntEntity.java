@@ -5,78 +5,78 @@ import com.github.alexmodguy.alexscaves.server.block.blockentity.NuclearSirenBlo
 import com.github.alexmodguy.alexscaves.server.block.poi.ACPOIRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.google.common.base.Predicates;
-import net.minecraft.entity.*;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public abstract class AbstractNuclearTntEntity extends Entity implements Ownable {
-    protected static final TrackedData<Integer> FUSE = DataTracker.registerData(AbstractNuclearTntEntity.class, TrackedDataHandlerRegistry.INTEGER);
+public abstract class AbstractNuclearTntEntity extends Entity implements TraceableEntity {
+    protected static final EntityDataAccessor<Integer> FUSE = SynchedEntityData.defineId(AbstractNuclearTntEntity.class, EntityDataSerializers.INT);
     public static final int DEFAULT_FUSE = 30;
     @Nullable
     protected LivingEntity causingEntity;
 
-    protected ItemConvertible dropItem = null;
+    protected ItemLike dropItem = null;
     protected boolean triggerSiren = true;
 
-    public AbstractNuclearTntEntity(EntityType<?> type, World world) {
+    public AbstractNuclearTntEntity(EntityType<?> type, Level world) {
         super(type, world);
     }
 
     @Override
-    protected void initDataTracker() {
-        this.dataTracker.startTracking(FUSE, DEFAULT_FUSE);
+    protected void defineSynchedData() {
+        this.entityData.define(FUSE, DEFAULT_FUSE);
     }
 
     @Override
-    protected MoveEffect getMoveEffect() {
-        return MoveEffect.NONE;
+    protected MovementEmission getMovementEmission() {
+        return MovementEmission.NONE;
     }
 
     @Override
-    public boolean canHit() {
+    public boolean isPickable() {
         return !this.isRemoved();
     }
 
     @Override
     public void tick() {
-        if (!this.hasNoGravity())
-            this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+        if (!this.isNoGravity())
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
 
-        if (this.triggerSiren && (age + this.getId()) % 10 == 0 && getWorld() instanceof ServerWorld serverLevel)
+        if (this.triggerSiren && (tickCount + this.getId()) % 10 == 0 && level() instanceof ServerLevel serverLevel)
             getNearbySirens(serverLevel, 256).forEach(this::activateSiren);
 
-        this.move(MovementType.SELF, this.getVelocity());
-        this.setVelocity(this.getVelocity().multiply(0.98));
-        if (this.isOnGround())
-            this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
+        this.move(MoverType.SELF, this.getDeltaMovement());
+        this.setDeltaMovement(this.getDeltaMovement().scale(0.98));
+        if (this.onGround())
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.7, -0.5, 0.7));
 
         int i = this.getFuse() - 1;
         this.setFuse(i);
         if (i <= 0) {
             this.discard();
-            if (!this.getWorld().isClient)
+            if (!this.level().isClientSide)
                 this.explode();
         } else {
-            this.updateWaterState();
-            if (this.getWorld().isClient && DEFAULT_FUSE - i > 10 && random.nextFloat() < 0.3F && this.isOnGround()) {
-                Vec3d center = this.getEyePos();
-                this.getWorld().addParticle(ACParticleRegistry.PROTON.get(), center.x, center.y, center.z, center.x, center.y, center.z);
+            this.updateInWaterStateAndDoFluidPushing();
+            if (this.level().isClientSide && DEFAULT_FUSE - i > 10 && random.nextFloat() < 0.3F && this.onGround()) {
+                Vec3 center = this.getEyePosition();
+                this.level().addParticle(ACParticleRegistry.PROTON.get(), center.x, center.y, center.z, center.x, center.y, center.z);
             }
         }
     }
@@ -84,12 +84,12 @@ public abstract class AbstractNuclearTntEntity extends Entity implements Ownable
     protected abstract void explode();
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
+    protected void addAdditionalSaveData(CompoundTag nbt) {
         nbt.putShort("Fuse", (short)this.getFuse());
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
+    protected void readAdditionalSaveData(CompoundTag nbt) {
         this.setFuse(nbt.getShort("Fuse"));
     }
 
@@ -99,54 +99,54 @@ public abstract class AbstractNuclearTntEntity extends Entity implements Ownable
     }
 
     private void activateSiren(BlockPos pos) {
-        if (getWorld().getBlockEntity(pos) instanceof NuclearSirenBlockEntity nuclearSirenBlock)
+        if (level().getBlockEntity(pos) instanceof NuclearSirenBlockEntity nuclearSirenBlock)
             nuclearSirenBlock.setNearestNuclearBomb(this);
     }
 
-    private Stream<BlockPos> getNearbySirens(ServerWorld world, int range) {
-        PointOfInterestStorage pointofinterestmanager = world.getPointOfInterestStorage();
-        return pointofinterestmanager.getPositions((poiTypeHolder) -> poiTypeHolder.matchesKey(ACPOIRegistry.NUCLEAR_SIREN.getKey()), Predicates.alwaysTrue(), this.getBlockPos(), range, PointOfInterestStorage.OccupationStatus.ANY);
+    private Stream<BlockPos> getNearbySirens(ServerLevel world, int range) {
+        PoiManager pointofinterestmanager = world.getPoiManager();
+        return pointofinterestmanager.findAll((poiTypeHolder) -> poiTypeHolder.is(ACPOIRegistry.NUCLEAR_SIREN.getKey()), Predicates.alwaysTrue(), this.blockPosition(), range, PoiManager.Occupancy.ANY);
     }
 
     @Override
-    protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+    protected float getEyeHeight(Pose pose, EntityDimensions dimensions) {
         return 0.15F;
     }
 
-    public void setFuse(int fuse) {
-        this.dataTracker.set(FUSE, fuse);
+    public int getFuse() {
+        return this.entityData.get(FUSE);
     }
 
-    public int getFuse() {
-        return this.dataTracker.get(FUSE);
+    public void setFuse(int fuse) {
+        this.entityData.set(FUSE, fuse);
     }
 
     @Override
-    public ItemStack getPickBlockStack() {
+    public ItemStack getPickResult() {
         if (dropItem == null) return null;
         return new ItemStack(dropItem);
     }
 
     @Override
-    public ActionResult interact(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.isIn(Tags.Items.SHEARS)) {
-            player.swingHand(hand);
-            this.playSoundIfNotSilent(ACSoundRegistry.NUCLEAR_BOMB_DEFUSE.get());
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        ItemStack itemStack = player.getItemInHand(hand);
+        if (itemStack.is(Tags.Items.SHEARS)) {
+            player.swing(hand);
+            this.playSound(ACSoundRegistry.NUCLEAR_BOMB_DEFUSE.get());
             this.remove(RemovalReason.KILLED);
             if (dropItem != null)
-                this.dropStack(new ItemStack(dropItem));
-            if (!player.getAbilities().creativeMode) {
-                itemStack.damage(1, player, (e) -> {
-                    e.sendToolBreakStatus(hand);
+                this.spawnAtLocation(new ItemStack(dropItem));
+            if (!player.getAbilities().instabuild) {
+                itemStack.hurtAndBreak(1, player, (e) -> {
+                    e.broadcastBreakEvent(hand);
                 });
             }
 
-            return ActionResult.SUCCESS;
-        } else if (player.shouldCancelInteraction()) {
-            return ActionResult.PASS;
+            return InteractionResult.SUCCESS;
+        } else if (player.isSecondaryUseActive()) {
+            return InteractionResult.PASS;
         } else {
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     }
 }

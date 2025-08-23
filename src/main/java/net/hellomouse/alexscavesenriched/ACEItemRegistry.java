@@ -3,10 +3,10 @@ package net.hellomouse.alexscavesenriched;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.item.RadioactiveItem;
 import net.hellomouse.alexscavesenriched.item.*;
-import net.minecraft.item.Item;
-import net.minecraft.item.SmithingTemplateItem;
-import net.minecraft.text.Text;
-import net.minecraft.util.Rarity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -17,9 +17,9 @@ public class ACEItemRegistry {
     public static final DeferredRegister<Item> DEF_REG = DeferredRegister.create(ForgeRegistries.ITEMS, AlexsCavesEnriched.MODID);
 
     public static final RegistryObject<Item> ENRICHED_URANIUM = DEF_REG.register("enriched_uranium",
-            () -> new RadioactiveItem(new Item.Settings()
+            () -> new RadioactiveItem(new Item.Properties()
                     .rarity(Rarity.UNCOMMON)
-                    .fireproof()
+                    .fireResistant()
                     .rarity(ACItemRegistry.RARITY_NUCLEAR), 0.001F)
     );
 
@@ -40,11 +40,11 @@ public class ACEItemRegistry {
     public static final RegistryObject<Item> RAILGUN = DEF_REG.register("railgun", RailgunItem::new);
     public static final RegistryObject<Item> RAYGUN_UPGRADE_TEMPLATE = DEF_REG.register("raygun_upgrade_template",
             () -> new SmithingTemplateItem(
-                    Text.translatable("item.alexscavesenriched.raygun_upgrade_template.applies_to"),
-                    Text.translatable("item.alexscavesenriched.raygun_upgrade_template.ingredients"),
-                    Text.translatable("item.alexscavesenriched.raygun_upgrade_template.title"),
-                    Text.translatable("item.alexscavesenriched.raygun_upgrade_template.base_slot_description"),
-                    Text.translatable("item.alexscavesenriched.raygun_upgrade_template.additions_slot_description"),
+                    Component.translatable("item.alexscavesenriched.raygun_upgrade_template.applies_to"),
+                    Component.translatable("item.alexscavesenriched.raygun_upgrade_template.ingredients"),
+                    Component.translatable("item.alexscavesenriched.raygun_upgrade_template.title"),
+                    Component.translatable("item.alexscavesenriched.raygun_upgrade_template.base_slot_description"),
+                    Component.translatable("item.alexscavesenriched.raygun_upgrade_template.additions_slot_description"),
                     List.of(),
                     List.of()
             )

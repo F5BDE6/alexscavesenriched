@@ -11,36 +11,37 @@ import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.*;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
 import net.hellomouse.alexscavesenriched.client.sound.RocketSound;
-import net.minecraft.block.AbstractFireBlock;
-import net.minecraft.block.EndGatewayBlock;
-import net.minecraft.block.EndPortalBlock;
-import net.minecraft.block.NetherPortalBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.EndGatewayBlock;
+import net.minecraft.world.level.block.EndPortalBlock;
+import net.minecraft.world.level.block.NetherPortalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.world.ForgeChunkManager;
@@ -54,10 +55,10 @@ import java.util.stream.Stream;
 
 import static net.hellomouse.alexscavesenriched.ACESounds.ROCKET_WHISTLE;
 
-public class RocketEntity extends PersistentProjectileEntity implements IRocketEntity {
-    private static final TrackedData<Byte> IS_FLAME = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Integer> TYPE = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Float> EXPLOSION_STRENGTH = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.FLOAT);
+public class RocketEntity extends AbstractArrow implements IRocketEntity {
+    private static final EntityDataAccessor<Byte> IS_FLAME = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> EXPLOSION_STRENGTH = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.FLOAT);
 
     // Bit flags
     public static final int TYPE_RADIOACTIVE = 1;
@@ -67,40 +68,40 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
 
     // I give up getting portals to work - set vel to 0 at portal then save speed
     // to post portal speed, if non-0 restore it
-    private static final TrackedData<Vector3f> POST_PORTAL_SPEED = DataTracker.registerData(RocketEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
+    private static final EntityDataAccessor<Vector3f> POST_PORTAL_SPEED = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.VECTOR3);
 
     private boolean spawnedWhistleSound = false;
 
-    public RocketEntity(EntityType entityType, World level) {
+    public RocketEntity(EntityType entityType, Level level) {
         super(entityType, level);
     }
 
-    public RocketEntity(World level, LivingEntity shooter) {
+    public RocketEntity(Level level, LivingEntity shooter) {
         super(ACEEntityRegistry.ROCKET.get(), shooter, level);
     }
 
-    public RocketEntity(World level, double x, double y, double z) {
+    public RocketEntity(Level level, double x, double y, double z) {
         super(ACEEntityRegistry.ROCKET.get(), x, y, z, level);
     }
 
-    public RocketEntity(PlayMessages.SpawnEntity spawnEntity, World level) {
+    public RocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ACEEntityRegistry.ROCKET.get(), level);
-        this.setBoundingBox(this.calculateBoundingBox());
+        this.setBoundingBox(this.makeBoundingBox());
     }
 
     @Override
-    protected void age() { /* Never despawn */ }
+    protected void tickDespawn() { /* Never despawn */ }
 
     @Override
-    public @NotNull Packet<ClientPlayPacketListener> createSpawnPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void readCustomDataFromNbt(@NotNull NbtCompound compoundTag) {
-        super.readCustomDataFromNbt(compoundTag);
-        this.dataTracker.set(TYPE, compoundTag.getInt("type"));
-        this.setPostPortalSpeed(new Vec3d(
+    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.entityData.set(TYPE, compoundTag.getInt("type"));
+        this.setPostPortalSpeed(new Vec3(
                 compoundTag.getFloat("post_portal_speed_x"),
                 compoundTag.getFloat("post_portal_speed_y"),
                 compoundTag.getFloat("post_portal_speed_z")
@@ -108,75 +109,84 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     }
 
     @Override
-    public void writeCustomDataToNbt(@NotNull NbtCompound compoundTag) {
-        super.writeCustomDataToNbt(compoundTag);
-        compoundTag.putInt("type", this.dataTracker.get(TYPE));
+    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putInt("type", this.entityData.get(TYPE));
         compoundTag.putDouble("post_portal_speed_x", this.getPostPortalSpeed().x);
         compoundTag.putDouble("post_portal_speed_y", this.getPostPortalSpeed().y);
         compoundTag.putDouble("post_portal_speed_z", this.getPostPortalSpeed().z);
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(IS_FLAME, (byte) 0);
-        this.dataTracker.startTracking(TYPE, 0);
-        this.dataTracker.startTracking(EXPLOSION_STRENGTH, (float) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.normal.explosionPower);
-        this.dataTracker.startTracking(POST_PORTAL_SPEED, new Vector3f(0.0F, 0.0F, 0.0F));
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(IS_FLAME, (byte) 0);
+        this.entityData.define(TYPE, 0);
+        this.entityData.define(EXPLOSION_STRENGTH, (float) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.normal.explosionPower);
+        this.entityData.define(POST_PORTAL_SPEED, new Vector3f(0.0F, 0.0F, 0.0F));
+    }
+
+    public float getExplosionStrength() {
+        return this.entityData.get(EXPLOSION_STRENGTH);
     }
 
     public void setExplosionStrength(float f) {
-        this.dataTracker.set(EXPLOSION_STRENGTH, f);
+        this.entityData.set(EXPLOSION_STRENGTH, f);
     }
-    public float getExplosionStrength() {
-        return this.dataTracker.get(EXPLOSION_STRENGTH);
+
+    public boolean getIsFlame() {
+        return this.entityData.get(IS_FLAME) != 0;
     }
 
     public void setIsFlame(boolean f) {
-        this.dataTracker.set(IS_FLAME, (byte) (f ? 1 : 0));
+        this.entityData.set(IS_FLAME, (byte) (f ? 1 : 0));
     }
-    public boolean getIsFlame() {
-        return this.dataTracker.get(IS_FLAME) != 0;
+
+    public boolean getIsRadioactive() {
+        return (this.entityData.get(TYPE) & TYPE_RADIOACTIVE) != 0;
     }
 
     public void setIsRadioactive(boolean f) {
-        this.dataTracker.set(TYPE, f ? TYPE_RADIOACTIVE : 0);
+        this.entityData.set(TYPE, f ? TYPE_RADIOACTIVE : 0);
     }
-    public boolean getIsRadioactive() {
-        return (this.dataTracker.get(TYPE) & TYPE_RADIOACTIVE) != 0;
+
+    public boolean getIsNuclear() {
+        return (this.entityData.get(TYPE) & TYPE_NUCLEAR) != 0;
     }
 
     public void setIsNuclear(boolean f) {
-        this.dataTracker.set(TYPE, f ? TYPE_NUCLEAR : 0);
-    }
-    public boolean getIsNuclear() {
-        return (this.dataTracker.get(TYPE) & TYPE_NUCLEAR) != 0;
+        this.entityData.set(TYPE, f ? TYPE_NUCLEAR : 0);
     }
 
+    public boolean getIsNeutron() {
+        return (this.entityData.get(TYPE) & TYPE_NEUTRON) != 0;
+    }
 
     public void setIsNeutron(boolean f) {
-        this.dataTracker.set(TYPE, f ? TYPE_NEUTRON : 0);
-    }
-    public boolean getIsNeutron() {
-        return (this.dataTracker.get(TYPE) & TYPE_NEUTRON) != 0;
+        this.entityData.set(TYPE, f ? TYPE_NEUTRON : 0);
     }
 
-    public void setIsMiniNuke(boolean f) { this.dataTracker.set(TYPE, f ? TYPE_MINI_NUKE : 0); }
-    public boolean getIsMiniNuke() { return (this.dataTracker.get(TYPE) & TYPE_MINI_NUKE) != 0; }
+    public boolean getIsMiniNuke() {
+        return (this.entityData.get(TYPE) & TYPE_MINI_NUKE) != 0;
+    }
 
-    public void setPostPortalSpeed(Vec3d x) {
-        this.dataTracker.set(POST_PORTAL_SPEED, new Vector3f(
+    public void setIsMiniNuke(boolean f) {
+        this.entityData.set(TYPE, f ? TYPE_MINI_NUKE : 0);
+    }
+
+    public Vec3 getPostPortalSpeed() {
+        Vector3f v = this.entityData.get(POST_PORTAL_SPEED);
+        return new Vec3(v.x, v.y, v.z);
+    }
+
+    public void setPostPortalSpeed(Vec3 x) {
+        this.entityData.set(POST_PORTAL_SPEED, new Vector3f(
                 (float) x.x, (float) x.y, (float) x.z
         ));
     }
 
-    public Vec3d getPostPortalSpeed() {
-        Vector3f v = this.dataTracker.get(POST_PORTAL_SPEED);
-        return new Vec3d(v.x, v.y, v.z);
-    }
-
     @Nullable
-    public Entity changeDimension(ServerWorld level, net.minecraftforge.common.util.ITeleporter teleporter) {
+    public Entity changeDimension(ServerLevel level, net.minecraftforge.common.util.ITeleporter teleporter) {
         var out = super.changeDimension(level, teleporter);
         if (out != null && (this.getIsNuclear() || this.getIsMiniNuke()) && this.getOwner() != null)
             ACECriterionTriggers.FIRE_NUKE_THROUGH_PORTAL.triggerForEntity(this.getOwner());
@@ -184,7 +194,7 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     }
 
     public void detonate() {
-        if (!this.getEntityWorld().isClient) {
+        if (!this.getCommandSenderWorld().isClientSide) {
             if (this.getIsNuclear())
                 this.detonateNuclear();
             else if (this.getIsNeutron())
@@ -196,16 +206,16 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
         }
     }
 
-    private Stream<BlockPos> getNearbySirens(ServerWorld world, int range) {
-        PointOfInterestStorage pointofinterestmanager = world.getPointOfInterestStorage();
-        return pointofinterestmanager.getPositions((poiTypeHolder) -> {
+    private Stream<BlockPos> getNearbySirens(ServerLevel world, int range) {
+        PoiManager pointofinterestmanager = world.getPoiManager();
+        return pointofinterestmanager.findAll((poiTypeHolder) -> {
             assert ACPOIRegistry.NUCLEAR_SIREN.getKey() != null;
-            return poiTypeHolder.matchesKey(ACPOIRegistry.NUCLEAR_SIREN.getKey());
-        }, blockPos -> true, this.getBlockPos(), range, PointOfInterestStorage.OccupationStatus.ANY);
+            return poiTypeHolder.is(ACPOIRegistry.NUCLEAR_SIREN.getKey());
+        }, blockPos -> true, this.blockPosition(), range, PoiManager.Occupancy.ANY);
     }
 
     private void activateSiren(BlockPos pos) {
-        BlockEntity var3 = this.getEntityWorld().getBlockEntity(pos);
+        BlockEntity var3 = this.getCommandSenderWorld().getBlockEntity(pos);
         if (var3 instanceof NuclearSirenBlockEntity nuclearSirenBlock) {
             nuclearSirenBlock.setNearestNuclearBomb(this);
         }
@@ -213,43 +223,43 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
 
     protected void detonateNuclear() {
         Entity explosion = AlexsCavesEnriched.CONFIG.nuclear.useNewNuke ?
-                (NuclearExplosion2Entity) ((EntityType<?>) ACEEntityRegistry.NUCLEAR_EXPLOSION2.get()).create(this.getEntityWorld()) :
-                (NuclearExplosionEntity) ((EntityType<?>) ACEntityRegistry.NUCLEAR_EXPLOSION.get()).create(this.getEntityWorld());
+                (NuclearExplosion2Entity) ((EntityType<?>) ACEEntityRegistry.NUCLEAR_EXPLOSION2.get()).create(this.getCommandSenderWorld()) :
+                (NuclearExplosionEntity) ((EntityType<?>) ACEntityRegistry.NUCLEAR_EXPLOSION.get()).create(this.getCommandSenderWorld());
         assert explosion != null;
-        explosion.copyPositionAndRotation(this);
+        explosion.copyPosition(this);
         if (explosion instanceof NuclearExplosionEntity)
             ((NuclearExplosionEntity) explosion).setSize((AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get()).floatValue());
         else if (explosion instanceof NuclearExplosion2Entity)
             ((NuclearExplosion2Entity) explosion).setSize((AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get()).floatValue());
-        this.getEntityWorld().spawnEntity(explosion);
+        this.getCommandSenderWorld().addFreshEntity(explosion);
         this.discard();
     }
 
     protected void detonateMiniNuke() {
         Entity explosion = AlexsCavesEnriched.CONFIG.nuclear.useNewNuke ?
-                (NuclearExplosion2Entity) ((EntityType<?>) ACEEntityRegistry.NUCLEAR_EXPLOSION2.get()).create(this.getEntityWorld()) :
-                (NuclearExplosionEntity) ((EntityType<?>) ACEntityRegistry.NUCLEAR_EXPLOSION.get()).create(this.getEntityWorld());
+                (NuclearExplosion2Entity) ((EntityType<?>) ACEEntityRegistry.NUCLEAR_EXPLOSION2.get()).create(this.getCommandSenderWorld()) :
+                (NuclearExplosionEntity) ((EntityType<?>) ACEntityRegistry.NUCLEAR_EXPLOSION.get()).create(this.getCommandSenderWorld());
         assert explosion != null;
-        explosion.copyPositionAndRotation(this);
+        explosion.copyPosition(this);
         if (explosion instanceof NuclearExplosionEntity)
             ((NuclearExplosionEntity) explosion).setSize((float)AlexsCavesEnriched.CONFIG.miniNukeRadius);
         else if (explosion instanceof NuclearExplosion2Entity)
             ((NuclearExplosion2Entity) explosion).setSize((float)AlexsCavesEnriched.CONFIG.miniNukeRadius);
-        this.getEntityWorld().spawnEntity(explosion);
+        this.getCommandSenderWorld().addFreshEntity(explosion);
         this.discard();
     }
 
     protected void detonateNeutron() {
-        Entity explosion = ((EntityType<?>) ACEEntityRegistry.NEUTRON_EXPLOSION.get()).create(this.getEntityWorld());
+        Entity explosion = ((EntityType<?>) ACEEntityRegistry.NEUTRON_EXPLOSION.get()).create(this.getCommandSenderWorld());
         assert explosion != null;
-        explosion.copyPositionAndRotation(this);
+        explosion.copyPosition(this);
         ((NeutronExplosionEntity) explosion).setSize(AlexsCavesEnriched.CONFIG.neutron.radius);
-        this.getEntityWorld().spawnEntity(explosion);
+        this.getCommandSenderWorld().addFreshEntity(explosion);
         this.discard();
     }
 
     protected void detonateNormal() {
-        this.getEntityWorld().createExplosion(null, this.getX(), this.getY(), this.getZ(), this.getExplosionStrength(), World.ExplosionSourceType.TNT);
+        this.getCommandSenderWorld().explode(null, this.getX(), this.getY(), this.getZ(), this.getExplosionStrength(), Level.ExplosionInteraction.TNT);
 
         if (this.getIsFlame()) {
             final int radius = (int) Math.ceil(this.getExplosionStrength() * 1.4F);
@@ -262,19 +272,19 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
 
                     for (int dy = 0; dy < radius; dy++) {
                         BlockPos blockpos = new BlockPos(this.getBlockX() + dx, this.getBlockY() - dy, this.getBlockZ() + dz);
-                        if (this.getEntityWorld().getBlockState(blockpos).isAir() && this.getEntityWorld().getBlockState(blockpos.down())
-                                .isOpaqueFullCube(this.getEntityWorld(), blockpos.down())) {
-                            this.getEntityWorld().setBlockState(blockpos, AbstractFireBlock.getState(this.getEntityWorld(), blockpos));
+                        if (this.getCommandSenderWorld().getBlockState(blockpos).isAir() && this.getCommandSenderWorld().getBlockState(blockpos.below())
+                                .isSolidRender(this.getCommandSenderWorld(), blockpos.below())) {
+                            this.getCommandSenderWorld().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.getCommandSenderWorld(), blockpos));
                             break;
                         }
                     }
                 }
             }
 
-            Box bashBox = new Box(new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ()))
-                    .expand(this.getExplosionStrength() * 2.5F);
-            for (LivingEntity entity : this.getEntityWorld().getNonSpectatingEntities(LivingEntity.class, bashBox))
-                entity.setOnFireFor(5);
+            AABB bashBox = new AABB(new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ()))
+                    .inflate(this.getExplosionStrength() * 2.5F);
+            for (LivingEntity entity : this.getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, bashBox))
+                entity.setSecondsOnFire(5);
         }
         this.discard();
 
@@ -283,39 +293,39 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
             double deltaY = 0;
             for (; deltaY < 5.0; deltaY += 1.0) {
                 BlockPos blockpos = new BlockPos(this.getBlockX(), this.getBlockY() - (int) deltaY, this.getBlockZ());
-                if (this.getEntityWorld().getBlockState(blockpos).isAir() &&
-                        this.getEntityWorld().getBlockState(blockpos.down()).isOpaqueFullCube(this.getEntityWorld(), blockpos.down()))
+                if (this.getCommandSenderWorld().getBlockState(blockpos).isAir() &&
+                        this.getCommandSenderWorld().getBlockState(blockpos.below()).isSolidRender(this.getCommandSenderWorld(), blockpos.below()))
                     break;
             }
 
-            AreaEffectCloudEntity areaeffectcloud = new AreaEffectCloudEntity(this.getEntityWorld(), this.getX(), this.getY() - deltaY + 1.2f, this.getZ());
-            areaeffectcloud.setParticleType(ACParticleRegistry.FALLOUT.get());
-            areaeffectcloud.setColor(0);
-            areaeffectcloud.addEffect(new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(), (int) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.uranium.irradiationPotionTime, 1));
+            AreaEffectCloud areaeffectcloud = new AreaEffectCloud(this.getCommandSenderWorld(), this.getX(), this.getY() - deltaY + 1.2f, this.getZ());
+            areaeffectcloud.setParticle(ACParticleRegistry.FALLOUT.get());
+            areaeffectcloud.setFixedColor(0);
+            areaeffectcloud.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(), (int) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.uranium.irradiationPotionTime, 1));
             areaeffectcloud.setRadius((float) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.uranium.irradiationRadius);
             areaeffectcloud.setDuration(AlexsCavesEnriched.CONFIG.rocket.nonNuclear.uranium.irradiationTime);
-            areaeffectcloud.setRadiusGrowth(-areaeffectcloud.getRadius() / (float) areaeffectcloud.getDuration());
-            this.getEntityWorld().spawnEntity(areaeffectcloud);
+            areaeffectcloud.setRadiusPerTick(-areaeffectcloud.getRadius() / (float) areaeffectcloud.getDuration());
+            this.getCommandSenderWorld().addFreshEntity(areaeffectcloud);
         }
     }
 
     @Override
-    protected void onEntityHit(@NotNull EntityHitResult res) {
-        super.onEntityHit(res);
+    protected void onHitEntity(@NotNull EntityHitResult res) {
+        super.onHitEntity(res);
         this.detonate();
     }
 
     protected void reliablePortalStep() {
         if (!AlexsCavesEnriched.CONFIG.rocket.reliableWithPortals) return;
-        if (this.getEntityWorld().isClient) return;
+        if (this.getCommandSenderWorld().isClientSide) return;
 
-        Vec3d postPortalSpeed = this.getPostPortalSpeed();
-        if (postPortalSpeed.lengthSquared() > 0) {
-            this.setVelocity(postPortalSpeed);
-            this.setPostPortalSpeed(new Vec3d(0.0, 0.0, 0.0));
+        Vec3 postPortalSpeed = this.getPostPortalSpeed();
+        if (postPortalSpeed.lengthSqr() > 0) {
+            this.setDeltaMovement(postPortalSpeed);
+            this.setPostPortalSpeed(new Vec3(0.0, 0.0, 0.0));
         }
 
-        Vec3d vel = this.getVelocity();
+        Vec3 vel = this.getDeltaMovement();
         if (vel.length() < 1.0F) return; // No need to check - vanilla check is reliable for low speeds
 
         BlockPos currentPos = new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ());
@@ -329,12 +339,12 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
                 ray.getY() >= 0 ? 1 : -1,
                 ray.getZ() >= 0 ? 1 : -1
         );
-        Vec3d tMax = new Vec3d(
+        Vec3 tMax = new Vec3(
                 ray.getX() != 0 ? ((double) step.getX() / ray.getX()) : 10000.0F,
                 ray.getY() != 0 ? ((double) step.getY() / ray.getY()) : 10000.0F,
                 ray.getZ() != 0 ? ((double) step.getZ() / ray.getZ()) : 10000.0F
         );
-        Vec3d tDelta = new Vec3d(tMax.getX(), tMax.getY(), tMax.getZ());
+        Vec3 tDelta = new Vec3(tMax.x(), tMax.y(), tMax.z());
         int stepCount = 0;
 
         while (!currentPos.equals(endPos)) {
@@ -342,29 +352,29 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
             if (stepCount > 70)
                 break; // Prevent ultra velocity rockets from lagging too much
 
-            if (tMax.getX() < tMax.getY()) {
-                if (tMax.getX() < tMax.getZ()) {
-                    currentPos = currentPos.add(new BlockPos(step.getX(), 0, 0));
-                    tMax = tMax.add(new Vec3d(tDelta.getX(), 0.0, 0.0));
+            if (tMax.x() < tMax.y()) {
+                if (tMax.x() < tMax.z()) {
+                    currentPos = currentPos.offset(new BlockPos(step.getX(), 0, 0));
+                    tMax = tMax.add(new Vec3(tDelta.x(), 0.0, 0.0));
                 } else {
-                    currentPos = currentPos.add(new BlockPos(0, 0, step.getZ()));
-                    tMax = tMax.add(new Vec3d(0, 0.0, tDelta.getZ()));
+                    currentPos = currentPos.offset(new BlockPos(0, 0, step.getZ()));
+                    tMax = tMax.add(new Vec3(0, 0.0, tDelta.z()));
                 }
             } else {
-                if (tMax.getY() < tMax.getZ()) {
-                    currentPos = currentPos.add(new BlockPos(0, step.getY(), 0));
-                    tMax = tMax.add(new Vec3d(0, tDelta.getY(), 0));
+                if (tMax.y() < tMax.z()) {
+                    currentPos = currentPos.offset(new BlockPos(0, step.getY(), 0));
+                    tMax = tMax.add(new Vec3(0, tDelta.y(), 0));
                 } else {
-                    currentPos = currentPos.add(new BlockPos(0, 0, step.getZ()));
-                    tMax = tMax.add(new Vec3d(0, 0.0, tDelta.getZ()));
+                    currentPos = currentPos.offset(new BlockPos(0, 0, step.getZ()));
+                    tMax = tMax.add(new Vec3(0, 0.0, tDelta.z()));
                 }
             }
 
-            var block = this.getEntityWorld().getBlockState(currentPos);
+            var block = this.getCommandSenderWorld().getBlockState(currentPos);
             if (block.getBlock() instanceof NetherPortalBlock || block.getBlock() instanceof EndGatewayBlock || block.getBlock() instanceof EndPortalBlock) {
                 this.setPostPortalSpeed(vel);
-                this.setVelocity(vel.normalize().multiply(0.01));
-                this.setPosition(currentPos.getX(), currentPos.getY(), currentPos.getZ());
+                this.setDeltaMovement(vel.normalize().scale(0.01));
+                this.setPos(currentPos.getX(), currentPos.getY(), currentPos.getZ());
             }
         }
     }
@@ -372,8 +382,8 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
     @OnlyIn(Dist.CLIENT)
     public void clientTick() {
         if (!spawnedWhistleSound) {
-            var rocketSoundInstance = new RocketSound(this, ACESounds.ROCKET_WHISTLE, SoundCategory.AMBIENT);
-            MinecraftClient.getInstance().getSoundManager().playNextTick(rocketSoundInstance);
+            var rocketSoundInstance = new RocketSound(this, ACESounds.ROCKET_WHISTLE, SoundSource.AMBIENT);
+            Minecraft.getInstance().getSoundManager().queueTickingSound(rocketSoundInstance);
             this.spawnedWhistleSound = true;
         }
     }
@@ -385,34 +395,34 @@ public class RocketEntity extends PersistentProjectileEntity implements IRocketE
         if (this.inGround) {
             this.detonate();
         } else {
-            if (this.getEntityWorld().isClient) {
-                if (this.getVelocity().length() > 0.5F) {
-                    Vec3d vec = this.getVelocity().multiply(-1.0);
-                    Vec3d center1 = this.getPos();
-                    Vec3d center2 = this.getPos().add(vec.multiply(0.5));
-                    this.getEntityWorld().addParticle(ParticleTypes.FIREWORK, true, center1.x, center1.y, center1.z,
+            if (this.getCommandSenderWorld().isClientSide) {
+                if (this.getDeltaMovement().length() > 0.5F) {
+                    Vec3 vec = this.getDeltaMovement().scale(-1.0);
+                    Vec3 center1 = this.position();
+                    Vec3 center2 = this.position().add(vec.scale(0.5));
+                    this.getCommandSenderWorld().addParticle(ParticleTypes.FIREWORK, true, center1.x, center1.y, center1.z,
                             0, 0, 0);
-                    this.getEntityWorld().addParticle(ParticleTypes.FIREWORK, true, center2.x, center2.y, center2.z,
+                    this.getCommandSenderWorld().addParticle(ParticleTypes.FIREWORK, true, center2.x, center2.y, center2.z,
                             0, 0, 0);
                 }
 
                 this.clientTick();
             } else {
                 // this.loadChunk();
-                if ((this.getIsNuclear() || this.getIsNeutron() || this.getIsMiniNuke()) && (this.age + this.getId()) % 10 == 0) {
-                    if (this.getEntityWorld() instanceof ServerWorld serverLevel)
+                if ((this.getIsNuclear() || this.getIsNeutron() || this.getIsMiniNuke()) && (this.tickCount + this.getId()) % 10 == 0) {
+                    if (this.getCommandSenderWorld() instanceof ServerLevel serverLevel)
                         this.getNearbySirens(serverLevel, 256).forEach(this::activateSiren);
                 }
             }
         }
     }
 
-    protected @NotNull SoundEvent getHitSound() {
-        return SoundEvents.ENTITY_GENERIC_EXPLODE;
+    protected @NotNull SoundEvent getDefaultHitGroundSoundEvent() {
+        return SoundEvents.GENERIC_EXPLODE;
     }
 
     @Override
-    protected @NotNull ItemStack asItemStack() {
+    protected @NotNull ItemStack getPickupItem() {
         return new ItemStack(ACEItemRegistry.ROCKET.get());
     }
 }

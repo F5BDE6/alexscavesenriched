@@ -2,39 +2,38 @@ package net.hellomouse.alexscavesenriched.block.fumo;
 
 import com.github.alexmodguy.alexscaves.server.block.ACSoundTypes;
 import net.hellomouse.alexscavesenriched.block.abs.AbstractFumoBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class XenoFumoBlock extends AbstractFumoBlock {
     public XenoFumoBlock() {
-        super(Settings.create()
-                .mapColor(MapColor.CLEAR)
+        super(Properties.of()
+                .mapColor(MapColor.NONE)
                 .strength(0, 0)
-                .sounds(ACSoundTypes.SCRAP_METAL)
-                .nonOpaque());
+                .sound(ACSoundTypes.SCRAP_METAL)
+                .noOcclusion());
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        super.appendTooltip(stack, world, tooltip, options);
-        tooltip.add(Text.translatable("block.alexscavesenriched.xeno_fumo.tooltip").formatted(Formatting.LIGHT_PURPLE));
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, world, tooltip, options);
+        tooltip.add(Component.translatable("block.alexscavesenriched.xeno_fumo.tooltip").withStyle(ChatFormatting.LIGHT_PURPLE));
     }
 
     @Override
-    public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-        world.playSoundAtBlockCenter(hit.getBlockPos(), SoundEvents.ENTITY_PANDA_HURT, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
+    public void onProjectileHit(Level world, BlockState state, BlockHitResult hit, Projectile projectile) {
+        world.playLocalSound(hit.getBlockPos(), SoundEvents.PANDA_HURT, SoundSource.BLOCKS, 1.0F, 1.0F, true);
     }
 }

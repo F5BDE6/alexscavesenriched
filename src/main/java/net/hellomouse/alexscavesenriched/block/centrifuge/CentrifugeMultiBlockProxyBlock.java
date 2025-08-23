@@ -4,42 +4,45 @@ import net.hellomouse.alexscavesenriched.ACEBlockEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEBlockRegistry;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeBlockEntity;
 import net.hellomouse.alexscavesenriched.block.block_entity.CentrifugeInventoryProxyBlockEntity;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class CentrifugeMultiBlockProxyBlock extends BlockWithEntity {
-    public static final BooleanProperty IS_TOP = BooleanProperty.of("top");
+public class CentrifugeMultiBlockProxyBlock extends BaseEntityBlock {
+    public static final BooleanProperty IS_TOP = BooleanProperty.create("top");
 
     public CentrifugeMultiBlockProxyBlock() {
-        super(CentrifugeUtil.getBlockSettings().hardness(20));
-        this.setDefaultState(this.stateManager.getDefaultState().with(IS_TOP, false));
+        super(CentrifugeUtil.getBlockSettings().destroyTime(20));
+        this.registerDefaultState(this.stateDefinition.any().setValue(IS_TOP, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(IS_TOP);
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof CentrifugeInventoryProxyBlockEntity proxy) {
             var target = proxy.getTargetPos();
@@ -53,56 +56,56 @@ public class CentrifugeMultiBlockProxyBlock extends BlockWithEntity {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!world.isClient && !(newState.getBlock() instanceof CentrifugeMultiBlockProxyBlock)) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!world.isClientSide && !(newState.getBlock() instanceof CentrifugeMultiBlockProxyBlock)) {
             var be = world.getBlockEntity(pos);
             if (be instanceof CentrifugeInventoryProxyBlockEntity pbe) {
                 BlockPos basePos = pbe.getTargetPos();
                 if (basePos != null) {
-                    world.updateComparators(pos, this);
+                    world.updateNeighbourForOutputSignal(pos, this);
                     world.removeBlock(basePos, false);
                     return;
                 }
             }
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onRemove(state, world, pos, newState, moved);
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World level, BlockPos blockPos, PlayerEntity player, Hand hand, BlockHitResult result) {
-        BlockPos.Mutable carve = new BlockPos.Mutable();
+    public InteractionResult use(BlockState state, Level level, BlockPos blockPos, Player player, InteractionHand hand, BlockHitResult result) {
+        BlockPos.MutableBlockPos carve = new BlockPos.MutableBlockPos();
         for (int dy = 1; dy < CentrifugeUtil.CENTRIFUGE_HEIGHT; dy++) {
             carve.set(blockPos.getX(), blockPos.getY() - dy, blockPos.getZ());
             BlockState otherState = level.getBlockState(carve);
             if (otherState.getBlock() instanceof CentrifugeMultiBlockBaseBlock)
                 return CentrifugeMultiBlockBaseBlock.centrifugeUse(otherState, level, carve, player, hand, result);
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CentrifugeInventoryProxyBlockEntity(pos, state);
     }
 
     @Override
-    public PistonBehavior getPistonPushReaction(BlockState blockState) {
-        return PistonBehavior.BLOCK;
+    public PushReaction getPistonPushReaction(BlockState blockState) {
+        return PushReaction.BLOCK;
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @javax.annotation.Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World level, BlockState state, BlockEntityType<T> entityType) {
-        return checkType(entityType, ACEBlockEntityRegistry.CENTRIFUGE_PROXY.get(), CentrifugeInventoryProxyBlockEntity::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> entityType) {
+        return createTickerHelper(entityType, ACEBlockEntityRegistry.CENTRIFUGE_PROXY.get(), CentrifugeInventoryProxyBlockEntity::tick);
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
         return new ItemStack(ACEBlockRegistry.CENTRIFUGE_TOP.get());
     }
 }

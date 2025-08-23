@@ -1,15 +1,15 @@
 package net.hellomouse.alexscavesenriched.block;
 
 import net.hellomouse.alexscavesenriched.block.abs.AbstractColaBlock;
-import net.minecraft.block.MapColor;
-import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.MapColor;
 
 public class NukaColaEmptyBlock extends AbstractColaBlock {
     public NukaColaEmptyBlock() {
-        super(Settings.create()
-                .mapColor(MapColor.CLEAR)
+        super(Properties.of()
+                .mapColor(MapColor.NONE)
                 .strength(0, 0)
-                .sounds(BlockSoundGroup.GLASS)
-                .nonOpaque());
+                .sound(SoundType.GLASS)
+                .noOcclusion());
     }
 }

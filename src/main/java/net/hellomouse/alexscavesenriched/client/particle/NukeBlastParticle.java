@@ -1,59 +1,59 @@
 package net.hellomouse.alexscavesenriched.client.particle;
 
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class NukeBlastParticle extends SpriteBillboardParticle {
+public class NukeBlastParticle extends TextureSheetParticle {
     public static final float DEFAULT_SCALE = 15.0F;
 
-    protected NukeBlastParticle(ClientWorld world, double x, double y, double z, double vx, double vy, double vz) {
+    protected NukeBlastParticle(ClientLevel world, double x, double y, double z, double vx, double vy, double vz) {
         super(world, x, y, z, vx, vy, vz);
-        this.collidesWithWorld = false;
+        this.hasPhysics = false;
         this.scale(DEFAULT_SCALE);
-        this.scale = DEFAULT_SCALE;
+        this.quadSize = DEFAULT_SCALE;
 
         this.setColor(1F, 1F, 1F);
-        this.maxAge = 400;
-        this.gravityStrength = 0.0F;
-        this.velocityMultiplier = 1.0F;
+        this.lifetime = 400;
+        this.gravity = 0.0F;
+        this.friction = 1.0F;
         this.setAlpha(1.0F);
 
         // Mojang randomizes these but we don't want to
-        this.velocityX = vx;
-        this.velocityY = vy;
-        this.velocityZ = vz;
+        this.xd = vx;
+        this.yd = vy;
+        this.zd = vz;
     }
 
     @Override
     public void tick() {
         super.tick();
-        float f = (this.age - (float)(this.maxAge / 2)) / (float)this.maxAge;
-        if (this.age > this.maxAge / 2)
+        float f = (this.age - (float) (this.lifetime / 2)) / (float) this.lifetime;
+        if (this.age > this.lifetime / 2)
             this.setAlpha(1.0F - f * 2F);
     }
 
     @Override
-    public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class Factory implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider sprites;
+    public static class Factory implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet sprites;
 
-        public Factory(SpriteProvider sprites) {
+        public Factory(SpriteSet sprites) {
             this.sprites = sprites;
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType type, ClientWorld level,
+        public Particle createParticle(SimpleParticleType type, ClientLevel level,
                                        double x, double y, double z,
                                        double xd, double yd, double zd) {
             NukeBlastParticle p = new NukeBlastParticle(level, x, y, z, xd, yd, zd);
-            p.setSprite(sprites);
+            p.pickSprite(sprites);
             return p;
         }
     }

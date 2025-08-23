@@ -2,7 +2,8 @@ package net.hellomouse.alexscavesenriched.forge;
 
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.item.DeadmanSwitchItem;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -11,12 +12,12 @@ import net.minecraftforge.fml.common.Mod;
 public class PlayerDeathEventHandler {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof PlayerEntity player)) return;
-        for (var item : player.getInventory().main)
+        if (!(event.getEntity() instanceof Player player)) return;
+        for (var item : player.getInventory().items)
             if (item.getItem() instanceof DeadmanSwitchItem && (DeadmanSwitchItem.isActive(item)))
-                DeadmanSwitchItem.detonate(player.getWorld(), player, item);
-        for (var item : player.getInventory().offHand)
+                DeadmanSwitchItem.detonate(player.level(), player, item);
+        for (var item : player.getInventory().offhand)
             if (item.getItem() instanceof DeadmanSwitchItem && (DeadmanSwitchItem.isActive(item)))
-                DeadmanSwitchItem.detonate(player.getWorld(), player, item);
+                DeadmanSwitchItem.detonate(player.level(), player, item);
     }
 }

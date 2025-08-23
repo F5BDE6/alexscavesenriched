@@ -1,16 +1,18 @@
 package net.hellomouse.alexscavesenriched.client.render;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gl.ShaderProgram;
+
+import net.minecraft.client.renderer.ShaderInstance;
 
 public class ACEInternalShaders {
-    private static ShaderProgram RadiationParticleShader;
+    private static ShaderInstance RadiationParticleShader;
 
     @Nullable
-    public static ShaderProgram getRadiationParticleShader(){
+    public static ShaderInstance getRadiationParticleShader() {
         return RadiationParticleShader;
     }
-    public static void setRadiationParticleShader(ShaderProgram shader){
+
+    public static void setRadiationParticleShader(ShaderInstance shader) {
         RadiationParticleShader = shader;
     }
 }

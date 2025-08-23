@@ -2,37 +2,38 @@ package net.hellomouse.alexscavesenriched.item;
 
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import javax.annotation.Nullable;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import java.util.List;
 
 public class UraniumCandyItem extends Item {
     public UraniumCandyItem() {
-        super(new Item.Settings()
-                .food(new FoodComponent.Builder()
-                        .hunger(200).saturationModifier(200)
-                        .effect(() -> new StatusEffectInstance(StatusEffects.NAUSEA, 900, 1), 1.0F)
-                        .effect(() -> new StatusEffectInstance(StatusEffects.BLINDNESS, 900, 0), 1.0F)
-                        .effect(() -> new StatusEffectInstance(StatusEffects.POISON, 900, 3), 1.0F)
-                        .effect(() -> new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 900, 1), 1.0F)
-                        .effect(() -> new StatusEffectInstance(StatusEffects.WEAKNESS, 900, 1), 1.0F)
-                        .effect(() -> new StatusEffectInstance(StatusEffects.SLOWNESS, 900, 1), 1.0F)
-                        .effect(() -> new StatusEffectInstance(ACEffectRegistry.IRRADIATED.get(), 80, 5), 1.0F)
+        super(new Item.Properties()
+                .food(new FoodProperties.Builder()
+                        .nutrition(200).saturationMod(200)
+                        .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 900, 1), 1.0F)
+                        .effect(() -> new MobEffectInstance(MobEffects.BLINDNESS, 900, 0), 1.0F)
+                        .effect(() -> new MobEffectInstance(MobEffects.POISON, 900, 3), 1.0F)
+                        .effect(() -> new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 900, 1), 1.0F)
+                        .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 900, 1), 1.0F)
+                        .effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 900, 1), 1.0F)
+                        .effect(() -> new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(), 80, 5), 1.0F)
                         .build()
                 )
         );
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World worldIn, List<Text> tooltip, TooltipContext flagIn) {
-        tooltip.add(Text.translatable("item.alexscavesenriched.uranium_candy.desc").formatted(Formatting.GRAY));
-        super.appendTooltip(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(Component.translatable("item.alexscavesenriched.uranium_candy.desc").withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 }
