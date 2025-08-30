@@ -2,7 +2,6 @@ package net.hellomouse.alexscavesenriched;
 
 import com.mojang.logging.LogUtils;
 import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
 import net.hellomouse.alexscavesenriched.client.particle.texture.DemonCoreGlowTexture;

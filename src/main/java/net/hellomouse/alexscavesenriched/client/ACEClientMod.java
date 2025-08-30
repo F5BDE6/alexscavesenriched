@@ -15,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,6 +27,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Arrays;
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = AlexsCavesEnriched.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 @OnlyIn(Dist.CLIENT)
 public class ACEClientMod {
@@ -38,6 +39,8 @@ public class ACEClientMod {
     public enum NukeSkyType {NONE, NEUTRON, NUKE, BLACK_HOLE}
     private static final float[] nukeSkyDecayRates = {1, 0.004F, 0.0003F, 0.001F};
     private static final float[] nukeSkyProgressPerType = new float[NukeSkyType.values().length];
+    private static int prevLevelHash = -1;
+
     // Get gradient <start color + alpha, end color + alpha>
     // Alpha color of sky will be progress
     public static Tuple<Vec3, Vec3> NUKE_SKY_GRADIENT = new Tuple<>(new Vec3(0.9, 0.2, 0), new Vec3(0.9, 0.1, 0));
@@ -48,6 +51,14 @@ public class ACEClientMod {
 
     // Nuke sky colors
     // ----------------------------------------------------
+    private static void resetNukeSkyMaybe(ClientLevel level) {
+        var levelHash = level == null ? 0 : level.hashCode();
+        if (levelHash != prevLevelHash) {
+            Arrays.fill(nukeSkyProgressPerType, 0.0F);
+            prevLevelHash = levelHash;
+        }
+    }
+
     public static void setNukeSky(NukeSkyType type, float progress) {
         progress = Math.max(0F, Math.min(progress, 1F));
         nukeSkyProgressPerType[type.ordinal()] = Math.max(progress, nukeSkyProgressPerType[type.ordinal()]);
@@ -154,6 +165,7 @@ public class ACEClientMod {
             if (lastTickTime == level.getGameTime())
                 return;
             lastTickTime = level.getGameTime();
+            resetNukeSkyMaybe(level);
 
             // Decay nuke sky glow even when nuke is not loaded
             for (int i = NukeSkyType.values().length - 1; i > 0; i--)

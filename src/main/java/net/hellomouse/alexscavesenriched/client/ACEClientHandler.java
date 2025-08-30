@@ -2,7 +2,6 @@ package net.hellomouse.alexscavesenriched.client;
 
 import com.github.alexmodguy.alexscaves.client.render.entity.EmptyRenderer;
 import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.hellomouse.alexscavesenriched.*;
 import net.hellomouse.alexscavesenriched.client.entity.BlackHoleDiskModel;
@@ -18,7 +17,6 @@ import net.hellomouse.alexscavesenriched.client.render.item.ACEItemRenderPropert
 import net.hellomouse.alexscavesenriched.item.DeadmanSwitchItem;
 import net.hellomouse.alexscavesenriched.item.GammaFlashlightItem;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -32,8 +30,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-
-import java.io.IOException;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = AlexsCavesEnriched.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @OnlyIn(Dist.CLIENT)
