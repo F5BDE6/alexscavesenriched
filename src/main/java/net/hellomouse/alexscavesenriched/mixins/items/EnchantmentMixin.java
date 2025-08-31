@@ -2,6 +2,7 @@ package net.hellomouse.alexscavesenriched.mixins.items;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
+import net.hellomouse.alexscavesenriched.item.RailgunItem;
 import net.hellomouse.alexscavesenriched.item.RocketLauncherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.*;
@@ -18,7 +19,7 @@ public abstract class EnchantmentMixin implements IForgeEnchantment {
             if (enchant instanceof ArrowDamageEnchantment || enchant instanceof ArrowFireEnchantment)
                 return true;
         }
-        else if (itemStack.getItem() instanceof RocketLauncherItem) {
+        else if (itemStack.getItem() instanceof RailgunItem) {
             if (enchant instanceof ArrowInfiniteEnchantment && AlexsCavesEnriched.CONFIG.railgun.infinity)
                 return true;
             else if (enchant instanceof MultiShotEnchantment && AlexsCavesEnriched.CONFIG.railgun.multishot)
