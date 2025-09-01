@@ -6,7 +6,6 @@ import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
 import net.hellomouse.alexscavesenriched.client.render.item.ACEClientItemExtension;
 import net.hellomouse.alexscavesenriched.entity.IRocketEntity;
-import net.hellomouse.alexscavesenriched.entity.RocketEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
+public class RocketLauncherItem extends ProjectileWeaponItem implements UpdatesStackTags {
 
     private static final float MAX_LOAD_TIME = 40.0f;
 
@@ -56,7 +55,7 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand) {
         ItemStack itemstack = player.getItemInHand(interactionHand);
         ItemStack ammo = player.getProjectile(itemstack);
-        boolean flag = player.isCreative();
+        boolean flag = player.isCreative() || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, itemstack) > 0;
         if (flag || !ammo.isEmpty()) {
             player.startUsingItem(interactionHand);
             return InteractionResultHolder.consume(itemstack);
@@ -220,8 +219,4 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
         return 128;
     }
 
-    @Override
-    public @NotNull AbstractArrow customArrow(@NotNull AbstractArrow arrow) {
-        return new RocketEntity(arrow.getCommandSenderWorld(), (LivingEntity) arrow.getOwner());
-    }
 }
