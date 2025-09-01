@@ -15,11 +15,8 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -50,7 +47,9 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
     public static float getPowerForTime(int i) {
         float f = (float) i / MAX_LOAD_TIME;
         f = (f * f + f * 2.0F) / 3.0F;
-        if (f > 1.0F) { f = 1.0F; }
+        if (f > 1.0F) {
+            f = 1.0F;
+        }
         return f;
     }
 
@@ -58,7 +57,7 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
         ItemStack itemstack = player.getItemInHand(interactionHand);
         ItemStack ammo = player.getProjectile(itemstack);
         boolean flag = player.isCreative();
-        if(flag || !ammo.isEmpty()) {
+        if (flag || !ammo.isEmpty()) {
             player.startUsingItem(interactionHand);
             return InteractionResultHolder.consume(itemstack);
         } else {
@@ -86,13 +85,14 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
     }
 
     private AbstractArrow createRocket(Player player, ItemStack ammoIn) {
-        IRocketItem rocket = (IRocketItem)(ammoIn.getItem() instanceof IRocketItem ? ammoIn.getItem() : ACEItemRegistry.ROCKET_NORMAL.get());
+        IRocketItem rocket = (IRocketItem) (ammoIn.getItem() instanceof IRocketItem ? ammoIn.getItem() : ACEItemRegistry.ROCKET_NORMAL.get());
         return rocket.createRocket(player.getCommandSenderWorld(), ammoIn, player);
     }
 
     public void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int i1) {
         if (!(livingEntity instanceof Player player))
             return;
+        boolean flag = player.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, itemStack) > 0;
 
         int i = this.getUseDuration(itemStack) - i1;
         float f = getPowerForTime(i);
@@ -102,7 +102,10 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
             ItemStack ammoStack = player.getProjectile(itemStack);
             AbstractArrow rocket = createRocket(player, ammoStack);
 
-            if (rocket != null) {
+            if (rocket != null || flag) {
+                if (rocket == null) {
+                    rocket = createRocket(player, new ItemStack(ACEItemRegistry.ROCKET_NORMAL.get()));
+                }
                 // Fire rocket
                 int power = itemStack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
                 rocket.pickup = AbstractArrow.Pickup.DISALLOWED;
