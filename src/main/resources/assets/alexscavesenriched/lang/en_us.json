@@ -186,6 +186,7 @@
     "text.autoconfig.alexscavesenriched.option.rocketLauncher.backblastRange": "Back blast range",
     "text.autoconfig.alexscavesenriched.option.rocketLauncher.backblastAngle": "Back blast angle",
     "text.autoconfig.alexscavesenriched.option.rocketLauncher.backblastDirectDamage": "Back blast direct damage",
+    "text.autoconfig.alexscavesenriched.option.rocketLauncher.infinity": "Enable infinity enchant",
     "text.autoconfig.alexscavesenriched.option.nuclear": "Nuclear explosion",
     "text.autoconfig.alexscavesenriched.option.nuclear.letNukeKillWither": "Let nuke kill wither",
     "text.autoconfig.alexscavesenriched.option.nuclear.useNewNuke": "Use new nuke",

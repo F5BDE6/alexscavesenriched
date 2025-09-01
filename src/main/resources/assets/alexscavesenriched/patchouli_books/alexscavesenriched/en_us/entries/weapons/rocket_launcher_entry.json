@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "The rocket launcher can be used to launch rockets (with global cooldown for each player, meaning you cannot fire multiple rocket launchers in sequence).$(br2)It can be enchanted with Power (boosts rocket speed) and Flame (to make fire explosions)."
+            "text": "The rocket launcher can be used to launch rockets (with global cooldown for each player, meaning you cannot fire multiple rocket launchers in sequence).$(br2)It can be enchanted with Power (boosts rocket speed) and Flame (to make fire explosions). Infinity can also be applied if enabled in config."
         },
         {
             "type": "patchouli:crafting",

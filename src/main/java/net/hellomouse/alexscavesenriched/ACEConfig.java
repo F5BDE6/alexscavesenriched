@@ -134,6 +134,9 @@ public class ACEConfig implements ConfigData {
         public double backblastAngle = 30;
         @ConfigEntry.BoundedDiscrete(min = 0, max = REASONABLE_MAX_SMALL)
         public double backblastDirectDamage = 20;
+
+        // Can these enchants work?
+        public boolean infinity = false;
     }
 
     public static class NuclearExplosionConfig {

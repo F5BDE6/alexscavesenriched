@@ -157,7 +157,7 @@ public class CentrifugeBlockEntity extends BaseContainerBlockEntity implements W
                 }
             }
         }
-        if (invChanged) {
+        if (invChanged || (entity.rotation == 0 && level.getGameTime() % 20 == 0)) {
             for (int dy = 0; dy < CentrifugeUtil.CENTRIFUGE_HEIGHT; dy++) {
                 var pos = entity.getBlockPos().relative(Direction.UP, dy);
                 level.updateNeighbourForOutputSignal(pos, level.getBlockState(pos).getBlock());

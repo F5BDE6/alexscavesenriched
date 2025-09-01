@@ -11,6 +11,11 @@
             "type": "patchouli:crafting",
             "text": "",
             "recipe": "alexscavesenriched:flamethrower"
+        },
+        {
+            "type": "patchouli:crafting",
+            "text": "Crafting a flamethrower with a nuka cola quantum will enhance it with blue fire.",
+            "recipe": "alexscavesenriched:flamethrower_2"
         }
     ]
 }

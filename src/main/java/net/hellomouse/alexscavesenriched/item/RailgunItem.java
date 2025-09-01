@@ -101,7 +101,7 @@ public class RailgunItem extends ProjectileWeaponItem implements UpdatesStackTag
                 int id = ((int)d);
                 world.addParticle(ParticleTypes.CRIT, false, point.x, point.y, point.z, 0, 0, 0);
                 if (id % 5 == 1)
-                    world.addParticle(ACEParticleRegistry.RAILGUN_SHOCKWAVE.get(), true, point.x, point.y, point.z, 0, 0, 0);
+                    world.addParticle(ACEParticleRegistry.RAILGUN_SHOCKWAVE.get(), true, point.x, point.y, point.z, look.x, look.y, look.z);
             }
 
             BlockPos blockPos = new BlockPos((int) Math.floor(point.x()), (int) Math.floor(point.y()), (int) Math.floor(point.z()));

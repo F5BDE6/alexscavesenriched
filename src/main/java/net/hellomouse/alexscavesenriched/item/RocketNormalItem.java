@@ -14,6 +14,10 @@ public class RocketNormalItem extends Item implements IRocketItem {
         super(new Properties().rarity(Rarity.UNCOMMON));
     }
 
+    public boolean allowInfinity() {
+        return true;
+    }
+
     public AbstractArrow createRocket(Level level, ItemStack ammoIn, Player player) {
         var e = new RocketEntity(level, player);
         e.setExplosionStrength((float) AlexsCavesEnriched.CONFIG.rocket.nonNuclear.normal.explosionPower);

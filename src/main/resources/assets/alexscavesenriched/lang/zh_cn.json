@@ -186,6 +186,7 @@
     "text.autoconfig.alexscavesenriched.option.rocketLauncher.backblastRange": "后喷区范围",
     "text.autoconfig.alexscavesenriched.option.rocketLauncher.backblastAngle": "后喷区角度",
     "text.autoconfig.alexscavesenriched.option.rocketLauncher.backblastDirectDamage": "后喷区直接损害",
+    "text.autoconfig.alexscavesenriched.option.rocketLauncher.infinity": "启用无限魔咒",
     "text.autoconfig.alexscavesenriched.option.nuclear": "核爆炸",
     "text.autoconfig.alexscavesenriched.option.nuclear.letNukeKillWither": "让核弹杀凋灵",
     "text.autoconfig.alexscavesenriched.option.nuclear.useNewNuke": "用新的核爆炸",

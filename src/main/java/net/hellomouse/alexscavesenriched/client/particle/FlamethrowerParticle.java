@@ -28,17 +28,15 @@ public class FlamethrowerParticle extends RisingParticle {
         this.setLocationFromBoundingbox();
     }
 
-    public int getLightColor(float tint) {
-        float f = ((float) this.age + tint) / (float) this.lifetime;
+    @Override
+    public int getLightColor(float partialTick) {
+        float f = ((float) this.age + partialTick) / (float) this.lifetime;
         f = 0.5f + (1.0f - Mth.clamp(f, 0.0F, 1.0F)) / 2;
-        int i = super.getLightColor(tint);
-        int j = i & 255;
-        int k = i >> 16 & 255;
+        int j = 0xF0;
         j += (int)(f * 15.0F * 16.0F);
-        if (j > 240) {
+        if (j > 240)
             j = 240;
-        }
-        return j | k << 16;
+        return j | (0xF0 << 16);
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -12,6 +12,7 @@ public class ACEParticleRegistry {
     public static final RegistryObject<SimpleParticleType> NEUTRON_BLAST = DEF_REG.register("neutron_blast", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> DEMONCORE_GLOW = DEF_REG.register("demon_core_glow", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> FLAMETHROWER = DEF_REG.register("flamethrower_flame", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> SOUL_FLAMETHROWER = DEF_REG.register("soul_flamethrower_flame", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> BLACK_HOLE_SMOKE = DEF_REG.register("black_hole_smoke", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> RAILGUN_SHOCKWAVE = DEF_REG.register("railgun_shockwave", () -> new SimpleParticleType(true));
 }

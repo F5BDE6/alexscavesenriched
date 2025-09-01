@@ -16,8 +16,9 @@ public abstract class EnchantmentMixin implements IForgeEnchantment {
     public boolean isAcceptableItem(boolean original, ItemStack itemStack) {
         Enchantment enchant = (Enchantment) ((Object) this);
         if (itemStack.getItem() instanceof RocketLauncherItem) {
-            if (enchant instanceof ArrowDamageEnchantment || enchant instanceof ArrowFireEnchantment)
+            if (enchant instanceof ArrowInfiniteEnchantment && AlexsCavesEnriched.CONFIG.rocketLauncher.infinity)
                 return true;
+            return enchant instanceof ArrowDamageEnchantment || enchant instanceof ArrowFireEnchantment;
         }
         else if (itemStack.getItem() instanceof RailgunItem) {
             if (enchant instanceof ArrowInfiniteEnchantment && AlexsCavesEnriched.CONFIG.railgun.infinity)
@@ -26,6 +27,7 @@ public abstract class EnchantmentMixin implements IForgeEnchantment {
                 return true;
             else if (enchant instanceof QuickChargeEnchantment && AlexsCavesEnriched.CONFIG.railgun.quickCharge)
                 return true;
+            return false;
         }
         return original;
     }

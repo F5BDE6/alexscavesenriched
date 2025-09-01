@@ -7,4 +7,6 @@ import net.minecraft.world.level.Level;
 
 public interface IRocketItem {
     AbstractArrow createRocket(Level level, ItemStack ammoIn, Player player);
+
+    default boolean allowInfinity() { return false; }
 }

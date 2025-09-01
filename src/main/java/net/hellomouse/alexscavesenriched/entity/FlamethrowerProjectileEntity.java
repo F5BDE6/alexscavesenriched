@@ -1,5 +1,6 @@
 package net.hellomouse.alexscavesenriched.entity;
 
+import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.hellomouse.alexscavesenriched.ACEEntityRegistry;
 import net.hellomouse.alexscavesenriched.ACEParticleRegistry;
 import net.minecraft.core.particles.ParticleOptions;
@@ -11,6 +12,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -28,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 
 public class FlamethrowerProjectileEntity extends Projectile {
+    private static final EntityDataAccessor<Byte> IS_SOUL = SynchedEntityData.defineId(FlamethrowerProjectileEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(FlamethrowerProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
 
     public FlamethrowerProjectileEntity(EntityType entityType, Level world) {
@@ -54,14 +57,23 @@ public class FlamethrowerProjectileEntity extends Projectile {
 
     @Override
     protected void defineSynchedData() {
+        this.getEntityData().define(IS_SOUL, (byte) 0);
         this.getEntityData().define(ITEM, ItemStack.EMPTY);
+    }
+
+    public boolean isSoul() {
+        return this.entityData.get(IS_SOUL) != 0;
+    }
+    public void setIsSoul(boolean f) {
+        this.entityData.set(IS_SOUL, (byte) (f ? 1 : 0));
     }
 
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         super.onHitEntity(entityHitResult);
-        float f = (float) this.getDeltaMovement().length();
-        int i = Mth.ceil(Mth.clamp((double) f * 2.0f, 0.0, 2.147483647E9));
+        float speed = (float) this.getDeltaMovement().length();
+        float damageScale = isSoul() ? 1.5F : 1F;
+        int damage = Mth.ceil(Mth.clamp((double) speed * 2.0f * damageScale, 0.0, 2.147483647E9));
 
         Entity entity = entityHitResult.getEntity();
 
@@ -72,8 +84,12 @@ public class FlamethrowerProjectileEntity extends Projectile {
         Entity owner = this.getOwner();
         DamageSource damageSource = owner instanceof LivingEntity ? this.damageSources().mobAttack((LivingEntity) owner) : this.damageSources().onFire();
         entity.setSecondsOnFire(7);
+        if (isSoul() && entity instanceof LivingEntity livingEntity) {
+            livingEntity.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(),
+                    20, 0, false, false, true));
+        }
 
-        if (entity.hurt(damageSource, (float) i)) {
+        if (entity.hurt(damageSource, (float) damage)) {
             if (entity instanceof LivingEntity livingEntity) {
                 if (!this.level().isClientSide && owner instanceof LivingEntity) {
                     EnchantmentHelper.doPostHurtEffects(livingEntity, owner);
@@ -109,12 +125,25 @@ public class FlamethrowerProjectileEntity extends Projectile {
 
             // Create fire particles in same direction
             Vec3 v = this.getDeltaMovement().scale(0.3);
-            ParticleOptions particleEffect = ParticleTypes.LAVA;
-            int choice = this.level().getRandom().nextInt(10);
-            if (choice < 6)
-                particleEffect = ACEParticleRegistry.FLAMETHROWER.get();
-            else if (choice <= 9)
-                particleEffect = ParticleTypes.LARGE_SMOKE;
+
+            ParticleOptions particleEffect;
+            boolean soulVersion = isSoul();
+
+            if (soulVersion) { // Soul fire version
+                particleEffect = ParticleTypes.SOUL_FIRE_FLAME;
+                int choice = this.level().getRandom().nextInt(10);
+                if (choice < 6)
+                    particleEffect = ACEParticleRegistry.SOUL_FLAMETHROWER.get();
+                else if (choice <= 9)
+                    particleEffect = ParticleTypes.LARGE_SMOKE;
+            } else {
+                particleEffect = ParticleTypes.LAVA;
+                int choice = this.level().getRandom().nextInt(10);
+                if (choice < 6)
+                    particleEffect = ACEParticleRegistry.FLAMETHROWER.get();
+                else if (choice <= 9)
+                    particleEffect = ParticleTypes.LARGE_SMOKE;
+            }
 
             // Spawn more particle density
             for (int i = 0; i < 4; i++) {
@@ -142,7 +171,7 @@ public class FlamethrowerProjectileEntity extends Projectile {
                     this.level().addParticle(ParticleTypes.BUBBLE, x - vec3d.x * 0.25, y - vec3d.y * 0.25, z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
             }
 
-            this.level().addParticle(ParticleTypes.FLAME, x, y, z, 0.0, 0.0, 0.0);
+            this.level().addParticle(soulVersion ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME, x, y, z, 0.0, 0.0, 0.0);
             this.setPos(x, y, z);
         } else {
             this.discard();

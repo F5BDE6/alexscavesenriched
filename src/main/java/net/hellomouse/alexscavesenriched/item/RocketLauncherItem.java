@@ -1,6 +1,7 @@
 package net.hellomouse.alexscavesenriched.item;
 
 import com.github.alexmodguy.alexscaves.server.item.UpdatesStackTags;
+import net.hellomouse.alexscavesenriched.ACEConfig;
 import net.hellomouse.alexscavesenriched.ACEItemRegistry;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
 import net.hellomouse.alexscavesenriched.advancements.ACECriterionTriggers;
@@ -197,7 +198,11 @@ public class RocketLauncherItem extends BowItem implements UpdatesStackTags {
                 // Cooldown + misc
                 if (AlexsCavesEnriched.CONFIG.rocketLauncher.cooldown > 0)
                     player.getCooldowns().addCooldown(itemStack.getItem(), AlexsCavesEnriched.CONFIG.rocketLauncher.cooldown);
-                if (!player.isCreative())
+
+                boolean infinity = AlexsCavesEnriched.CONFIG.rocketLauncher.infinity && itemStack.getEnchantmentLevel(Enchantments.INFINITY_ARROWS) > 0;
+                if (ammoStack.getItem() instanceof IRocketItem rocketItem)
+                    infinity = infinity && rocketItem.allowInfinity();
+                if (!player.isCreative() && !infinity)
                     ammoStack.shrink(1);
             }
         }

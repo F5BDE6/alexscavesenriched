@@ -2,7 +2,6 @@ package net.hellomouse.alexscavesenriched.item;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.message.UpdateItemTagMessage;
-import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.hellomouse.alexscavesenriched.ACEItemRegistry;
 import net.hellomouse.alexscavesenriched.ACESounds;
 import net.hellomouse.alexscavesenriched.AlexsCavesEnriched;
@@ -12,12 +11,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -28,6 +27,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -79,6 +79,11 @@ public class FlamethrowerItem extends Item {
     }
 
     @Override
+    public int getBarColor(ItemStack stack) {
+        return Mth.hsvToRgb(isSoul(stack) ? 0.5F : 0F, 0.8F, 1.0F);
+    }
+
+    @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.BOW;
     }
@@ -108,7 +113,8 @@ public class FlamethrowerItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
        if (getCharge(stack) != 0) {
             String chargeLeft = "" + (MAX_CHARGE - getCharge(stack));
-           tooltip.add(Component.translatable("item.alexscaves.raygun.charge", chargeLeft, MAX_CHARGE).withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.translatable("item.alexscaves.raygun.charge", chargeLeft, MAX_CHARGE).withStyle(
+                    isSoul(stack) ? ChatFormatting.AQUA : ChatFormatting.YELLOW));
        }
     }
 
@@ -122,10 +128,11 @@ public class FlamethrowerItem extends Item {
         super.inventoryTick(stack, world, entity, slot, selected);
         boolean using = (entity instanceof LivingEntity living) && living.getUseItem().equals(stack);
         boolean holding = (entity instanceof LivingEntity living) && (living.getMainHandItem().equals(stack) || living.getOffhandItem().equals(stack));
+        boolean soulVersion = isSoul(stack);
 
         if (holding && world.isClientSide && world.random.nextInt() % 10 == 0) {
             Vec3 lookDir = entity.getViewVector(1.0F);
-            world.addParticle(ParticleTypes.SMALL_FLAME,
+            world.addParticle(soulVersion ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SMALL_FLAME,
                     entity.getX() + lookDir.x, entity.getY() + lookDir.y + 1, entity.getZ() + lookDir.z,
                     (world.random.nextFloat() - 0.5) * 0.1,
                     0.2,
@@ -144,6 +151,11 @@ public class FlamethrowerItem extends Item {
         }
     }
 
+    // Nuka cola variant
+    private boolean isSoul(ItemStack stack) {
+        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains("Soul");
+    }
+
     @Override
     public void onUseTick(Level world, LivingEntity living, ItemStack stack, int timeUsing) {
         if (!world.isClientSide) {
@@ -154,8 +166,10 @@ public class FlamethrowerItem extends Item {
                 if (world.getGameTime() % 10 == 0)
                     world.playSound(null, living.getX(), living.getY(), living.getZ(), ACESounds.FLAMETHROWER, living.getSoundSource(), 1.0F, 1.0F);
                 for (int i = 0; i < 2; i++) {
-                    Projectile fireProjectile = new FlamethrowerProjectileEntity(living, 0, 1, 0, world);
+                    boolean soulVersion = isSoul(stack);
+                    FlamethrowerProjectileEntity fireProjectile = new FlamethrowerProjectileEntity(living, 0, 1, 0, world);
                     fireProjectile.setSecondsOnFire(100);
+                    fireProjectile.setIsSoul(soulVersion);
 
                     float offset1 = (world.getRandom().nextFloat() - 0.5f) * FIRING_RANDOMNESS;
                     float offset2 = (world.getRandom().nextFloat() - 0.5f) * FIRING_RANDOMNESS;

@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "alexscavesenriched:flamethrower"
+        },
+        {
+            "item": "alexscavesenriched:nuka_cola_quantum"
+        }
+    ],
+    "result": {
+        "item": "alexscavesenriched:flamethrower",
+        "count": 1,
+        "nbt": "{Soul:1b}"
+    }
+}

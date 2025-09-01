@@ -55,6 +55,7 @@ public class ACEClientHandler {
         event.registerSpriteSet(ACEParticleRegistry.NEUTRON_BLAST.get(), NeutronBlastParticle.Factory::new);
         event.registerSpecial(ACEParticleRegistry.DEMONCORE_GLOW.get(), new DemonCoreGlowParticle.Factory());
         event.registerSpriteSet(ACEParticleRegistry.FLAMETHROWER.get(), FlamethrowerParticle.Factory::new);
+        event.registerSpriteSet(ACEParticleRegistry.SOUL_FLAMETHROWER.get(), FlamethrowerParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.BLACK_HOLE_SMOKE.get(), BlackHoleSmokeParticle.Factory::new);
         event.registerSpriteSet(ACEParticleRegistry.RAILGUN_SHOCKWAVE.get(), RailgunShockwaveParticle.Factory::new);
     }
